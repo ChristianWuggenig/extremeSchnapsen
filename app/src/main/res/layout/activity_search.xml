@@ -9,6 +9,14 @@
     <android.support.v7.widget.AppCompatTextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/txvShowAvailableDevices"/>
+        android:id="@+id/txvShowAvailableDevices"
+        android:text="@string/txvShowAvailableDevices"/>
+
+    <android.support.v7.widget.ListViewCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lvAvailableDevices"
+        app:layout_constraintTop_toBottomOf="@+id/txvShowAvailableDevices"
+        android:layout_marginTop="100sp" />
 
 </android.support.constraint.ConstraintLayout>

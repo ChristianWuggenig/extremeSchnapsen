@@ -3,4 +3,9 @@
     <string name="enter_username">Gib einen Benutzernamen an</string>
     <string name="username_hint">Benutzername</string>
     <string name="registerBtn_Name">Registrieren</string>
+
+    <string name="txvShowAvailableDevices">Verfügbare Geräte</string>
+
+    <string name="msgWifiP2pSearching">Suche läuft</string>
+    <string name="msgWifiP2pNotWorking">Es gibt ein Problem mit der Netzwerkschnittstelle</string>
 </resources>
