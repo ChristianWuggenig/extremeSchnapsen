@@ -22,36 +22,39 @@
 
     <Button
         android:id="@+id/btnProfil"
+        style="@style/CustomButton"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Benutzerprofil"
+        android:text="@string/btn_menu_profil"
         app:layout_constraintBottom_toTopOf="@+id/btnSettings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnSettings"
+        style="@style/CustomButton"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="150dp"
-        android:text="Spiel Einstellungen"
+        android:text="@string/btn_menu_settings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvMenuTitle" />
 
     <Button
         android:id="@+id/btnStartGame"
+        style="@style/CustomButton"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Spiel Starten"
+        android:text="@string/btn_menu_start_game"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnSettings" />

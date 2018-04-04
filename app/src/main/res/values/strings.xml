@@ -3,4 +3,9 @@
     <string name="enter_username">Gib einen Benutzernamen an</string>
     <string name="username_hint">Benutzername</string>
     <string name="registerBtn_Name">Registrieren</string>
+
+    <!-- menu button strings -->
+    <string name="btn_menu_profil">Benutzerprofil</string>
+    <string name="btn_menu_settings">Spieleinstellungen</string>
+    <string name="btn_menu_start_game">Spiel Starten</string>
 </resources>
