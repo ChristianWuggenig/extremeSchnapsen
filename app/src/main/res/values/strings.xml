@@ -3,4 +3,5 @@
     <string name="enter_username">Gib einen Benutzernamen an</string>
     <string name="username_hint">Benutzername</string>
     <string name="registerBtn_Name">Registrieren</string>
+    <string name="editText_errorMessage">Das Feld darf nicht leer sein.</string>
 </resources>
