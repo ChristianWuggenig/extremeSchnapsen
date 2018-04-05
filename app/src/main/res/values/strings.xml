@@ -13,4 +13,5 @@
 
     <string name="editText_errorMessage">Das Feld darf nicht leer sein.</string>
 
+    <string name="btnSearch">Spieler suchen</string>
 </resources>
