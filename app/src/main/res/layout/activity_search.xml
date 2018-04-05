@@ -4,19 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cardfactory.com.extremeschnapsen.Search">
-
-    <android.support.v7.widget.AppCompatTextView
+    tools:context="cardfactory.com.extremeschnapsen.SearchActivity">
+    
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/txvShowAvailableDevices"
-        android:text="@string/txvShowAvailableDevices"/>
+        android:layout_margin="50sp">
 
-    <android.support.v7.widget.ListViewCompat
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/lvAvailableDevices"
-        app:layout_constraintTop_toBottomOf="@+id/txvShowAvailableDevices"
-        android:layout_marginTop="100sp" />
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/txvShowAvailableDevices"
+            android:text="@string/txvShowAvailableDevices"
+            android:textSize="20sp"/>
+
+        <android.support.v7.widget.ListViewCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/lvAvailableDevices"
+            app:layout_constraintTop_toBottomOf="@+id/txvShowAvailableDevices"
+            android:layout_marginTop="30sp"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10.0sp"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btnSearchForP2PDevices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btnSearchForP2PDevices"
+            app:layout_constraintBottom_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

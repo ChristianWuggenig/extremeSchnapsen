@@ -19,11 +19,11 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
     WifiP2pManager.PeerListListener peerListListener;
 
     //declare activity-context to show toast-messages on the search-activity
-    private Search searchActivity;
+    private SearchActivity searchActivity;
 
     public WiFiP2PBroadcastReceiver(WifiP2pManager manager,
                                     WifiP2pManager.Channel channel,
-                                    Search activity,
+                                    SearchActivity activity,
                                     WifiP2pManager.PeerListListener myPeerListListener) {
         super();
         this.p2pManager = manager;
@@ -40,7 +40,7 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
         //decide which P2P-Action was thrown
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
 
-            int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
+            int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, 1);
 
             //check if P2P is possible with the given hardware-settings (for example if P2P is not available for some reason, a toast message is shown)
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
