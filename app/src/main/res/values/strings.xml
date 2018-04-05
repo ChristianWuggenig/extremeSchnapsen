@@ -10,4 +10,7 @@
     <string name="msgWifiP2pNotWorking">Es gibt ein Problem mit der Netzwerkschnittstelle</string>
 
     <string name="btnSearchForP2PDevices">Suchen...</string>
+
+    <string name="editText_errorMessage">Das Feld darf nicht leer sein.</string>
+
 </resources>
