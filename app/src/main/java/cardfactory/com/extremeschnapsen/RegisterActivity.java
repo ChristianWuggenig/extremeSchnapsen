@@ -8,6 +8,7 @@ import android.os.Bundle;
 //import android.widget.ArrayAdapter;
 //import android.widget.ListView;
 
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -29,6 +30,9 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        getSupportActionBar().hide();
+
         setContentView(R.layout.activity_register);
 
         Log.d(LOG_TAG, "Das Datenquellen-Objekt wird angelegt.");

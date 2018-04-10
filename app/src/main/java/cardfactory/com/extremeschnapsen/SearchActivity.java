@@ -83,7 +83,7 @@ public class SearchActivity extends AppCompatActivity {
         discoverPeers();
 
         //set the onItemClickListener, so that a connection to the selected device can be established
-        setSearchButtonClickListener();
+        setListViewOnClickListener();
     }
 
     @Override
@@ -102,7 +102,9 @@ public class SearchActivity extends AppCompatActivity {
         unregisterReceiver(broadcastReceiver);
     }
 
-    private void discoverPeers() {
+    public void discoverPeers() {
+
+        Toast.makeText(this, R.string.msgWifiP2pSearching, Toast.LENGTH_SHORT).show();
 
         p2pManager.discoverPeers(p2pChannel, new WifiP2pManager.ActionListener() {
             @Override
@@ -117,7 +119,7 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    private void initializeArrayAdapter() {
+    public void initializeArrayAdapter() {
         deviceAdapter = new ArrayAdapter<WifiP2pDevice>(this, R.layout.wifi_device, R.id.lvSingleDevice, devices) {
 
             //iterates through the whole "devices"-list and executes the following method for each device-item
@@ -136,7 +138,7 @@ public class SearchActivity extends AppCompatActivity {
         };
     }
 
-    private void refreshedPeers() {
+    public void refreshedPeers() {
         peerListListener = new WifiP2pManager.PeerListListener() {
             @Override
             public void onPeersAvailable(WifiP2pDeviceList peerList) {
@@ -156,7 +158,7 @@ public class SearchActivity extends AppCompatActivity {
         };
     }
 
-    private void defineP2PIntentFilter() {
+    public void defineP2PIntentFilter() {
         intentFilter = new IntentFilter();
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -164,7 +166,7 @@ public class SearchActivity extends AppCompatActivity {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
     }
 
-    private void setSearchButtonClickListener() {
+    public void setListViewOnClickListener() {
         lvAvailableDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

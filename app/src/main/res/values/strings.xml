@@ -7,7 +7,7 @@
     <string name="txvShowAvailableDevices">Verfügbare Geräte</string>
 
     <string name="msgWifiP2pSearching">Suche läuft</string>
-    <string name="msgWifiP2pNotWorking">Es gibt ein Problem mit der Netzwerkschnittstelle</string>
+    <string name="msgWifiP2pNotWorking">Es gibt ein Problem mit der Netzwerkschnittstelle. Ist WLAN ausgeschaltet?</string>
 
     <string name="btnSearchForP2PDevices">Suchen...</string>
 
