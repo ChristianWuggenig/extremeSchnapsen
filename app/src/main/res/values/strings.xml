@@ -14,4 +14,9 @@
     <string name="editText_errorMessage">Das Feld darf nicht leer sein.</string>
 
     <string name="btnSearch">Spieler suchen</string>
+
+    <!-- menu button strings -->
+    <string name="btn_menu_profil">Benutzerprofil</string>
+    <string name="btn_menu_settings">Spieleinstellungen</string>
+    <string name="btn_menu_start_game">Spiel Starten</string>
 </resources>
