@@ -21,12 +21,8 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="SQLite Filter" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c5013fd-815d-47ff-a76e-f2f00dd49e04" name="Default" comment="nachdem bei mir auch die erste Activity drin ist-&gt; bitte das verwenden&#10;Player.class -&gt; Modell für Player&#10;PlayerDataSource.class -&gt; DAO für Player&#10;DbHelper.class -&gt; DB HilfsKlasse&#10;StartScreenActivity.class -&gt; Startseite &#10;RegisiterActivity.class -&gt; für RegistierSeite&#10;stirngs.xml -&gt; hier Strings fürs layout speichern &#10;AndroidManifest.xml-&gt; hab die StartScreenActivity ist jetz die MainActivity">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+    <list default="true" id="2c5013fd-815d-47ff-a76e-f2f00dd49e04" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/app/app.iml" afterPath="$PROJECT_DIR$/app/app.iml" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/cardfactory/com/extremeschnapsen/MainMenuActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/cardfactory/com/extremeschnapsen/MainMenuActivity.java" />
-      <change beforePath="$PROJECT_DIR$/local.properties" afterPath="$PROJECT_DIR$/local.properties" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -2281,7 +2277,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="device.picker.selection" value="Nexus_5_API_P" />
     <property name="android.profiler.active" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1523389885709" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1523389938792" />
   </component>
   <component name="RecentsManager">
     <key name="android.template.packageName">
@@ -2675,7 +2671,14 @@
       <option name="project" value="LOCAL" />
       <updated>1522781142196</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Buttons einheitlich gestyled &#10;&#10;Habe probiert den Hintergrund fürs spiel und für die Start Activity neu zu setzen aber leider ohne Erfolg">
+      <created>1523390090845</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1523390090845</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TodoView">
@@ -2734,7 +2737,8 @@
     <MESSAGE value="für Daniel: layout activity_register.xml kann jetzt bearbeitet werden" />
     <MESSAGE value="für Daniel: layout activity_register.xml kann jetzt bearbeitet werden&#10;+ strings.xml wurde upgedatet" />
     <MESSAGE value="nachdem bei mir auch die erste Activity drin ist-&gt; bitte das verwenden&#10;Player.class -&gt; Modell für Player&#10;PlayerDataSource.class -&gt; DAO für Player&#10;DbHelper.class -&gt; DB HilfsKlasse&#10;StartScreenActivity.class -&gt; Startseite &#10;RegisiterActivity.class -&gt; für RegistierSeite&#10;stirngs.xml -&gt; hier Strings fürs layout speichern &#10;AndroidManifest.xml-&gt; hab die StartScreenActivity ist jetz die MainActivity" />
-    <option name="LAST_COMMIT_MESSAGE" value="nachdem bei mir auch die erste Activity drin ist-&gt; bitte das verwenden&#10;Player.class -&gt; Modell für Player&#10;PlayerDataSource.class -&gt; DAO für Player&#10;DbHelper.class -&gt; DB HilfsKlasse&#10;StartScreenActivity.class -&gt; Startseite &#10;RegisiterActivity.class -&gt; für RegistierSeite&#10;stirngs.xml -&gt; hier Strings fürs layout speichern &#10;AndroidManifest.xml-&gt; hab die StartScreenActivity ist jetz die MainActivity" />
+    <MESSAGE value="Buttons einheitlich gestyled &#10;&#10;Habe probiert den Hintergrund fürs spiel und für die Start Activity neu zu setzen aber leider ohne Erfolg" />
+    <option name="LAST_COMMIT_MESSAGE" value="Buttons einheitlich gestyled &#10;&#10;Habe probiert den Hintergrund fürs spiel und für die Start Activity neu zu setzen aber leider ohne Erfolg" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
