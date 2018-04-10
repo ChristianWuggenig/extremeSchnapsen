@@ -23,4 +23,8 @@ public class MainMenuActivity extends AppCompatActivity {
         Intent i = new Intent(this, SearchActivity.class);
         this.startActivity(i);
     }
+    Button profil =  (Button) findViewById(R.id.btnProfile);
+    Button settings =  (Button) findViewById(R.id.btnSettings);
+    Button start =  (Button) findViewById(R.id.btnStartGame);
+
 }
