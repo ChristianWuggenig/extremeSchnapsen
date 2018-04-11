@@ -19,12 +19,12 @@ public class MainMenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_menu);
     }
 
-    public void onClickBtnSearch(View view) {
+    public void onClickBtnStartGame(View view) {
         Intent i = new Intent(this, SearchActivity.class);
         this.startActivity(i);
     }
-    Button profil =  (Button) findViewById(R.id.btnProfile);
-    Button settings =  (Button) findViewById(R.id.btnSettings);
-    Button start =  (Button) findViewById(R.id.btnStartGame);
+    //Button profil =  (Button) findViewById(R.id.btnProfile);
+    //Button settings =  (Button) findViewById(R.id.btnSettings);
+    //Button start =  (Button) findViewById(R.id.btnStartGame);
 
 }
