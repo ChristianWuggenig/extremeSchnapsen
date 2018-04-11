@@ -23,9 +23,6 @@
   <component name="ChangeListManager">
     <list default="true" id="2c5013fd-815d-47ff-a76e-f2f00dd49e04" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/app/app.iml" afterPath="$PROJECT_DIR$/app/app.iml" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/background.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/background.png" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_search.xml" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_search.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -51,8 +48,8 @@
       <file leaf-file-name="activity_main_menu.xml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main_menu.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" column="43" lean-forward="true" selection-start-line="12" selection-start-column="43" selection-end-line="12" selection-end-column="43" />
+            <state relative-caret-position="240">
+              <caret line="16" column="39" lean-forward="true" selection-start-line="16" selection-start-column="39" selection-end-line="16" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -118,7 +115,7 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/cardfactory/com/extremeschnapsen/MainMenuActivity.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="330">
-              <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+              <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -2317,7 +2314,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="device.picker.selection" value="9TLVPBRWSGDQCMC6" />
     <property name="android.profiler.active" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1523457222881" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1523457366666" />
   </component>
   <component name="RecentsManager">
     <key name="android.template.packageName">
@@ -2339,10 +2336,6 @@
           <option name="myCanBeAbsent" value="false" />
           <option name="myId" value="UPDATED" />
           <PATH vcs="Git" revision="">$PROJECT_DIR$/app/src/main/java/cardfactory/com/extremeschnapsen/MainMenuActivity.java</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/app/src/main/res/layout/activity_main_menu.xml</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/app/src/main/res/layout/activity_register.xml</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/app/src/main/res/layout/activity_search.xml</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/app/src/main/res/layout/activity_start_screen.xml</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
           <option name="myUpdateName" value="Created" />
@@ -2350,8 +2343,6 @@
           <option name="mySupportsDeletion" value="false" />
           <option name="myCanBeAbsent" value="false" />
           <option name="myId" value="CREATED" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/app/src/main/res/drawable/card.png</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/app/src/main/res/drawable/start.png</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
           <option name="myUpdateName" value="Deleted" />
@@ -2359,8 +2350,6 @@
           <option name="mySupportsDeletion" value="false" />
           <option name="myCanBeAbsent" value="true" />
           <option name="myId" value="REMOVED_FROM_REPOSITORY" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/app/src/main/res/drawable/Card.png</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/app/src/main/res/drawable/Start.png</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
           <option name="myUpdateName" value="Restored" />
@@ -2864,7 +2853,14 @@
       <option name="project" value="LOCAL" />
       <updated>1523454758026</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="bug fixes with background">
+      <created>1523457333901</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1523457333901</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TodoView">
@@ -2925,7 +2921,8 @@
     <MESSAGE value="nachdem bei mir auch die erste Activity drin ist-&gt; bitte das verwenden&#10;Player.class -&gt; Modell für Player&#10;PlayerDataSource.class -&gt; DAO für Player&#10;DbHelper.class -&gt; DB HilfsKlasse&#10;StartScreenActivity.class -&gt; Startseite &#10;RegisiterActivity.class -&gt; für RegistierSeite&#10;stirngs.xml -&gt; hier Strings fürs layout speichern &#10;AndroidManifest.xml-&gt; hab die StartScreenActivity ist jetz die MainActivity" />
     <MESSAGE value="Buttons einheitlich gestyled &#10;&#10;Habe probiert den Hintergrund fürs spiel und für die Start Activity neu zu setzen aber leider ohne Erfolg" />
     <MESSAGE value="Hintergrund für den Startscreen hinzugefügt" />
-    <option name="LAST_COMMIT_MESSAGE" value="Hintergrund für den Startscreen hinzugefügt" />
+    <MESSAGE value="bug fixes with background" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fixes with background" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -3248,7 +3245,7 @@
     <entry file="file://$PROJECT_DIR$/app/src/main/java/cardfactory/com/extremeschnapsen/MainMenuActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
-          <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+          <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -3303,8 +3300,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main_menu.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="43" lean-forward="true" selection-start-line="12" selection-start-column="43" selection-end-line="12" selection-end-column="43" />
+        <state relative-caret-position="240">
+          <caret line="16" column="39" lean-forward="true" selection-start-line="16" selection-start-column="39" selection-end-line="16" selection-end-column="39" />
           <folding />
         </state>
       </provider>
