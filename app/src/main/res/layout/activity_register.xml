@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@drawable/background"
     android:layout_height="match_parent"
     tools:context="cardfactory.com.extremeschnapsen.RegisterActivity">
 
@@ -37,6 +38,7 @@
         android:layout_height="52dp"
         android:layout_marginStart="124dp"
         android:layout_marginTop="12dp"
+        style="@style/CustomButton"
         android:text="@string/registerBtn_Name"
         app:layout_constraintStart_toStartOf="@+id/usernameTextView"
         app:layout_constraintTop_toBottomOf="@+id/usernameEditText" />
