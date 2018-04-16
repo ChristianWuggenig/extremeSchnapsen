@@ -1,19 +1,18 @@
 package cardfactory.com.extremeschnapsen;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 
 //import android.widget.ArrayAdapter;
 //import android.widget.ListView;
-
-import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 /**
  * Created by NapeStar on 05.04.18.

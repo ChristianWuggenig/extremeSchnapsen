@@ -18,17 +18,22 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
     private WifiP2pManager.Channel p2pChannel;
     WifiP2pManager.PeerListListener peerListListener;
 
+    //declare startGameActivity
+    private Class<StartGameActivity> gameActivityClass;
+
     //declare activity-context to show toast-messages on the search-activity
     private SearchActivity searchActivity;
 
     public WiFiP2PBroadcastReceiver(WifiP2pManager manager,
                                     WifiP2pManager.Channel channel,
                                     SearchActivity activity,
+                                    Class<StartGameActivity> gameActivityClass,
                                     WifiP2pManager.PeerListListener myPeerListListener) {
         super();
         this.p2pManager = manager;
         this.p2pChannel = channel;
         this.searchActivity = activity;
+        this.gameActivityClass = gameActivityClass;
         this.peerListListener = myPeerListListener;
     }
 
@@ -60,6 +65,15 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
 
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
             // Respond to new connection or disconnections
+            p2pManager.requestConnectionInfo(p2pChannel, new WifiP2pManager.ConnectionInfoListener() {
+                @Override
+                public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
+                    if(wifiP2pInfo.groupFormed){
+                        Intent startGameActiviyIntent = new Intent(searchActivity.getApplicationContext(),gameActivityClass);
+                        searchActivity.startActivity(startGameActiviyIntent);
+                    }
+                }
+            });
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             // Respond to this device's wifi state changing
         }
