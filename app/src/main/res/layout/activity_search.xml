@@ -17,6 +17,7 @@
             android:layout_height="match_parent"
             android:id="@+id/txvShowAvailableDevices"
             android:text="@string/txvShowAvailableDevices"
+            android:textColor="#FFF"
             android:textSize="20sp"/>
 
         <android.support.v7.widget.ListViewCompat
