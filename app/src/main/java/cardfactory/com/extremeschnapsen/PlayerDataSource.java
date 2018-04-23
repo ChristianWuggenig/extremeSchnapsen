@@ -25,13 +25,13 @@ public class PlayerDataSource {
     private DbHelper dbHelper;
 
     private String[] columns = {
-            DbHelper.COLUMN_ID,
-            DbHelper.COLUMN_USERNAME
+            DbHelper.COLUMN_PLAYER_ID,
+            DbHelper.COLUMN_PLAYER_USERNAME
     };
 
     public PlayerDataSource(Context context) {
         Log.d(LOG_TAG, "Unsere DataSource erzeugt jetzt den dbHelper.");
-        dbHelper = new DbHelper(context);
+        dbHelper = DbHelper.getInstance(context);
     }
 
     public void open() {
@@ -47,12 +47,12 @@ public class PlayerDataSource {
 
     public Player createPlayer(String username) {
         ContentValues values = new ContentValues();
-        values.put(DbHelper.COLUMN_USERNAME, username);
+        values.put(DbHelper.COLUMN_PLAYER_USERNAME, username);
 
         long insertId = database.insert(DbHelper.TABLE_PLAYER_LIST, null, values);
 
         Cursor cursor = database.query(DbHelper.TABLE_PLAYER_LIST,
-                columns, DbHelper.COLUMN_ID + "=" + insertId,
+                columns, DbHelper.COLUMN_CARD_ID + "=" + insertId,
                 null, null, null, null);
 
         cursor.moveToFirst();
@@ -63,8 +63,8 @@ public class PlayerDataSource {
     }
 
     private Player cursorToPlayer(Cursor cursor) {
-        int idIndex = cursor.getColumnIndex(DbHelper.COLUMN_ID);
-        int idUsername = cursor.getColumnIndex(DbHelper.COLUMN_USERNAME);
+        int idIndex = cursor.getColumnIndex(DbHelper.COLUMN_PLAYER_ID);
+        int idUsername = cursor.getColumnIndex(DbHelper.COLUMN_PLAYER_USERNAME);
 
         String username = cursor.getString(idUsername);
         long id = cursor.getLong(idIndex);
