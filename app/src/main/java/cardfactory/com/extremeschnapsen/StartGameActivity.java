@@ -1,13 +1,10 @@
 package cardfactory.com.extremeschnapsen;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,11 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class StartGameActivity extends AppCompatActivity {
+public class StartGameActivity extends AppCompatActivity implements INetworkDisplay {
 
     private ConstraintLayout deckholder;
     List<Deck> currentDeck;
-    boolean deckSet = false;
+
+    TextView txvPlayer;
+
+    Round round;
+
+    NetworkManager networkManager;
+
+    private View.OnClickListener onClickListener;
+    private ImageView ivCardOne;
+    private ImageView ivCardTwo;
+    private ImageView ivCardThree;
+    private ImageView ivCardFour;
+    private ImageView ivCardFive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,38 +64,62 @@ public class StartGameActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         boolean isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
 
-        final TextView txvPlayer = this.findViewById(R.id.txvPlayer);
-        Round round = new Round(this);
+        round = new Round(this);
+
+        currentDeck = round.initializeRound();
 
         if(isGroupOwner) {
-            currentDeck = round.initializeRound();
-
-            ServerAsyncTask serverAsyncTask = new ServerAsyncTask() {
-                @Override
-                public void updateDecks(List<Deck> currentDeckFromClient) {
-                    if(!deckSet) {
-                        currentDeck = currentDeckFromClient;
-                        deckSet = true;
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                txvPlayer.setText(currentDeck.get(0).toString());
-                            }
-                        });
-
-                    }
-
-                }
-            };
-
-            serverAsyncTask.execute(currentDeck);
+            round.startServer();
+            round.setMyTurn(true);
         }
         else {
-            currentDeck = round.initializeRound();
-            ClientAsyncTask clientAsyncTask = new ClientAsyncTask();
-            clientAsyncTask.execute(currentDeck);
-            txvPlayer.setText(currentDeck.get(0).toString());
+            round.startClient();
+            round.setMyTurn(false);
+            round.playCard(0);
         }
+
+        onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivCardClicked(view);
+            }
+        };
+
+        ivCardOne = this.findViewById(R.id.iv_card_1);
+        ivCardTwo = this.findViewById(R.id.iv_card_2);
+        ivCardThree = this.findViewById(R.id.iv_card_3);
+        ivCardFour = this.findViewById(R.id.iv_card_4);
+        ivCardFive = this.findViewById(R.id.iv_card_5);
+
+        txvPlayer = this.findViewById(R.id.txvPlayer);
+    }
+
+    @Override
+    public void displayStatus(final String message) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txvPlayer.setText(message);
+            }
+        });
+
+    }
+
+    public void ivCardClicked(View view) {
+        ImageView imageView = (ImageView)view;
+
+        switch (imageView.getId()) {
+            case R.id.iv_card_1:
+                txvPlayer.setText("card 1 played");
+                round.playCard(1);
+                break;
+            case R.id.iv_card_2:
+                txvPlayer.setText("card 2");
+                round.playCard(2);
+                break;
+        }
+
+
     }
 }
