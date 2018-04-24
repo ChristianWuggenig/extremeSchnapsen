@@ -70,6 +70,7 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
                 public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
                     if(wifiP2pInfo.groupFormed){
                         Intent startGameActiviyIntent = new Intent(searchActivity.getApplicationContext(),gameActivityClass);
+                        startGameActiviyIntent.putExtra("IS_GROUP_OWNER", wifiP2pInfo.isGroupOwner);
                         searchActivity.startActivity(startGameActiviyIntent);
                     }
                 }
