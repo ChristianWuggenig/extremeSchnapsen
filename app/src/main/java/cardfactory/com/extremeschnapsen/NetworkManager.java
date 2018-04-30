@@ -6,10 +6,12 @@ public class NetworkManager  {
 
     private static NetworkManager networkManager;
 
-    private ServerAsyncTask serverAsyncTask;
+    private StartServerAsyncTask startServerAsyncTask;
     private ClientAsyncTask clientAsyncTask;
 
     private INetworkDisplay networkDisplay;
+
+    private String oppositeIP;
 
     private NetworkManager (INetworkDisplay networkDisplay) {
         this.networkDisplay = networkDisplay;
@@ -23,7 +25,7 @@ public class NetworkManager  {
     }
 
     public void startServer(List<Deck> currentDeck) {
-        serverAsyncTask = new ServerAsyncTask() {
+        startServerAsyncTask = new StartServerAsyncTask() {
             @Override
             public void updateDecks(List<Deck> currentDeckFromClient) {
                 currentDeck = currentDeckFromClient;
@@ -36,9 +38,14 @@ public class NetworkManager  {
             public void updateCardPlayed(int cardID) {
                 networkDisplay.displayStatus("card " + String.valueOf(cardID) + " played");
             }
+
+            @Override
+            public void updateIP(String ip) {
+                oppositeIP = ip;
+            }
         };
 
-        serverAsyncTask.execute(currentDeck);
+        startServerAsyncTask.execute(currentDeck);
     }
 
     public void startClient(List<Deck> currentDeck) {
@@ -52,9 +59,16 @@ public class NetworkManager  {
             public void updateCardPlayed(int cardID) {
                 networkDisplay.displayStatus("card " + String.valueOf(cardID) + " played");
             }
+
+            @Override
+            public void startServer() {
+
+            }
         };
 
-        clientAsyncTask.execute(currentDeck);
+        oppositeIP = "192.168.49.1";
+
+        clientAsyncTask.execute(oppositeIP, currentDeck);
     }
 
     public void playCard(int cardID) {
@@ -68,13 +82,18 @@ public class NetworkManager  {
             public void updateCardPlayed(int cardID) {
                 networkDisplay.displayStatus("card " + String.valueOf(cardID) + " played");
             }
+
+            @Override
+            public void startServer() {
+                networkDisplay.changeClientToServer();
+            }
         };
 
-        clientAsyncTask.execute(cardID);
+        clientAsyncTask.execute(oppositeIP, cardID);
     }
 
     public void waitForCard() {
-        serverAsyncTask = new ServerAsyncTask() {
+        startServerAsyncTask = new StartServerAsyncTask() {
             @Override
             public void updateDecks(List<Deck> currentDeckFromClient) {
                 currentDeck = currentDeckFromClient;
@@ -87,8 +106,13 @@ public class NetworkManager  {
             public void updateCardPlayed(int cardID) {
                 networkDisplay.displayStatus("card " + String.valueOf(cardID) + " played");
             }
+
+            @Override
+            public void updateIP(String ip) {
+
+            }
         };
 
-        serverAsyncTask.execute();
+        startServerAsyncTask.execute();
     }
 }

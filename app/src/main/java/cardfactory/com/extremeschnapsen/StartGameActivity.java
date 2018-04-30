@@ -2,6 +2,7 @@ package cardfactory.com.extremeschnapsen;
 
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -25,11 +26,10 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     NetworkManager networkManager;
 
     private View.OnClickListener onClickListener;
-    private ImageView ivCardOne;
-    private ImageView ivCardTwo;
-    private ImageView ivCardThree;
-    private ImageView ivCardFour;
-    private ImageView ivCardFive;
+
+    private AlertDialog.Builder builder;
+
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +38,18 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         getSupportActionBar().hide();
 
         setContentView(R.layout.activity_start_game);
+
+        builder = new AlertDialog.Builder(StartGameActivity.this);
+
+        builder.setMessage("Warten auf Gegenspieler")
+        .setTitle("Warten");
+
+        dialog = builder.create();
+
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+
+        dialog.show();
 
         deckholder = (ConstraintLayout) findViewById(R.id.layoutPlaceholder);
         List<ImageView> cardList = new ArrayList<ImageView>();
@@ -75,7 +87,6 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         else {
             round.startClient();
             round.setMyTurn(false);
-            round.playCard(0);
         }
 
         onClickListener = new View.OnClickListener() {
@@ -84,12 +95,6 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
                 ivCardClicked(view);
             }
         };
-
-        ivCardOne = this.findViewById(R.id.iv_card_1);
-        ivCardTwo = this.findViewById(R.id.iv_card_2);
-        ivCardThree = this.findViewById(R.id.iv_card_3);
-        ivCardFour = this.findViewById(R.id.iv_card_4);
-        ivCardFive = this.findViewById(R.id.iv_card_5);
 
         txvPlayer = this.findViewById(R.id.txvPlayer);
     }
@@ -104,6 +109,13 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
             }
         });
 
+        dialog.dismiss();
+
+    }
+
+    @Override
+    public void changeClientToServer() {
+        round.waitForCard();
     }
 
     public void ivCardClicked(View view) {
@@ -111,15 +123,27 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
         switch (imageView.getId()) {
             case R.id.iv_card_1:
-                txvPlayer.setText("card 1 played");
-                round.playCard(1);
+                playCard(1);
                 break;
             case R.id.iv_card_2:
-                txvPlayer.setText("card 2");
-                round.playCard(2);
+                playCard(2);
+                break;
+            case R.id.iv_card_3:
+                playCard(3);
+                break;
+            case R.id.iv_card_4:
+                playCard(4);
+                break;
+            case R.id.iv_card_5:
+                playCard(5);
                 break;
         }
+    }
 
-
+    public void playCard(int cardID) {
+        if(round.playCard(cardID))
+            txvPlayer.setText("card " + String.valueOf(cardID) + " played");
+        else
+            txvPlayer.setText("not your turn");
     }
 }
