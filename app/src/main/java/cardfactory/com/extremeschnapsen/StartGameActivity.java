@@ -17,6 +17,8 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
     private ConstraintLayout deckholder;
     List<Deck> currentDeck;
+    List<Deck> cardsOnHand;
+    Deck opencard;
 
     TextView txvPlayer;
 
@@ -49,24 +51,44 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         cardList.add((ImageView) findViewById(R.id.iv_card_trump));
         cardList.add((ImageView) findViewById(R.id.iv_card_played));
 
-        String [] cardCat = {"herz", "karo", "kreuz", "pik"};
-        String [] cardValue = {"ass", "10", "koenig", "dame", "bub"};
-
-        for(ImageView card : cardList){
-            Random r = new Random();
-            int cat_index = r.nextInt(4);
-            int value_index = r.nextInt(5);
-
-            int res_id = getResources().getIdentifier(cardCat[cat_index] + cardValue[value_index], "drawable", this.getPackageName() );
-            card.setImageResource(res_id);
-        }
-
         Intent intent = this.getIntent();
         boolean isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
 
         round = new Round(this);
 
-        currentDeck = round.initializeRound();
+        //muss noch umgesetzt werden
+        //if (isGroupOwner){
+            currentDeck = round.initializeRound();
+        //}
+        //else
+
+
+        String [] cardCat = {"herz", "karo", "kreuz", "pik"};
+        String [] cardValue = {"ass", "10", "koenig", "dame", "bub"};
+
+        int index = 0;
+        cardsOnHand = round.getCardsOnHand(isGroupOwner);
+        opencard = round.getOpenCard();
+        String karte = null;
+
+        for(ImageView card : cardList){
+
+            if (index <5) {
+                karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
+            }
+            if (index == 5){
+                karte = opencard.getCardSuit() + opencard.getCardRank();
+            }
+            index ++;
+            if (index == 6){
+                karte = "herzass";
+            }
+
+            int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName() );
+            card.setImageResource(res_id);
+        }
+
+
 
         if(isGroupOwner) {
             round.startServer();

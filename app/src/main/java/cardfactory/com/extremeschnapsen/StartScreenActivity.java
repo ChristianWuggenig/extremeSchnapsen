@@ -67,29 +67,29 @@ public class StartScreenActivity extends AppCompatActivity {
         if (cardDataSource.getAllCards().isEmpty()){
             Log.d(LOG_TAG, "Spielkarten werden in DB Tabelle geschrieben.");
 
-            cardDataSource.createCard("Heart", "Ass", 11);
-            cardDataSource.createCard("Heart", "Ten", 10);
-            cardDataSource.createCard("Heart", "King", 4);
-            cardDataSource.createCard("Heart", "Queen", 3);
-            cardDataSource.createCard("Heart", "Jack", 2);
+            cardDataSource.createCard("herz", "ass", 11);
+            cardDataSource.createCard("herz", "10", 10);
+            cardDataSource.createCard("herz", "koenig", 4);
+            cardDataSource.createCard("herz", "dame", 3);
+            cardDataSource.createCard("herz", "bube", 2);
 
-            cardDataSource.createCard("Diamond", "Ass", 11);
-            cardDataSource.createCard("Diamond", "Ten", 10);
-            cardDataSource.createCard("Diamond", "King", 4);
-            cardDataSource.createCard("Diamond", "Queen", 3);
-            cardDataSource.createCard("Diamond", "Jack", 2);
+            cardDataSource.createCard("karo", "ass", 11);
+            cardDataSource.createCard("karo", "10", 10);
+            cardDataSource.createCard("karo", "koenig", 4);
+            cardDataSource.createCard("karo", "dame", 3);
+            cardDataSource.createCard("karo", "bube", 2);
 
-            cardDataSource.createCard("Spade", "Ass", 11);
-            cardDataSource.createCard("Spade", "Ten", 10);
-            cardDataSource.createCard("Spade", "King", 4);
-            cardDataSource.createCard("Spade", "Queen", 3);
-            cardDataSource.createCard("Spade", "Jack", 2);
+            cardDataSource.createCard("pik", "ass", 11);
+            cardDataSource.createCard("pik", "10", 10);
+            cardDataSource.createCard("pik", "koenig", 4);
+            cardDataSource.createCard("pik", "dame", 3);
+            cardDataSource.createCard("pik", "bube", 2);
 
-            cardDataSource.createCard("Club", "Ass", 11);
-            cardDataSource.createCard("Club", "Ten", 10);
-            cardDataSource.createCard("Club", "King", 4);
-            cardDataSource.createCard("Club", "Queen", 3);
-            cardDataSource.createCard("Club", "Jack", 2);
+            cardDataSource.createCard("kreuz", "ass", 11);
+            cardDataSource.createCard("kreuz", "10", 10);
+            cardDataSource.createCard("kreuz", "koenig", 4);
+            cardDataSource.createCard("kreuz", "dame", 3);
+            cardDataSource.createCard("kreuz", "bube", 2);
 
 
         }
@@ -100,6 +100,15 @@ public class StartScreenActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "Folgende Einträge sind in der Datenbank vorhanden:");
         playerDataSource.getAllPlayers();
         cardDataSource.getAllCards();
+
+        deckDataSource.updateDeckStatus(1,9);
+        deckDataSource.getAllDeck();
+        deckDataSource.deleteDeckTable();
+        deckDataSource.getAllDeck();
+
+        int[] test = {20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
+
+        deckDataSource.receiveShuffeldDeck(test, cardDataSource.getAllCards());
         deckDataSource.getAllDeck();
 
         Log.d(LOG_TAG, "Ist die PlayerList leer: " + isEmptyPlayerList());

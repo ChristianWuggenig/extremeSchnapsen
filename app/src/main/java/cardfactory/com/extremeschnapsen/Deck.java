@@ -6,27 +6,39 @@ package cardfactory.com.extremeschnapsen;
 
 public class Deck extends Card {
 
+    private long deckID;
     private int deckStatus;
     private int deckTrump;
 
-    public Deck(long cardID, String cardSuit, String cardRank, int cardValue, int deckStatus, int deckTrump) {
+    public Deck(long deckID, long cardID, String cardSuit, String cardRank, int cardValue, int deckStatus, int deckTrump) {
         super(cardID, cardSuit, cardRank, cardValue);
+        this.deckID = deckID;
         this.deckStatus = deckStatus;
         this.deckTrump = deckTrump;
     }
 
     public Deck(long cardID, String cardSuit, String cardRank, int cardValue) {
         super(cardID, cardSuit, cardRank, cardValue);
+
         this.deckStatus = 1;
         this.deckTrump = 0;
     }
 
     public Deck(Card card){
+
         super(card.getCardID(), card.getCardSuit(), card.getCardRank(), card.getCardValue());
+        this.deckID = 1;
         this.deckStatus = 1;
         this.deckTrump = 0;
     }
 
+    public long getDeckID() {
+        return deckID;
+    }
+
+    public void setDeckID(long deckID) {
+        this.deckID = deckID;
+    }
 
     public int getDeckStatus() {
         return deckStatus;

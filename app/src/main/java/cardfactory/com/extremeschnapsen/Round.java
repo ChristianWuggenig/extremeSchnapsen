@@ -30,6 +30,40 @@ public class Round {
         networkManager = NetworkManager.getInstance((INetworkDisplay)context);
     }
 
+    //die Karten auf der Hand zurückbekommen
+    public List<Deck> getCardsOnHand(boolean player1){
+        List<Deck> deckonhands = null;
+
+        if (player1) {
+            for (Deck deck : this.currentDeck) {
+                if (deck.getDeckStatus() == 1) {
+                    deckonhands.add(deck);
+                }
+            }
+        }
+        else {
+            for (Deck deck : this.currentDeck) {
+                if (deck.getDeckStatus() == 2) {
+                    deckonhands.add(deck);
+                }
+            }
+        }
+        return deckonhands;
+
+    }
+
+    //offene Karte aus dem Deck erhalten
+    public Deck getOpenCard(){
+
+        Deck opencard = null;
+        for (Deck deck : this.currentDeck) {
+            if (deck.getDeckStatus() == 3) {
+                opencard = deck;
+            }
+        }
+        return opencard;
+    }
+
     public List<Deck> initializeRound() {
         allCards = cardDataSource.getAllCards();
         currentDeck = deckDataSource.shuffelDeck(allCards);

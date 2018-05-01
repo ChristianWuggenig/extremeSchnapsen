@@ -35,6 +35,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CARDVALUE = "cardValue";
 
     public static final String COLUMN_DECK_ID = "_id";
+    public static final String COLUMN_DECK_CARD_ID = "_cardID";
     public static final String COLUMN_DECKSUIT = "deckSuit";
     public static final String COLUMN_DECKRANK = "deckRank";
     public static final String COLUMN_DECKVALUE = "deckValue";
@@ -57,6 +58,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String SQL_CREATE_DECK_TABLE =
             "CREATE TABLE " + TABLE_DECK_LIST +
                     "(" + COLUMN_DECK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_DECK_CARD_ID + " INTEGER NOT NULL, " +
                     COLUMN_DECKSUIT + " TEXT NOT NULL, " +
                     COLUMN_DECKRANK + " TEXT NOT NULL, " +
                     COLUMN_DECKVALUE + " INTEGER NOT NULL, " +
