@@ -1,6 +1,5 @@
 package cardfactory.com.extremeschnapsen;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -14,15 +13,20 @@ import java.util.Map;
 
 import fi.iki.elonen.NanoHTTPD;
 
-public abstract class StartHTTPServerAsyncTask extends AsyncTask {
-    NanoHTTPD nanoHTTPD;
-    @Override
-    protected Object doInBackground(final Object[] objects) {
+public class StartHTTPServer {
+    int cardPlayed;
+    List<Deck> currentDeck;
+    INetworkDisplay networkDisplay;
 
-        Log.d("AsyncTask", "Starting AsyncTask");
+    public StartHTTPServer(List<Deck> currentDeck, INetworkDisplay networkDisplay) {
+        this.cardPlayed = 0;
+        this.currentDeck = currentDeck;
+        this.networkDisplay = networkDisplay;
+    }
 
+    public void startServer() {
         try {
-            nanoHTTPD = new NanoHTTPD(8080) {
+            NanoHTTPD nanoHTTPD = new NanoHTTPD(8080) {
                 @Override
                 public Response serve(IHTTPSession session) {
                     String message = "";
@@ -31,7 +35,6 @@ public abstract class StartHTTPServerAsyncTask extends AsyncTask {
                         Map<String, List<String>> params = session.getParameters();
 
                         if (params.size() == 0) {
-                            List<Deck> currentDeck = (List<Deck>) objects[0];
 
                             JSONArray jsonArray = new JSONArray();
 
@@ -47,31 +50,20 @@ public abstract class StartHTTPServerAsyncTask extends AsyncTask {
 
                             message = jsonArray.toString();
 
-                            updateDeck();
+                            networkDisplay.displayStatus(currentDeck.get(0).toString());
                         } else {
-                            if (objects.length > 1) {
-                                int cardPlayed = (int)objects[1];
+                            JSONObject jsonObject = new JSONObject();
 
-                                while (cardPlayed == 0) {
-                                    try {
-                                        Thread.sleep(500);
-                                        Log.d("Waiting", "Waiting for player to tap card");
-                                    } catch (InterruptedException ex) {
-                                        Log.d("ThreadException", ex.getMessage());
-                                    }
-                                }
-                                JSONObject jsonObject = new JSONObject();
-
-                                try {
-                                    jsonObject.put("ID", cardPlayed);
-                                } catch (JSONException ex) {
-                                    Log.d("JSONError", ex.getMessage());
-                                }
-
-                                //cardPlayed = 0;
-
-                                message = jsonObject.toString();
+                            try {
+                                jsonObject.put("ID", cardPlayed);
+                            } catch (JSONException ex) {
+                                Log.d("JSONError", ex.getMessage());
                             }
+
+                            cardPlayed = 0;
+
+                            message = jsonObject.toString();
+
                         }
                     } else if(session.getMethod() == Method.POST) {
                         try {
@@ -79,7 +71,8 @@ public abstract class StartHTTPServerAsyncTask extends AsyncTask {
                             session.parseBody(params);
                             JSONObject jsonObject = new JSONObject(params.get("postData"));
                             String cardIDString = jsonObject.getString("ID");
-                            updateCardPlayed(Integer.parseInt(cardIDString));
+                            networkDisplay.displayStatus("opposite player played card " + cardIDString);
+                            networkDisplay.setMyTurn(true);
                             message = jsonObject.toString();
                         } catch (Exception ex) {
                             Log.d("HTTPError", ex.getMessage());
@@ -95,23 +88,9 @@ public abstract class StartHTTPServerAsyncTask extends AsyncTask {
         } catch (IOException ex) {
             Log.d("HTTPError", ex.getMessage());
         }
-
-
-        return null;
     }
 
-    public abstract void updateCardPlayed(int cardID);
-
-    public abstract void updateDeck();
-
-    public void stopSelf() {
-        nanoHTTPD.stop();
-        cancel(true);
-    }
-
-    @Override
-    protected void onCancelled() {
-        nanoHTTPD.stop();
-        super.onCancelled();
+    public void setCardPlayed(int cardPlayed) {
+        this.cardPlayed = cardPlayed;
     }
 }

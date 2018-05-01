@@ -39,8 +39,8 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
         builder = new AlertDialog.Builder(StartGameActivity.this);
 
-        builder.setMessage("Warten auf Gegenspieler")
-        .setTitle("Warten");
+        builder.setMessage(R.string.msgWaitingForOpposite)
+        .setTitle(R.string.msgWaiting);
 
         dialog = builder.create();
 
@@ -137,11 +137,12 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         if(round.playCard(cardID))
             txvPlayer.setText("card " + String.valueOf(cardID) + " played");
         else
-            txvPlayer.setText("not your turn");
+            txvPlayer.setText("not your turn or end of round reached");
     }
 
     @Override
     public void setMyTurn(boolean value) {
         round.setMyTurn(true);
+        round.increaseMoves();
     }
 }

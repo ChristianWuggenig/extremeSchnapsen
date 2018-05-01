@@ -8,7 +8,6 @@ import java.util.List;
 
 public class Round {
 
-    private Context context;
     private List<Card> allCards;
     private List<Deck> currentDeck;
     private DeckDataSource deckDataSource;
@@ -18,14 +17,17 @@ public class Round {
 
     private boolean myTurn;
 
+    private int moves;
+
     public Round(Context context) {
-        this.context = context;
         deckDataSource = new DeckDataSource(context);
         cardDataSource = new CardDataSource(context);
         cardDataSource.open();
         deckDataSource.open();
         allCards = new ArrayList<>();
         currentDeck = new ArrayList<>();
+
+        moves = 1;
 
         networkManager = NetworkManager.getInstance(context, (INetworkDisplay)context);
     }
@@ -40,6 +42,10 @@ public class Round {
         this.myTurn = myTurn;
     }
 
+    public void increaseMoves() {
+        moves++;
+    }
+
     public void startServer() {
         networkManager.startHttpServer(currentDeck);
     }
@@ -49,9 +55,10 @@ public class Round {
     }
 
     public boolean playCard(int cardID) {
-        if (myTurn) {
+        if (myTurn && moves <= 10) {
             networkManager.sendCard(cardID);
             myTurn = false;
+            moves++;
             return true;
         }
         return false;

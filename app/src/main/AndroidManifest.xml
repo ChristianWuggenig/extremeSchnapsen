@@ -46,7 +46,6 @@
             android:name=".StartGameActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"></activity>
-        <service android:name=".HTTPServerService" />
     </application>
 
 </manifest>

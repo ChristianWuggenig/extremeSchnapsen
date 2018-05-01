@@ -17,7 +17,6 @@ import java.util.List;
 
 public class StartHTTPClient {
 
-    private Context context;
     private  INetworkDisplay networkDisplay;
     private RequestQueue requestQueue;
 
@@ -26,7 +25,6 @@ public class StartHTTPClient {
     private static final String queueTag = "extremeSchnapsen";
 
     public StartHTTPClient(Context context, INetworkDisplay networkDisplay) {
-        this.context = context;
         this.networkDisplay = networkDisplay;
         this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         oppositeIP = "http://192.168.49.1:8080/";
