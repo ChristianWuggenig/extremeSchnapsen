@@ -46,13 +46,13 @@ public class Round {
 
     public void startClient() {
         networkManager.startClient(currentDeck);
-        waitForCard();
     }
 
     public boolean playCard(int cardID) {
         if (myTurn) {
             networkManager.playCard(cardID);
             myTurn = false;
+            networkManager.waitForCard();
             return true;
         }
         return false;
@@ -60,6 +60,5 @@ public class Round {
 
     public void waitForCard() {
         networkManager.waitForCard();
-        myTurn = true;
     }
 }

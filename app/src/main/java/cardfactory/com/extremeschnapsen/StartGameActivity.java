@@ -23,8 +23,6 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
     Round round;
 
-    NetworkManager networkManager;
-
     private View.OnClickListener onClickListener;
 
     private AlertDialog.Builder builder;
@@ -113,11 +111,6 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
     }
 
-    @Override
-    public void changeClientToServer() {
-        round.waitForCard();
-    }
-
     public void ivCardClicked(View view) {
         ImageView imageView = (ImageView)view;
 
@@ -145,5 +138,10 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
             txvPlayer.setText("card " + String.valueOf(cardID) + " played");
         else
             txvPlayer.setText("not your turn");
+    }
+
+    @Override
+    public void setMyTurn(boolean value) {
+        round.setMyTurn(true);
     }
 }

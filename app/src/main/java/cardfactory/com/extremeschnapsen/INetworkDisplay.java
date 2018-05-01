@@ -3,5 +3,5 @@ package cardfactory.com.extremeschnapsen;
 public interface INetworkDisplay {
     public void displayStatus(String message);
 
-    public void changeClientToServer();
+    public void setMyTurn(boolean value);
 }
