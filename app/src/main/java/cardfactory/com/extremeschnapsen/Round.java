@@ -3,7 +3,6 @@ package cardfactory.com.extremeschnapsen;
 import android.content.Context;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Round {
@@ -34,7 +33,7 @@ public class Round {
 
     //die Karten auf der Hand zurückbekommen
     public List<Deck> getCardsOnHand(boolean player1){
-        List<Deck> deckonhands = null;
+        List<Deck> deckonhands = new ArrayList<>();
 
         if (player1) {
             for (Deck deck : this.currentDeck) {

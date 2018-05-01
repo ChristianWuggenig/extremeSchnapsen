@@ -74,7 +74,7 @@ public class SearchActivity extends AppCompatActivity {
         p2pChannel = p2pManager.initialize(this, getMainLooper(), null);
 
         //initialize the BroadcastReceiver and pass the necessary parameters
-        broadcastReceiver =  new WiFiP2PBroadcastReceiver(p2pManager, p2pChannel, this, StartGameActivity.class, peerListListener);
+        broadcastReceiver =  new WiFiP2PBroadcastReceiver(p2pManager, p2pChannel, this, peerListListener);
 
         //define the intentFilter for the BroadcastReceiver. this is necessary to tell the BroadcastReceiver what "actions" it should listen for --> all P2P-Actions!
         defineP2PIntentFilter();

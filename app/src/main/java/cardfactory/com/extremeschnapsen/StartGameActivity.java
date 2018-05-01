@@ -65,21 +65,21 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         boolean isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
 
         round = new Round(this);
+        currentDeck = round.initializeRound();
 
-        //muss noch umgesetzt werden
-        //if (isGroupOwner){
-            currentDeck = round.initializeRound();
-        //}
-        //else
-
-
-        String [] cardCat = {"herz", "karo", "kreuz", "pik"};
-        String [] cardValue = {"ass", "10", "koenig", "dame", "bub"};
+        if(isGroupOwner) {
+            round.startServer();
+            round.setMyTurn(false);
+        }
+        else {
+            round.startClient();
+            round.setMyTurn(true);
+        }
 
         int index = 0;
         cardsOnHand = round.getCardsOnHand(isGroupOwner);
         opencard = round.getOpenCard();
-        String karte = null;
+        String karte = "";
 
         for(ImageView card : cardList){
 
@@ -96,17 +96,6 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
             int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName() );
             card.setImageResource(res_id);
-        }
-
-
-
-        if(isGroupOwner) {
-            round.startServer();
-            round.setMyTurn(false);
-        }
-        else {
-            round.startClient();
-            round.setMyTurn(true);
         }
 
         onClickListener = new View.OnClickListener() {
