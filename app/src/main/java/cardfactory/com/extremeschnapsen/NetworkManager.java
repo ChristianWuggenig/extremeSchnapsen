@@ -1,94 +1,51 @@
 package cardfactory.com.extremeschnapsen;
 
+import android.content.Context;
 import java.util.List;
 
 public class NetworkManager  {
 
     private static NetworkManager networkManager;
 
-    private ServerAsyncTask serverAsyncTask;
-    private ClientAsyncTask clientAsyncTask;
-
     private INetworkDisplay networkDisplay;
+    private Context context;
 
-    private NetworkManager (INetworkDisplay networkDisplay) {
+    private boolean isServer;
+
+    StartHTTPClient httpClient;
+    StartHTTPServer httpServer;
+
+    private NetworkManager (Context context, INetworkDisplay networkDisplay) {
         this.networkDisplay = networkDisplay;
+        this.context = context;
     }
 
-    public static NetworkManager getInstance(INetworkDisplay networkDisplay) {
+    public static NetworkManager getInstance(Context context, INetworkDisplay networkDisplay) {
         if (networkManager == null) {
-            networkManager = new NetworkManager(networkDisplay);
+            networkManager = new NetworkManager(context, networkDisplay);
         }
         return networkManager;
     }
 
-    public void startServer(List<Deck> currentDeck) {
-        serverAsyncTask = new ServerAsyncTask() {
-            @Override
-            public void updateDecks(List<Deck> currentDeckFromClient) {
-                currentDeck = currentDeckFromClient;
+    public void startHttpServer(List<Deck> currentDeck) {
+        isServer = true;
 
-                networkDisplay.displayStatus(currentDeck.get(0).toString());
-
-            }
-
-            @Override
-            public void updateCardPlayed(int cardID) {
-                networkDisplay.displayStatus("card " + String.valueOf(cardID) + " played");
-            }
-        };
-
-        serverAsyncTask.execute(currentDeck);
+        httpServer = new StartHTTPServer(currentDeck, networkDisplay);
+        httpServer.startServer();
     }
 
-    public void startClient(List<Deck> currentDeck) {
-        clientAsyncTask = new ClientAsyncTask() {
-            @Override
-            public void updateDecks(List<Deck> currentDeck) {
-                networkDisplay.displayStatus(currentDeck.get(0).toString());
-            }
+    public void startHttpClient(List<Deck> wrongDeck) {
+        isServer = false;
 
-            @Override
-            public void updateCardPlayed(int cardID) {
-                networkDisplay.displayStatus("card " + String.valueOf(cardID) + " played");
-            }
-        };
-
-        clientAsyncTask.execute(currentDeck);
+        httpClient = new StartHTTPClient(context, networkDisplay);
+        httpClient.getDeck(wrongDeck);
     }
 
-    public void playCard(int cardID) {
-        clientAsyncTask = new ClientAsyncTask() {
-            @Override
-            public void updateDecks(List<Deck> currentDeck) {
-                networkDisplay.displayStatus(currentDeck.get(0).toString());
-            }
-
-            @Override
-            public void updateCardPlayed(int cardID) {
-                networkDisplay.displayStatus("card " + String.valueOf(cardID) + " played");
-            }
-        };
-
-        clientAsyncTask.execute(cardID);
-    }
-
-    public void waitForCard() {
-        serverAsyncTask = new ServerAsyncTask() {
-            @Override
-            public void updateDecks(List<Deck> currentDeckFromClient) {
-                currentDeck = currentDeckFromClient;
-
-                networkDisplay.displayStatus(currentDeck.get(0).toString());
-
-            }
-
-            @Override
-            public void updateCardPlayed(int cardID) {
-                networkDisplay.displayStatus("card " + String.valueOf(cardID) + " played");
-            }
-        };
-
-        serverAsyncTask.execute();
+    public void sendCard(int cardID) {
+        if (isServer) {
+            httpServer.setCardPlayed(cardID);
+        }
+        else
+            httpClient.sendCard(cardID);
     }
 }
