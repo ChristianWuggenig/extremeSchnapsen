@@ -27,7 +27,7 @@ public class Round {
         allCards = new ArrayList<>();
         currentDeck = new ArrayList<>();
 
-        networkManager = NetworkManager.getInstance((INetworkDisplay)context);
+        networkManager = NetworkManager.getInstance(context, (INetworkDisplay)context);
     }
 
     public List<Deck> initializeRound() {
@@ -41,24 +41,19 @@ public class Round {
     }
 
     public void startServer() {
-        networkManager.startServer(currentDeck);
+        networkManager.startHttpServer(currentDeck);
     }
 
     public void startClient() {
-        networkManager.startClient(currentDeck);
+        networkManager.startHttpClient(currentDeck);
     }
 
     public boolean playCard(int cardID) {
         if (myTurn) {
-            networkManager.playCard(cardID);
+            networkManager.sendCard(cardID);
             myTurn = false;
-            networkManager.waitForCard();
             return true;
         }
         return false;
-    }
-
-    public void waitForCard() {
-        networkManager.waitForCard();
     }
 }

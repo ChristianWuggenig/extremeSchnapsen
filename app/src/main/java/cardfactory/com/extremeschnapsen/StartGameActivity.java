@@ -80,11 +80,11 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
         if(isGroupOwner) {
             round.startServer();
-            round.setMyTurn(true);
+            round.setMyTurn(false);
         }
         else {
             round.startClient();
-            round.setMyTurn(false);
+            round.setMyTurn(true);
         }
 
         onClickListener = new View.OnClickListener() {

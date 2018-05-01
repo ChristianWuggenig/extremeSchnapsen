@@ -25,14 +25,12 @@ public abstract class StartServerAsyncTask extends AsyncTask{
 
             Log.d("StartServer", "Successfully started ServerSocket, waiting for connections");
 
-            while (true) {
-                Socket client = serverSocket.accept();
-                client.setTcpNoDelay(true);
+            Socket client = serverSocket.accept();
+            client.setTcpNoDelay(true);
 
-                Log.d("StartServer", "Processing finished, returning client-socket");
+            Log.d("StartServer", "Processing finished, returning client-socket");
 
-                getClientSocket(client);
-            }
+            getClientSocket(client);
 
 
         } catch (IOException ex) {
