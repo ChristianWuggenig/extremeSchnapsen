@@ -15,6 +15,7 @@ public class Round {
     private NetworkManager networkManager;
 
     private boolean myTurn;
+    private boolean isGroupOwner;
 
     private int moves;
 
@@ -32,10 +33,10 @@ public class Round {
     }
 
     //die Karten auf der Hand zurückbekommen
-    public List<Deck> getCardsOnHand(boolean player1){
+    public List<Deck> getCardsOnHand(){
         List<Deck> deckonhands = new ArrayList<>();
 
-        if (player1) {
+        if (isGroupOwner) {
             for (Deck deck : this.currentDeck) {
                 if (deck.getDeckStatus() == 1) {
                     deckonhands.add(deck);
@@ -65,10 +66,16 @@ public class Round {
         return opencard;
     }
 
-    public List<Deck> initializeRound() {
+    public void initializeRound() {
         allCards = cardDataSource.getAllCards();
         currentDeck = deckDataSource.shuffelDeck(allCards);
-        return currentDeck;
+        isGroupOwner = true;
+    }
+
+    public void getShuffledDeck(int[] shuffledDeckIDs) {
+        allCards = cardDataSource.getAllCards();
+        currentDeck = deckDataSource.receiveShuffeldDeck(shuffledDeckIDs, allCards);
+        isGroupOwner = false;
     }
 
     public void setMyTurn(boolean myTurn) {
@@ -89,6 +96,15 @@ public class Round {
 
     public boolean playCard(int cardID) {
         if (myTurn && moves <= 10) {
+            for (Deck deck : currentDeck) {
+                if(deck.getCardID() == cardID) {
+                    if (isGroupOwner)
+                        deckDataSource.updateDeckStatus(deck.getCardID(), 5);
+                    else
+                        deckDataSource.updateDeckStatus(deck.getCardID(), 6);
+                }
+            }
+
             networkManager.sendCard(cardID);
             myTurn = false;
             moves++;
@@ -96,4 +112,6 @@ public class Round {
         }
         return false;
     }
+
+    //TODO: für daniel: nach dem stich muss noch der status der karte upgedated werden (auf 7)
 }

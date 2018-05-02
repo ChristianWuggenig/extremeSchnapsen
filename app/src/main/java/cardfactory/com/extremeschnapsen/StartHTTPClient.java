@@ -35,23 +35,25 @@ public class StartHTTPClient {
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, oppositeIP, new JSONArray(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                List<Deck> currentDeck = new ArrayList<>();
+                //List<Deck> currentDeck = new ArrayList<>();
+                int[] shuffledDeckIDs = new int[20];
 
                 try {
                     for (int count = 0; count < wrongDeck.size(); count++) {
                         JSONObject jsonObject = response.getJSONObject(0);
-                        for (int innerCount = 0; innerCount < wrongDeck.size(); innerCount++) {
+                        shuffledDeckIDs[count] = jsonObject.getInt("ID");
+                        /*for (int innerCount = 0; innerCount < wrongDeck.size(); innerCount++) {
                             if (jsonObject.getLong("ID") == wrongDeck.get(innerCount).getCardID()) {
                                 currentDeck.add(wrongDeck.get(innerCount));
                             }
-                        }
-
+                        }*/
                     }
                 } catch (Exception ex) {
                     Log.d("JSONError", ex.getMessage());
                 }
 
-                networkDisplay.displayStatus(currentDeck.get(0).toString());
+                networkDisplay.displayStatus(String.valueOf(shuffledDeckIDs[0]));
+                networkDisplay.displayShuffledDeck(shuffledDeckIDs);
             }
         }, new Response.ErrorListener() {
             @Override

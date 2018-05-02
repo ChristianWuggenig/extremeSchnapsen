@@ -17,9 +17,10 @@ import java.util.Random;
 public class StartGameActivity extends AppCompatActivity implements INetworkDisplay {
 
     private ConstraintLayout deckholder;
-    List<Deck> currentDeck;
     List<Deck> cardsOnHand;
     Deck opencard;
+
+    List<ImageView> cardList;
 
     TextView txvPlayer;
 
@@ -52,7 +53,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         dialog.show();
 
         deckholder = (ConstraintLayout) findViewById(R.id.layoutPlaceholder);
-        List<ImageView> cardList = new ArrayList<ImageView>();
+        cardList = new ArrayList<ImageView>();
         cardList.add((ImageView) findViewById(R.id.iv_card_1));
         cardList.add((ImageView) findViewById(R.id.iv_card_2));
         cardList.add((ImageView) findViewById(R.id.iv_card_3));
@@ -65,37 +66,16 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         boolean isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
 
         round = new Round(this);
-        currentDeck = round.initializeRound();
 
         if(isGroupOwner) {
             round.startServer();
             round.setMyTurn(false);
+            round.initializeRound();
+            displayDeck();
         }
         else {
             round.startClient();
             round.setMyTurn(true);
-        }
-
-        int index = 0;
-        cardsOnHand = round.getCardsOnHand(isGroupOwner);
-        opencard = round.getOpenCard();
-        String karte = "";
-
-        for(ImageView card : cardList){
-
-            if (index <5) {
-                karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
-            }
-            if (index == 5){
-                karte = opencard.getCardSuit() + opencard.getCardRank();
-            }
-            index ++;
-            if (index == 6){
-                karte = "herzass";
-            }
-
-            int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName() );
-            card.setImageResource(res_id);
         }
 
         onClickListener = new View.OnClickListener() {
@@ -122,31 +102,65 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
     }
 
+    public void displayDeck() {
+        //wird dadurch auch die gespielte karte in iv_card_played angezeigt (also jene mit status 5 oder 6)?
+        int index = 0;
+        cardsOnHand = round.getCardsOnHand();
+        opencard = round.getOpenCard();
+        String karte = "";
+
+        for(ImageView card : cardList){
+
+            if (index <5) {
+                karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
+            }
+            if (index == 5){
+                karte = opencard.getCardSuit() + opencard.getCardRank();
+            }
+            index ++;
+            if (index == 6){
+                karte = "herzass";
+            }
+
+            int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName() );
+            card.setImageResource(res_id);
+        }
+    }
+
+    @Override
+    public void displayShuffledDeck(int[] shuffledDeckIDs) {
+        round.getShuffledDeck(shuffledDeckIDs);
+        displayDeck();
+    }
+
     public void ivCardClicked(View view) {
         ImageView imageView = (ImageView)view;
 
         switch (imageView.getId()) {
             case R.id.iv_card_1:
-                playCard(1);
+                playCard((int)cardsOnHand.get(0).getCardID()); //bekomme ich dadurch die richtige karte?
                 break;
             case R.id.iv_card_2:
-                playCard(2);
+                playCard((int)cardsOnHand.get(1).getCardID());
                 break;
             case R.id.iv_card_3:
-                playCard(3);
+                playCard((int)cardsOnHand.get(2).getCardID());
                 break;
             case R.id.iv_card_4:
-                playCard(4);
+                playCard((int)cardsOnHand.get(3).getCardID());
                 break;
             case R.id.iv_card_5:
-                playCard(5);
+                playCard((int)cardsOnHand.get(4).getCardID());
                 break;
         }
     }
 
     public void playCard(int cardID) {
-        if(round.playCard(cardID))
+        if(round.playCard(cardID)) {
             txvPlayer.setText("card " + String.valueOf(cardID) + " played");
+            displayDeck();
+        }
+
         else
             txvPlayer.setText("not your turn or end of round reached");
     }
