@@ -129,6 +129,21 @@
         app:layout_constraintVertical_bias="0.087"
         />
 
+    <ImageView
+        android:id="@+id/iv_card_played2"
+        android:layout_width="84dp"
+        android:layout_height="125dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/iv_card_played"
+        app:layout_constraintHorizontal_bias="0.768"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.082" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
