@@ -12,19 +12,21 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class StartGameActivity extends AppCompatActivity implements INetworkDisplay {
 
     private ConstraintLayout deckholder;
     List<Deck> cardsOnHand;
-    Deck opencard;
+    Deck open;
+    List<Deck> playedCards;
 
     List<ImageView> cardList;
 
     TextView txvPlayer;
 
     Round round;
+
+    boolean isGroupOwner;
 
     private View.OnClickListener onClickListener;
 
@@ -53,7 +55,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         dialog.show();
 
         deckholder = (ConstraintLayout) findViewById(R.id.layoutPlaceholder);
-        cardList = new ArrayList<ImageView>();
+        cardList = new ArrayList<>();
         cardList.add((ImageView) findViewById(R.id.iv_card_1));
         cardList.add((ImageView) findViewById(R.id.iv_card_2));
         cardList.add((ImageView) findViewById(R.id.iv_card_3));
@@ -61,16 +63,17 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         cardList.add((ImageView) findViewById(R.id.iv_card_5));
         cardList.add((ImageView) findViewById(R.id.iv_card_trump));
         cardList.add((ImageView) findViewById(R.id.iv_card_played));
+        cardList.add((ImageView) findViewById(R.id.iv_card_played2));
 
         Intent intent = this.getIntent();
-        boolean isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
+        isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
 
         round = new Round(this);
 
         if(isGroupOwner) {
+            round.initializeRound();
             round.startServer();
             round.setMyTurn(false);
-            round.initializeRound();
             displayDeck();
         }
         else {
@@ -103,27 +106,65 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     }
 
     public void displayDeck() {
-        //wird dadurch auch die gespielte karte in iv_card_played angezeigt (also jene mit status 5 oder 6)?
         int index = 0;
         cardsOnHand = round.getCardsOnHand();
-        opencard = round.getOpenCard();
+        open = round.getOpenCard();
+        playedCards = round.getPlayedCards();
         String karte = "";
 
-        for(ImageView card : cardList){
+        if(cardsOnHand.size() == 5) {
+            for(ImageView card : cardList) {
+                karte = "";
+                if (index < 5) {
+                    karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
+                }
+                if (index == 5){
+                    karte = open.getCardSuit() + open.getCardRank();
+                }
+                if (index == 6 && playedCards.size() > 0){
+                    if (playedCards.get(index-6) != null)
+                        karte = playedCards.get(index-6).getCardSuit() + playedCards.get(index-6).getCardRank();
+                }
 
-            if (index <5) {
-                karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
-            }
-            if (index == 5){
-                karte = opencard.getCardSuit() + opencard.getCardRank();
-            }
-            index ++;
-            if (index == 6){
-                karte = "herzass";
+                if (index == 7 && playedCards.size() > 1) {
+                    if (playedCards.get(index-6) != null)
+                        karte = playedCards.get(index-6).getCardSuit() + playedCards.get(index-6).getCardRank();
+
+                }
+                if (karte == "")
+                    karte = "logo";
+
+                index ++;
+
+                int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName() );
+                card.setImageResource(res_id);
             }
 
-            int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName() );
-            card.setImageResource(res_id);
+        } else if (cardsOnHand.size() == 4) {
+            for(ImageView card : cardList) {
+                karte = "";
+                if (index < 4) {
+                    karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
+                }
+                if (index == 5) {
+                    karte = open.getCardSuit() + open.getCardRank();
+                }
+                if (index == 6 && playedCards.size() > 0){
+                    if (playedCards.get(index-6) != null)
+                        karte = playedCards.get(index-6).getCardSuit() + playedCards.get(index-6).getCardRank();
+                }
+                if (index == 7 && playedCards.size() > 1) {
+                    if (playedCards.get(index-6) != null)
+                        karte = playedCards.get(index-6).getCardSuit() + playedCards.get(index-6).getCardRank();
+                }
+                if (karte == "")
+                    karte = "logo";
+
+                index++;
+
+                int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName());
+                card.setImageResource(res_id);
+            }
         }
     }
 
@@ -166,8 +207,24 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     }
 
     @Override
-    public void setMyTurn(boolean value) {
-        round.setMyTurn(true);
-        round.increaseMoves();
+    public void setMyTurn(final boolean value, final int cardPlayed) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                List<Deck> allDecks = round.getAllCards();
+
+                for (Deck deck : allDecks) {
+                    if (deck.getDeckStatus() == 1 && deck.getCardID() == cardPlayed)
+                        round.updateCard(cardPlayed, 5);
+                    else if (deck.getDeckStatus() == 2 && deck.getCardID() == cardPlayed)
+                        round.updateCard(cardPlayed, 6);
+                }
+
+                round.setMyTurn(true);
+                round.increaseMoves();
+                displayDeck();
+            }
+        });
+
     }
 }

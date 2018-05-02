@@ -30,7 +30,7 @@ public class StartHTTPClient {
         oppositeIP = "http://192.168.49.1:8080/";
     }
 
-    public void getDeck(final List<Deck> wrongDeck) {
+    public void getDeck() {
 
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, oppositeIP, new JSONArray(), new Response.Listener<JSONArray>() {
             @Override
@@ -39,8 +39,8 @@ public class StartHTTPClient {
                 int[] shuffledDeckIDs = new int[20];
 
                 try {
-                    for (int count = 0; count < wrongDeck.size(); count++) {
-                        JSONObject jsonObject = response.getJSONObject(0);
+                    for (int count = 0; count < 20; count++) {
+                        JSONObject jsonObject = response.getJSONObject(count);
                         shuffledDeckIDs[count] = jsonObject.getInt("ID");
                         /*for (int innerCount = 0; innerCount < wrongDeck.size(); innerCount++) {
                             if (jsonObject.getLong("ID") == wrongDeck.get(innerCount).getCardID()) {
@@ -52,8 +52,8 @@ public class StartHTTPClient {
                     Log.d("JSONError", ex.getMessage());
                 }
 
-                networkDisplay.displayStatus(String.valueOf(shuffledDeckIDs[0]));
                 networkDisplay.displayShuffledDeck(shuffledDeckIDs);
+                networkDisplay.displayStatus("Deck received, first card has id: " + String.valueOf(shuffledDeckIDs[0]));
             }
         }, new Response.ErrorListener() {
             @Override
@@ -101,7 +101,7 @@ public class StartHTTPClient {
                 try {
                     if((int)response.get("ID") != 0) {
                         networkDisplay.displayStatus("Server played card " + response.get("ID"));
-                        networkDisplay.setMyTurn(true);
+                        networkDisplay.setMyTurn(true, (int)response.getInt("ID"));
                     } else {
                         try {
                             Thread.sleep(500);

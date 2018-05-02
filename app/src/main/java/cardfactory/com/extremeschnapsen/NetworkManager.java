@@ -34,11 +34,11 @@ public class NetworkManager  {
         httpServer.startServer();
     }
 
-    public void startHttpClient(List<Deck> wrongDeck) {
+    public void startHttpClient() {
         isServer = false;
 
         httpClient = new StartHTTPClient(context, networkDisplay);
-        httpClient.getDeck(wrongDeck);
+        httpClient.getDeck();
     }
 
     public void sendCard(int cardID) {

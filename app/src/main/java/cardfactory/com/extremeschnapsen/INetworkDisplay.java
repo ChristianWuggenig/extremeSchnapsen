@@ -5,5 +5,5 @@ public interface INetworkDisplay {
 
     public void displayShuffledDeck(int[] shuffledDeckIDs);
 
-    public void setMyTurn(boolean value);
+    public void setMyTurn(boolean value, int cardPlayed);
 }

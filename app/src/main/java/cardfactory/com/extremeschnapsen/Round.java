@@ -29,6 +29,8 @@ public class Round {
 
         moves = 1;
 
+        deckDataSource.deleteDeckTable();
+
         networkManager = NetworkManager.getInstance(context, (INetworkDisplay)context);
     }
 
@@ -54,9 +56,12 @@ public class Round {
 
     }
 
+    public List<Deck> getAllCards() {
+        return deckDataSource.getAllDeck();
+    }
+
     //offene Karte aus dem Deck erhalten
     public Deck getOpenCard(){
-
         Deck opencard = null;
         for (Deck deck : this.currentDeck) {
             if (deck.getDeckStatus() == 3) {
@@ -64,6 +69,23 @@ public class Round {
             }
         }
         return opencard;
+    }
+
+    public List<Deck> getPlayedCards() {
+        List<Deck> playedcards = new ArrayList<>();
+        for (Deck deck : this.currentDeck) {
+            if (deck.getDeckStatus() == 5 && isGroupOwner) {
+                playedcards.add(deck);
+            } else if (deck.getDeckStatus() == 6 && isGroupOwner){
+                playedcards.add(deck);
+            }
+            if (deck.getDeckStatus() == 6 && !isGroupOwner) {
+                playedcards.add(deck);
+            } else if (deck.getDeckStatus() == 5 && !isGroupOwner){
+                playedcards.add(deck);
+            }
+        }
+        return playedcards;
     }
 
     public void initializeRound() {
@@ -91,17 +113,21 @@ public class Round {
     }
 
     public void startClient() {
-        networkManager.startHttpClient(currentDeck);
+        networkManager.startHttpClient();
     }
 
     public boolean playCard(int cardID) {
         if (myTurn && moves <= 10) {
             for (Deck deck : currentDeck) {
                 if(deck.getCardID() == cardID) {
-                    if (isGroupOwner)
+                    if (isGroupOwner) {
+                        deck.setDeckStatus(5); //wie bekomme ich das in die GUI?
                         deckDataSource.updateDeckStatus(deck.getCardID(), 5);
-                    else
+                    }
+                    else {
+                        deck.setDeckStatus(6);
                         deckDataSource.updateDeckStatus(deck.getCardID(), 6);
+                    }
                 }
             }
 
@@ -113,5 +139,15 @@ public class Round {
         return false;
     }
 
-    //TODO: für daniel: nach dem stich muss noch der status der karte upgedated werden (auf 7)
+    public void updateCard(int cardID, int status) {
+        deckDataSource.updateDeckStatus(cardID, status);
+
+        for (Deck deck : currentDeck) {
+            if (deck.getCardID() == cardID) {
+                deck.setDeckStatus(status);
+            }
+        }
+    }
+
+    //TODO: für daniel: nach dem stich muss noch der status der karte upgedated werden (auf 7 oder 8)
 }

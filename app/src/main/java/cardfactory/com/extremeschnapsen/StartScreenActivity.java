@@ -71,25 +71,25 @@ public class StartScreenActivity extends AppCompatActivity {
             cardDataSource.createCard("herz", "10", 10);
             cardDataSource.createCard("herz", "koenig", 4);
             cardDataSource.createCard("herz", "dame", 3);
-            cardDataSource.createCard("herz", "bube", 2);
+            cardDataSource.createCard("herz", "bub", 2);
 
             cardDataSource.createCard("karo", "ass", 11);
             cardDataSource.createCard("karo", "10", 10);
             cardDataSource.createCard("karo", "koenig", 4);
             cardDataSource.createCard("karo", "dame", 3);
-            cardDataSource.createCard("karo", "bube", 2);
+            cardDataSource.createCard("karo", "bub", 2);
 
             cardDataSource.createCard("pik", "ass", 11);
             cardDataSource.createCard("pik", "10", 10);
             cardDataSource.createCard("pik", "koenig", 4);
             cardDataSource.createCard("pik", "dame", 3);
-            cardDataSource.createCard("pik", "bube", 2);
+            cardDataSource.createCard("pik", "bub", 2);
 
             cardDataSource.createCard("kreuz", "ass", 11);
             cardDataSource.createCard("kreuz", "10", 10);
             cardDataSource.createCard("kreuz", "koenig", 4);
             cardDataSource.createCard("kreuz", "dame", 3);
-            cardDataSource.createCard("kreuz", "bube", 2);
+            cardDataSource.createCard("kreuz", "bub", 2);
 
 
         }
