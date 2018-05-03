@@ -19,6 +19,8 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     List<Deck> cardsOnHand;
     Deck open;
     List<Deck> playedCards;
+    Deck playedCardPlayer1;
+    Deck playedCardPlayer2;
 
     List<ImageView> cardList;
 
@@ -110,61 +112,31 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         cardsOnHand = round.getCardsOnHand();
         open = round.getOpenCard();
         playedCards = round.getPlayedCards();
+        playedCardPlayer1 = round.getPlayedCardPlayer1();
+        playedCardPlayer2 = round.getPlayedCardPlayer2();
         String karte = "";
 
-        if(cardsOnHand.size() == 5) {
-            for(ImageView card : cardList) {
-                karte = "";
-                if (index < 5) {
-                    karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
-                }
-                if (index == 5){
-                    karte = open.getCardSuit() + open.getCardRank();
-                }
-                if (index == 6 && playedCards.size() > 0){
-                    if (playedCards.get(index-6) != null)
-                        karte = playedCards.get(index-6).getCardSuit() + playedCards.get(index-6).getCardRank();
-                }
-
-                if (index == 7 && playedCards.size() > 1) {
-                    if (playedCards.get(index-6) != null)
-                        karte = playedCards.get(index-6).getCardSuit() + playedCards.get(index-6).getCardRank();
-
-                }
-                if (karte == "")
-                    karte = "logo";
-
-                index ++;
-
-                int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName() );
-                card.setImageResource(res_id);
+        for(ImageView card : cardList) {
+            karte = "";
+            if (index < cardsOnHand.size()) {
+                karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
             }
-
-        } else if (cardsOnHand.size() == 4) {
-            for(ImageView card : cardList) {
-                karte = "";
-                if (index < 4) {
-                    karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
-                }
-                if (index == 5) {
-                    karte = open.getCardSuit() + open.getCardRank();
-                }
-                if (index == 6 && playedCards.size() > 0){
-                    if (playedCards.get(index-6) != null)
-                        karte = playedCards.get(index-6).getCardSuit() + playedCards.get(index-6).getCardRank();
-                }
-                if (index == 7 && playedCards.size() > 1) {
-                    if (playedCards.get(index-6) != null)
-                        karte = playedCards.get(index-6).getCardSuit() + playedCards.get(index-6).getCardRank();
-                }
-                if (karte == "")
-                    karte = "logo";
-
-                index++;
-
-                int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName());
-                card.setImageResource(res_id);
+            if (index == 5 && open != null){
+                karte = open.getCardSuit() + open.getCardRank();
             }
+            if (index == 6 && playedCardPlayer1 != null) {
+                karte = playedCardPlayer1.getCardSuit() + playedCardPlayer1.getCardRank();
+            }
+            if (index == 7 && playedCardPlayer2 != null) {
+                karte = playedCardPlayer2.getCardSuit() + playedCardPlayer2.getCardRank();
+            }
+            if (karte == "")
+                karte = "logo";
+
+            index ++;
+
+            int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName() );
+            card.setImageResource(res_id);
         }
     }
 

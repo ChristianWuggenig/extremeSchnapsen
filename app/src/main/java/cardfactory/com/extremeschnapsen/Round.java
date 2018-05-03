@@ -71,17 +71,41 @@ public class Round {
         return opencard;
     }
 
+    //playedCard Player 1
+    public Deck getPlayedCardPlayer1(){
+        Deck playedplayer1 = null;
+        for (Deck deck : this.currentDeck) {
+            if (deck.getDeckStatus() == 5) {
+                playedplayer1 = deck;
+            }
+        }
+        return playedplayer1;
+    }
+
+    //playedCard Player 2
+    public Deck getPlayedCardPlayer2(){
+        Deck playedplayer2 = null;
+        for (Deck deck : this.currentDeck) {
+            if (deck.getDeckStatus() == 6) {
+                playedplayer2 = deck;
+            }
+        }
+        return playedplayer2;
+    }
+
+
     public List<Deck> getPlayedCards() {
         List<Deck> playedcards = new ArrayList<>();
+
         for (Deck deck : this.currentDeck) {
-            if (deck.getDeckStatus() == 5 && isGroupOwner) {
+            if (deck.getDeckStatus() == 6 && isGroupOwner) {
                 playedcards.add(deck);
-            } else if (deck.getDeckStatus() == 6 && isGroupOwner){
+            } else if (deck.getDeckStatus() == 5 && isGroupOwner){
                 playedcards.add(deck);
             }
-            if (deck.getDeckStatus() == 6 && !isGroupOwner) {
+            if (deck.getDeckStatus() == 5 && !isGroupOwner) {
                 playedcards.add(deck);
-            } else if (deck.getDeckStatus() == 5 && !isGroupOwner){
+            } else if (deck.getDeckStatus() == 6 && !isGroupOwner){
                 playedcards.add(deck);
             }
         }
