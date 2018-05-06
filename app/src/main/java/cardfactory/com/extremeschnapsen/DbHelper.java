@@ -25,6 +25,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String TABLE_PLAYER_LIST = "player_list";
     public static final String TABLE_CARD_LIST = "card_list";
     public static final String TABLE_DECK_LIST = "deck_list";
+    public static final String TABLE_ROUNDPOINTS_LIST = "roundpoints_list";
 
     public static final String COLUMN_PLAYER_ID = "_id";
     public static final String COLUMN_PLAYER_USERNAME = "username";
@@ -41,6 +42,11 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DECKVALUE = "deckValue";
     public static final String COLUMN_DECKSTATUS = "deckStatus";
     public static final String COLUMN_DECKTRUMP = "decktrump";
+
+    public static final String COLUMN_ROUNDPOINTS_ID = "id";
+    public static final String COLUMN_CURRENTROUNDPOINTS = "current";
+    public static final String COLUMN_POINTSPLAYER1 = "pointsplayer1";
+    public static final String COLUMN_POINTSPLAYER2 = "pointsplayer2";
 
     //string for sql query -> CREATE TABLE
     public static final String SQL_CREATE_PLAYER_TABLE =
@@ -64,6 +70,13 @@ public class DbHelper extends SQLiteOpenHelper {
                     COLUMN_DECKVALUE + " INTEGER NOT NULL, " +
                     COLUMN_DECKSTATUS + " INTEGER,  " +
                     COLUMN_DECKTRUMP + " INTEGER);";
+
+    public static final String SQL_CREATE_ROUNDPOINTS_TABLE =
+            "CREATE TABLE " + TABLE_ROUNDPOINTS_LIST +
+                    "(" + COLUMN_ROUNDPOINTS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_CURRENTROUNDPOINTS + " INTEGER NOT NULL, " +
+                    COLUMN_POINTSPLAYER1 + " INTEGER NOT NULL, " +
+                    COLUMN_POINTSPLAYER2 + " INTEGER NOT NULL);";
 
 
     //für Singleton
@@ -107,6 +120,13 @@ public class DbHelper extends SQLiteOpenHelper {
         try {
             Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_DECK_TABLE + " angelegt.");
             db.execSQL(SQL_CREATE_DECK_TABLE);
+        }
+        catch (Exception ex) {
+            Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
+        }
+        try {
+            Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_ROUNDPOINTS_TABLE + " angelegt.");
+            db.execSQL(SQL_CREATE_ROUNDPOINTS_TABLE);
         }
         catch (Exception ex) {
             Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
