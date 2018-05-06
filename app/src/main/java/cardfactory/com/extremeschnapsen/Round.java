@@ -10,8 +10,11 @@ public class Round {
 
     private List<Card> allCards;
     private List<Deck> currentDeck;
+    private List<RoundPoints> allRoundPoints;
     private DeckDataSource deckDataSource;
     private CardDataSource cardDataSource;
+    private RoundPointsDataSource roundPointsDataSource;
+
 
     private NetworkManager networkManager;
 
@@ -23,10 +26,13 @@ public class Round {
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
         cardDataSource = new CardDataSource(context);
+        roundPointsDataSource = new RoundPointsDataSource(context);
         cardDataSource.open();
         deckDataSource.open();
+        roundPointsDataSource.open();
         allCards = new ArrayList<>();
         currentDeck = new ArrayList<>();
+        allRoundPoints = new ArrayList<>();
 
         moves = 1;
 
@@ -173,6 +179,7 @@ public class Round {
             }
         }
     }
+    
 
 
     //TODO: für daniel: nach dem stich muss noch der status der karte upgedated werden (auf 7 oder 8)
@@ -196,7 +203,6 @@ public class Round {
                 //bitte schauen wie das dritte else if gemacht werden muss wenn die Kartenwerte gleich sind
                 // welcher spieler dann die Punkte erhält bin mir da nicht sicher ob man das so machen kann danke !!
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
-                    //das muss dann in die Datenbamk gespeichert werden, also das Objekt pointsPlayer1
                     pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                 } else if (cardPlayer2.getCardValue() > cardPlayer1.getCardValue()) {
                     pointsplayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
