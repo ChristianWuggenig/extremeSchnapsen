@@ -1,6 +1,7 @@
 package cardfactory.com.extremeschnapsen;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +32,11 @@ public class Round {
 
         deckDataSource.deleteDeckTable();
 
-        networkManager = NetworkManager.getInstance(context, (INetworkDisplay)context);
+        networkManager = NetworkManager.getInstance(context, (INetworkDisplay) context);
     }
 
     //die Karten auf der Hand zurückbekommen
-    public List<Deck> getCardsOnHand(){
+    public List<Deck> getCardsOnHand() {
         List<Deck> deckonhands = new ArrayList<>();
 
         if (isGroupOwner) {
@@ -44,8 +45,7 @@ public class Round {
                     deckonhands.add(deck);
                 }
             }
-        }
-        else {
+        } else {
             for (Deck deck : this.currentDeck) {
                 if (deck.getDeckStatus() == 2) {
                     deckonhands.add(deck);
@@ -61,7 +61,7 @@ public class Round {
     }
 
     //offene Karte aus dem Deck erhalten
-    public Deck getOpenCard(){
+    public Deck getOpenCard() {
         Deck opencard = null;
         for (Deck deck : this.currentDeck) {
             if (deck.getDeckStatus() == 3) {
@@ -72,7 +72,7 @@ public class Round {
     }
 
     //playedCard Player 1
-    public Deck getPlayedCardPlayer1(){
+    public Deck getPlayedCardPlayer1() {
         Deck playedplayer1 = null;
         for (Deck deck : this.currentDeck) {
             if (deck.getDeckStatus() == 5) {
@@ -83,7 +83,7 @@ public class Round {
     }
 
     //playedCard Player 2
-    public Deck getPlayedCardPlayer2(){
+    public Deck getPlayedCardPlayer2() {
         Deck playedplayer2 = null;
         for (Deck deck : this.currentDeck) {
             if (deck.getDeckStatus() == 6) {
@@ -100,12 +100,12 @@ public class Round {
         for (Deck deck : this.currentDeck) {
             if (deck.getDeckStatus() == 6 && isGroupOwner) {
                 playedcards.add(deck);
-            } else if (deck.getDeckStatus() == 5 && isGroupOwner){
+            } else if (deck.getDeckStatus() == 5 && isGroupOwner) {
                 playedcards.add(deck);
             }
             if (deck.getDeckStatus() == 5 && !isGroupOwner) {
                 playedcards.add(deck);
-            } else if (deck.getDeckStatus() == 6 && !isGroupOwner){
+            } else if (deck.getDeckStatus() == 6 && !isGroupOwner) {
                 playedcards.add(deck);
             }
         }
@@ -143,12 +143,11 @@ public class Round {
     public boolean playCard(int cardID) {
         if (myTurn && moves <= 10) {
             for (Deck deck : currentDeck) {
-                if(deck.getCardID() == cardID) {
+                if (deck.getCardID() == cardID) {
                     if (isGroupOwner) {
                         deck.setDeckStatus(5); //wie bekomme ich das in die GUI?
                         deckDataSource.updateDeckStatus(deck.getCardID(), 5);
-                    }
-                    else {
+                    } else {
                         deck.setDeckStatus(6);
                         deckDataSource.updateDeckStatus(deck.getCardID(), 6);
                     }
@@ -157,9 +156,11 @@ public class Round {
 
             networkManager.sendCard(cardID);
             myTurn = false;
-            moves++;
+            this.increaseMoves();
+
             return true;
         }
+
         return false;
     }
 
@@ -173,5 +174,40 @@ public class Round {
         }
     }
 
+
     //TODO: für daniel: nach dem stich muss noch der status der karte upgedated werden (auf 7 oder 8)
+
+    public void compareCards(Deck cardPlayer1, Deck cardPlayer2, Deck trump, RoundPoints pointsplayer1, RoundPoints pointsplayer2) {
+        //both cards of round are set, continue to compare those
+
+        if (cardPlayer1 != null && cardPlayer2 != null && trump != null) {
+
+            if (cardPlayer1.getCardSuit() == getOpenCard().getCardSuit() && cardPlayer2.getCardSuit() != getOpenCard().getCardSuit()) {
+                pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+            } else if (cardPlayer1.getCardSuit() != getOpenCard().getCardSuit() && cardPlayer2.getCardSuit() == getOpenCard().getCardSuit()) {
+                pointsplayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+            } else if (cardPlayer1.getCardSuit() == getOpenCard().getCardSuit() && cardPlayer2.getCardSuit() == getOpenCard().getCardSuit()) {
+                if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
+                    //das muss dann in die Datenbamk gespeichert werden, also das Objekt pointsPlayer1
+                    pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                } else {
+                    pointsplayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                }
+                //bitte schauen wie das dritte else if gemacht werden muss wenn die Kartenwerte gleich sind
+                // welcher spieler dann die Punkte erhält bin mir da nicht sicher ob man das so machen kann danke !!
+                if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
+                    //das muss dann in die Datenbamk gespeichert werden, also das Objekt pointsPlayer1
+                    pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                } else if (cardPlayer2.getCardValue() > cardPlayer1.getCardValue()) {
+                    pointsplayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                } else if (cardPlayer1.getCardValue() == cardPlayer2.getCardValue()) {
+                    pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                }
+
+            }
+            RoundPointsDataSource.saveRoundPoints(pointsplayer1);
+            RoundPointsDataSource.saveRoundPoints(pointsplayer2);
+        }
+
+    }
 }
