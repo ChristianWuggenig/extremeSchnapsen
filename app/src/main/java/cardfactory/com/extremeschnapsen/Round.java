@@ -179,13 +179,16 @@ public class Round {
             }
         }
     }
-    
+
 
 
     //TODO: für daniel: nach dem stich muss noch der status der karte upgedated werden (auf 7 oder 8)
 
     public void compareCards(Deck cardPlayer1, Deck cardPlayer2, Deck trump, RoundPoints pointsplayer1, RoundPoints pointsplayer2) {
         //both cards of round are set, continue to compare those
+
+        //init roundpoints for each player, get old round points from db
+
 
         if (cardPlayer1 != null && cardPlayer2 != null && trump != null) {
 
@@ -211,8 +214,9 @@ public class Round {
                 }
 
             }
-            RoundPointsDataSource.saveRoundPoints(pointsplayer1);
-            RoundPointsDataSource.saveRoundPoints(pointsplayer2);
+
+            roundPointsDataSource.saveRoundPoints(pointsplayer1);
+            roundPointsDataSource.saveRoundPoints(pointsplayer2);
         }
 
     }
