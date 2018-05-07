@@ -15,7 +15,7 @@ public class RoundPointsDataSource {
 
     private SQLiteDatabase database;
     private DbHelper dbHelper;
-
+    private long insertId;
 
     private String[] columns = {
             DbHelper.COLUMN_ROUNDPOINTS_ID,
@@ -42,12 +42,12 @@ public class RoundPointsDataSource {
 
     public RoundPoints createRoundPoints(int RoundPointsID, int CurrentRoundPointsID, int PointsPlayer1, int PointsPlayer2) {
         ContentValues values = new ContentValues();
-        values.put(DbHelper.COLUMN_ROUNDPOINTS_ID, RoundPointsID);
-        values.put(DbHelper.COLUMN_ROUNDPOINTS_ID, CurrentRoundPointsID);
+        //values.put(DbHelper.COLUMN_ROUNDPOINTS_ID, RoundPointsID);
+        values.put(DbHelper.COLUMN_CURRENTROUNDPOINTS, CurrentRoundPointsID);
         values.put(DbHelper.COLUMN_POINTSPLAYER1, PointsPlayer1);
         values.put(DbHelper.COLUMN_POINTSPLAYER2, PointsPlayer2);
 
-        long insertId = database.insert(DbHelper.TABLE_ROUNDPOINTS_LIST, null, values);
+        insertId = database.insert(DbHelper.TABLE_ROUNDPOINTS_LIST, null, values);
 
         Cursor cursor = database.query(DbHelper.TABLE_ROUNDPOINTS_LIST,
                 columns, DbHelper.COLUMN_ROUNDPOINTS_ID + "=" + insertId,
@@ -104,7 +104,7 @@ public class RoundPointsDataSource {
     public void saveRoundPoints(RoundPoints pointsToSave){
         ContentValues values = new ContentValues();
         values.put(DbHelper.COLUMN_CURRENTROUNDPOINTS, pointsToSave.getCurrentroundpoints());
-        values.put(DbHelper.COLUMN_ROUNDPOINTS_ID, pointsToSave.getRoundpointsID());
+        values.put(DbHelper.COLUMN_ROUNDPOINTS_ID, insertId);
         values.put(DbHelper.COLUMN_POINTSPLAYER1, pointsToSave.getPointsplayer1());
         values.put(DbHelper.COLUMN_POINTSPLAYER2, pointsToSave.getPointsplayer2());
         database.insert(DbHelper.TABLE_ROUNDPOINTS_LIST, null, values);

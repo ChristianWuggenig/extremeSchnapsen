@@ -50,4 +50,8 @@ public class NetworkManager  {
             httpClient.sendCard(cardID);
 
     }
+
+    public void waitForCard() {
+        httpClient.getPlayedCard();
+    }
 }

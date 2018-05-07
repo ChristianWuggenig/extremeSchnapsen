@@ -171,6 +171,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     public void playCard(int cardID) {
         if(round.playCard(cardID)) {
             txvPlayer.setText("card " + String.valueOf(cardID) + " played");
+            round.compareCards();
             displayDeck();
         }
 
@@ -193,7 +194,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
                 }
 
                 round.setMyTurn(true);
-                round.increaseMoves();
+                round.compareCards();
                 displayDeck();
 
             }
