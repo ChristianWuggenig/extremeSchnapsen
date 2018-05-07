@@ -48,4 +48,8 @@ public class NetworkManager  {
         else
             httpClient.sendCard(cardID);
     }
+
+    public void waitForCard() {
+        httpClient.getPlayedCard();
+    }
 }

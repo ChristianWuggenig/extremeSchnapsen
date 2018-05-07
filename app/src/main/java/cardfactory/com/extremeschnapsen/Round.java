@@ -14,6 +14,9 @@ public class Round {
     private DeckDataSource deckDataSource;
     private CardDataSource cardDataSource;
     private RoundPointsDataSource roundPointsDataSource;
+    
+    private RoundPoints pointsPlayer1;
+    private RoundPoints pointsPlayer2;
 
 
     private NetworkManager networkManager;
@@ -33,6 +36,9 @@ public class Round {
         allCards = new ArrayList<>();
         currentDeck = new ArrayList<>();
         allRoundPoints = new ArrayList<>();
+
+        pointsPlayer1 = new RoundPoints(0L, 0, 0, 0);
+        pointsPlayer2 = new RoundPoints(0L, 0, 0, 0);
 
         moves = 1;
 
@@ -180,43 +186,105 @@ public class Round {
         }
     }
 
+    public void getNextFreeCard(int playerID) {
+        for (Deck deck : currentDeck) {
+            if (deck.getDeckStatus() == 4) {
+                deck.setDeckStatus(playerID);
+                break;
+            }
+        }
+    }
 
-
-    //TODO: für daniel: nach dem stich muss noch der status der karte upgedated werden (auf 7 oder 8)
-
-    public void compareCards(Deck cardPlayer1, Deck cardPlayer2, Deck trump, RoundPoints pointsplayer1, RoundPoints pointsplayer2) {
+    public void compareCards() {
         //both cards of round are set, continue to compare those
 
         //init roundpoints for each player, get old round points from db
 
+        Deck cardPlayer1 = getPlayedCardPlayer1();
+        Deck cardPlayer2 = getPlayedCardPlayer2();
+        boolean player1Won = false;
+        boolean player2Won = false;
 
-        if (cardPlayer1 != null && cardPlayer2 != null && trump != null) {
+        if (cardPlayer1 != null && cardPlayer2 != null) {
 
-            if (cardPlayer1.getCardSuit() == getOpenCard().getCardSuit() && cardPlayer2.getCardSuit() != getOpenCard().getCardSuit()) {
-                pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
-            } else if (cardPlayer1.getCardSuit() != getOpenCard().getCardSuit() && cardPlayer2.getCardSuit() == getOpenCard().getCardSuit()) {
-                pointsplayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
-            } else if (cardPlayer1.getCardSuit() == getOpenCard().getCardSuit() && cardPlayer2.getCardSuit() == getOpenCard().getCardSuit()) {
+            //spieler 1 hat trumpf, spieler 2 nicht
+            if (cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && !cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
+                pointsPlayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                player1Won = true;
+
+            }
+            //spieler 2 hat trumpf, spieler 1 nicht
+            else if (!cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
+                pointsPlayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                player2Won = true;
+
+            }
+            //beide haben einen trumpf
+            else if (cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
+
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
-                    //das muss dann in die Datenbamk gespeichert werden, also das Objekt pointsPlayer1
-                    pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    pointsPlayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    player1Won = true;
+
                 } else {
-                    pointsplayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    pointsPlayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    player2Won = true;
+
                 }
-                //bitte schauen wie das dritte else if gemacht werden muss wenn die Kartenwerte gleich sind
-                // welcher spieler dann die Punkte erhält bin mir da nicht sicher ob man das so machen kann danke !!
+
+            }
+            //keiner von beiden hat einen trumpf
+            else if(!cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && !cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
+
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
-                    pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    pointsPlayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    player1Won = true;
+
                 } else if (cardPlayer2.getCardValue() > cardPlayer1.getCardValue()) {
-                    pointsplayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    pointsPlayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    player2Won = true;
+
                 } else if (cardPlayer1.getCardValue() == cardPlayer2.getCardValue()) {
-                    pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    if (isGroupOwner) {
+                        pointsPlayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                        player1Won = true;
+                    }
+                    else {
+                        pointsPlayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                        player2Won = true;
+                    }
                 }
 
             }
 
-            roundPointsDataSource.saveRoundPoints(pointsplayer1);
-            roundPointsDataSource.saveRoundPoints(pointsplayer2);
+            roundPointsDataSource.saveRoundPoints(pointsPlayer1);
+            roundPointsDataSource.saveRoundPoints(pointsPlayer2);
+
+            cardPlayer1.setDeckStatus(7);
+            cardPlayer2.setDeckStatus(8);
+            deckDataSource.updateDeckStatus(cardPlayer1.getCardID(), 7); //updaten des status der karte
+            deckDataSource.updateDeckStatus(cardPlayer2.getCardID(), 8);
+
+            if (player1Won && isGroupOwner) {
+                myTurn = true;
+                getNextFreeCard(1);
+                getNextFreeCard(2);
+            } else if (player2Won && !isGroupOwner) {
+                myTurn = true;
+                getNextFreeCard(2);
+                getNextFreeCard(1);
+            } else if (player1Won && !isGroupOwner) {
+                myTurn = false;
+                networkManager.waitForCard();
+                getNextFreeCard(1);
+                getNextFreeCard(2);
+            } else if (player2Won && isGroupOwner) {
+                myTurn = false;
+                getNextFreeCard(2);
+                getNextFreeCard(1);
+            }
+
+
         }
 
     }
