@@ -203,16 +203,16 @@ public class Round {
                 } else {
                     pointsplayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                 }
-                //bitte schauen wie das dritte else if gemacht werden muss wenn die Kartenwerte gleich sind
-                // welcher spieler dann die Punkte erhält bin mir da nicht sicher ob man das so machen kann danke !!
+            } else if (cardPlayer1.getCardSuit() != getOpenCard().getCardSuit() && cardPlayer2.getCardSuit() != getOpenCard().getCardSuit()){
+            //bitte schauen wie das dritte else if gemacht werden muss wenn die Kartenwerte gleich sind
+            // welcher spieler dann die Punkte erhält bin mir da nicht sicher ob man das so machen kann danke !!
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
-                    pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                 } else if (cardPlayer2.getCardValue() > cardPlayer1.getCardValue()) {
-                    pointsplayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                pointsplayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                 } else if (cardPlayer1.getCardValue() == cardPlayer2.getCardValue()) {
-                    pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                pointsplayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                 }
-
             }
 
             roundPointsDataSource.saveRoundPoints(pointsplayer1);

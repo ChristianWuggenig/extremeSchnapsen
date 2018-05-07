@@ -195,6 +195,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
                 round.setMyTurn(true);
                 round.increaseMoves();
                 displayDeck();
+
             }
         });
 

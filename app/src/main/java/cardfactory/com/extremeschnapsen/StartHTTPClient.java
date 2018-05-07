@@ -1,5 +1,6 @@
 package cardfactory.com.extremeschnapsen;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.util.Log;
 
