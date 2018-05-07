@@ -2,8 +2,11 @@ package cardfactory.com.extremeschnapsen;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Round {
@@ -12,6 +15,7 @@ public class Round {
     private List<Deck> currentDeck;
     private DeckDataSource deckDataSource;
     private CardDataSource cardDataSource;
+    private RoundPointsDataSource roundPointsDataSource;
 
     private NetworkManager networkManager;
 
@@ -23,6 +27,7 @@ public class Round {
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
         cardDataSource = new CardDataSource(context);
+        roundPointsDataSource = new RoundPointsDataSource(context);
         cardDataSource.open();
         deckDataSource.open();
         allCards = new ArrayList<>();
@@ -38,6 +43,7 @@ public class Round {
     //die Karten auf der Hand zurückbekommen
     public List<Deck> getCardsOnHand() {
         List<Deck> deckonhands = new ArrayList<>();
+
 
         if (isGroupOwner) {
             for (Deck deck : this.currentDeck) {
@@ -205,9 +211,139 @@ public class Round {
                 }
 
             }
-            RoundPointsDataSource.saveRoundPoints(pointsplayer1);
-            RoundPointsDataSource.saveRoundPoints(pointsplayer2);
+            roundPointsDataSource.saveRoundPoints(pointsplayer1);
+            roundPointsDataSource.saveRoundPoints(pointsplayer2);
         }
 
     }
+
+    public boolean checkFor20(List<Deck> cardsOnHand, List<CardImageView> cardImageViews){
+
+        boolean result = false;
+
+        //check only every second step
+        if(this.moves % 2 == 0) {
+            //check if player has more than one card of a color
+            int countHerz = 0;
+            int countPink = 0;
+            int countKaro = 0;
+            int countKreuz = 0;
+
+            long hasHerzKoenig = 0;
+            long hasHerzDame = 0;
+
+            long hasKaroKoenig = 0;
+            long hasKaroDame = 0;
+
+            long hasKreuzKoenig = 0;
+            long hasKreuzDame = 0;
+
+            long hasPikKoenig = 0;
+            long hasPikDame = 0;
+
+            Collections.sort(cardsOnHand, new Comparator<Deck>() {
+                @Override
+                public int compare(Deck d1, Deck d2) {
+                    return d1.getCardSuit().compareToIgnoreCase(d2.getCardSuit());
+                }
+            });
+
+            for(CardImageView civ : cardImageViews){
+                Log.e("CARD_IMAGE_VIEW", civ.getCardId() + "");
+            }
+
+            for (Deck d : cardsOnHand) {
+                switch (d.getCardSuit()){
+                    case "karo":
+                        countKaro++;
+                        break;
+                    case "kreuz":
+                        countKreuz++;
+                        break;
+                    case "pik":
+                        countPink++;
+                        break;
+                    case "herz":
+                        countHerz++;
+                        break;
+                }
+
+                if(countHerz > 1 ){
+                    if(d.getCardValue() == 3){
+                        hasHerzDame = d.getCardID();
+                    }else if(d.getCardValue() == 4){
+                        hasHerzKoenig = d.getCardID();
+                    }
+                }else if(countKaro > 1){
+                    if(d.getCardValue() == 3){
+                        hasKaroDame = d.getCardID();
+                    }else if(d.getCardValue() == 4){
+                        hasKaroKoenig = d.getCardID();
+                    }
+                }else if(countKreuz > 1){
+                    if(d.getCardValue() == 3){
+                        hasKreuzDame = d.getCardID();
+                    }else if(d.getCardValue() == 4){
+                        hasKreuzKoenig = d.getCardID();
+                    }
+                }else if(countPink > 1){
+                    if(d.getCardValue() == 3){
+                        hasPikDame = d.getCardID();
+                    }else if(d.getCardValue() == 4){
+                        hasPikKoenig = d.getCardID();
+                    }
+                }
+
+                if(hasHerzDame != 0 && hasHerzKoenig != 0){
+                    //find cards in image view and enable more points
+                    for(CardImageView civ : cardImageViews){
+                        if(civ.getCardId() == hasHerzDame){
+                            //update style and updated enable 20 strike
+                            civ.setImageAlpha(25);
+                            civ.setEnable_20_strike(true);
+                        }else if(civ.getCardId() == hasHerzKoenig){
+                            civ.setImageAlpha(25);
+                            civ.setEnable_20_strike(true);
+                        }
+                    }
+                }
+                if(hasKaroDame != 0 && hasKaroKoenig != 0){
+                    for(CardImageView civ : cardImageViews){
+                        if(civ.getCardId() == hasKaroDame){
+                            civ.setImageAlpha(25);
+                            civ.setEnable_20_strike(true);
+                        }else if(civ.getCardId() == hasKaroKoenig){
+                            civ.setImageAlpha(25);
+                            civ.setEnable_20_strike(true);
+                        }
+                    }
+                }
+                if(hasKreuzDame != 0 && hasKreuzKoenig != 0){
+                    for(CardImageView civ : cardImageViews){
+                        if(civ.getCardId() == hasKreuzDame){
+                            civ.setImageAlpha(25);
+                            civ.setEnable_20_strike(true);
+                        }else if(civ.getCardId() == hasKreuzDame){
+                            civ.setImageAlpha(25);
+                            civ.setEnable_20_strike(true);
+                        }
+                    }
+                }
+                if(hasPikDame != 0 && hasPikKoenig != 0){
+                    for(CardImageView civ : cardImageViews){
+                        if(civ.getCardId() == hasPikDame){
+                            civ.setImageAlpha(25);
+                            civ.setEnable_20_strike(true);
+                        }else if(civ.getCardId() == hasPikKoenig){
+                            civ.setImageAlpha(25);
+                            civ.setEnable_20_strike(true);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
 }
