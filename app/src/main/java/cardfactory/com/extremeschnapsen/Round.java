@@ -1,7 +1,6 @@
 package cardfactory.com.extremeschnapsen;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +14,7 @@ public class Round {
     private CardDataSource cardDataSource;
     private RoundPointsDataSource roundPointsDataSource;
     
-    private RoundPoints pointsPlayer1;
-    private RoundPoints pointsPlayer2;
+    private RoundPoints points;
 
 
     private NetworkManager networkManager;
@@ -33,12 +31,12 @@ public class Round {
         cardDataSource.open();
         deckDataSource.open();
         roundPointsDataSource.open();
+        roundPointsDataSource.createRoundPoints(1, 0, 0, 0);
         allCards = new ArrayList<>();
         currentDeck = new ArrayList<>();
         allRoundPoints = new ArrayList<>();
 
-        pointsPlayer1 = new RoundPoints(0L, 0, 0, 0);
-        pointsPlayer2 = new RoundPoints(0L, 0, 0, 0);
+        points = new RoundPoints(1L, 0, 0, 0);
 
         moves = 1;
 
@@ -157,7 +155,7 @@ public class Round {
             for (Deck deck : currentDeck) {
                 if (deck.getCardID() == cardID) {
                     if (isGroupOwner) {
-                        deck.setDeckStatus(5); //wie bekomme ich das in die GUI?
+                        deck.setDeckStatus(5);
                         deckDataSource.updateDeckStatus(deck.getCardID(), 5);
                     } else {
                         deck.setDeckStatus(6);
@@ -168,8 +166,6 @@ public class Round {
 
             networkManager.sendCard(cardID);
             myTurn = false;
-            this.increaseMoves();
-
             return true;
         }
 
@@ -198,8 +194,6 @@ public class Round {
     public void compareCards() {
         //both cards of round are set, continue to compare those
 
-        //init roundpoints for each player, get old round points from db
-
         Deck cardPlayer1 = getPlayedCardPlayer1();
         Deck cardPlayer2 = getPlayedCardPlayer2();
         boolean player1Won = false;
@@ -209,13 +203,13 @@ public class Round {
 
             //spieler 1 hat trumpf, spieler 2 nicht
             if (cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && !cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
-                pointsPlayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                 player1Won = true;
 
             }
             //spieler 2 hat trumpf, spieler 1 nicht
             else if (!cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
-                pointsPlayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                points.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                 player2Won = true;
 
             }
@@ -223,11 +217,11 @@ public class Round {
             else if (cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
 
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
-                    pointsPlayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                     player1Won = true;
 
                 } else {
-                    pointsPlayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    points.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                     player2Won = true;
 
                 }
@@ -237,28 +231,27 @@ public class Round {
             else if(!cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && !cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
 
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
-                    pointsPlayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                     player1Won = true;
 
                 } else if (cardPlayer2.getCardValue() > cardPlayer1.getCardValue()) {
-                    pointsPlayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    points.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                     player2Won = true;
 
                 } else if (cardPlayer1.getCardValue() == cardPlayer2.getCardValue()) {
                     if (isGroupOwner) {
-                        pointsPlayer1.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                        points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                         player1Won = true;
                     }
                     else {
-                        pointsPlayer2.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                        points.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                         player2Won = true;
                     }
                 }
 
             }
 
-            roundPointsDataSource.saveRoundPoints(pointsPlayer1);
-            roundPointsDataSource.saveRoundPoints(pointsPlayer2);
+            roundPointsDataSource.saveRoundPoints(points);
 
             cardPlayer1.setDeckStatus(7);
             cardPlayer2.setDeckStatus(8);
@@ -284,8 +277,7 @@ public class Round {
                 getNextFreeCard(1);
             }
 
-
+            increaseMoves();
         }
-
     }
 }
