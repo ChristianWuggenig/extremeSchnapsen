@@ -24,6 +24,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     Deck playedCardPlayer2;
 
     List<ImageView> cardList;
+    List<CardImageView> cardsToCheckFor20;
 
     TextView txvPlayer;
 
@@ -68,6 +69,15 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         cardList.add((ImageView) findViewById(R.id.iv_card_played));
         cardList.add((ImageView) findViewById(R.id.iv_card_played2));
 
+
+
+        cardsToCheckFor20 = new ArrayList<>();
+        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_1));
+        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_2));
+        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_3));
+        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_4));
+        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_5));
+
         Intent intent = this.getIntent();
         isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
 
@@ -109,6 +119,8 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     }
 
     public void displayDeck() {
+        //TODO: bitte hier den code so anpassen, das die Karten nicht nach links nachrutschen wenn eine action getriggered wurde, erschwert unnötig die abfrage und das trigger der 20er, 40er Ansage
+
         int index = 0;
         cardsOnHand = round.getCardsOnHand();
         open = round.getOpenCard();
@@ -116,6 +128,8 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         playedCardPlayer1 = round.getPlayedCardPlayer1();
         playedCardPlayer2 = round.getPlayedCardPlayer2();
         String karte = "";
+
+        round.checkFor20(cardsOnHand, cardsToCheckFor20);
 
         for(ImageView card : cardList) {
             karte = "";
@@ -138,6 +152,14 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
             int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName());
             card.setImageResource(res_id);
+        }
+        index = 0;
+
+        for(CardImageView civ : cardsToCheckFor20){
+            if (index < cardsOnHand.size()) {
+                civ.setCardId (cardsOnHand.get(index).getCardID() );
+            }
+            index++;
         }
     }
 
@@ -170,6 +192,15 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     }
 
     public void playCard(int cardID) {
+        for(CardImageView civ : cardsToCheckFor20){
+            if((int) civ.getCardId() == cardID){
+                if( civ.isEnable_20_strike() ){
+                    //TODO: was soll passieren wenn die gespielte karte freigeschalten wurde für die 20er ansage ?
+                }
+            }
+        }
+
+
         if(round.playCard(cardID)) {
             txvPlayer.setText("card " + String.valueOf(cardID) + " played");
             round.compareCards();
