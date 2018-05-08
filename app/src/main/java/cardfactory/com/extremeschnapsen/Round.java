@@ -26,6 +26,8 @@ public class Round {
 
     private int moves;
 
+    private String trump;
+
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
         cardDataSource = new CardDataSource(context);
@@ -44,6 +46,8 @@ public class Round {
         deckDataSource.deleteDeckTable();
 
         networkManager = NetworkManager.getInstance(context, (INetworkDisplay) context);
+
+        trump = deckDataSource.getTrump();
     }
 
     //die Karten auf der Hand zurückbekommen
@@ -219,19 +223,19 @@ public class Round {
         if (cardPlayer1 != null && cardPlayer2 != null) {
 
             //spieler 1 hat trumpf, spieler 2 nicht
-            if (cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && !cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
+            if (cardPlayer1.getCardSuit().equals(trump) && !cardPlayer2.getCardSuit().equals(trump)) {
                 points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                 player1Won = true;
 
             }
             //spieler 2 hat trumpf, spieler 1 nicht
-            else if (!cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
+            else if (!cardPlayer1.getCardSuit().equals(trump) && cardPlayer2.getCardSuit().equals(trump)) {
                 points.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
                 player2Won = true;
 
             }
             //beide haben einen trumpf
-            else if (cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
+            else if (cardPlayer1.getCardSuit().equals(trump) && cardPlayer2.getCardSuit().equals(trump)) {
 
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
                     points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
@@ -245,7 +249,7 @@ public class Round {
 
             }
             //keiner von beiden hat einen trumpf
-            else if(!cardPlayer1.getCardSuit().equals(getOpenCard().getCardSuit()) && !cardPlayer2.getCardSuit().equals(getOpenCard().getCardSuit())) {
+            else if(!cardPlayer1.getCardSuit().equals(trump) && !cardPlayer2.getCardSuit().equals(trump)) {
 
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
                     points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
@@ -296,14 +300,6 @@ public class Round {
             }
 
             increaseMoves();
-
-            /*String value = "";
-
-            for (Deck deck : currentDeck) {
-                value += deck.toString();
-            }
-
-            Log.d("DeckList", value);*/
 
             deckDataSource.getAllDeck();
         
