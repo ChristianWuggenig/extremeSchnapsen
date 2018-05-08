@@ -46,8 +46,6 @@ public class Round {
         deckDataSource.deleteDeckTable();
 
         networkManager = NetworkManager.getInstance(context, (INetworkDisplay) context);
-
-        trump = deckDataSource.getTrump();
     }
 
     //die Karten auf der Hand zurückbekommen
@@ -219,6 +217,7 @@ public class Round {
         Deck cardPlayer2 = getPlayedCardPlayer2();
         boolean player1Won = false;
         boolean player2Won = false;
+        trump = deckDataSource.getTrump();
 
         if (cardPlayer1 != null && cardPlayer2 != null) {
 
