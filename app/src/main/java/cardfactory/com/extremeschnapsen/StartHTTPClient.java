@@ -102,7 +102,7 @@ public class StartHTTPClient {
                 try {
                     if((int)response.get("ID") != 0) {
                         networkDisplay.displayStatus("Server played card " + response.get("ID"));
-                        networkDisplay.setMyTurn(true, (int)response.getInt("ID"));
+                        networkDisplay.setMyTurn((int)response.getInt("ID"));
                     } else {
                         try {
                             Thread.sleep(500);

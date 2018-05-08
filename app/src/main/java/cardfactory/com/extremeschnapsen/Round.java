@@ -10,7 +10,6 @@ public class Round {
 
     private List<Card> allCards;
     private List<Deck> currentDeck;
-    private List<RoundPoints> allRoundPoints;
     private DeckDataSource deckDataSource;
     private CardDataSource cardDataSource;
     private RoundPointsDataSource roundPointsDataSource;
@@ -35,7 +34,6 @@ public class Round {
         roundPointsDataSource.createRoundPoints(1, 0, 0, 0);
         allCards = new ArrayList<>();
         currentDeck = new ArrayList<>();
-        allRoundPoints = new ArrayList<>();
 
         points = new RoundPoints(1L, 0, 0, 0);
 
@@ -281,6 +279,14 @@ public class Round {
             }
 
             increaseMoves();
+
+            String value = "";
+
+            for (Deck deck : currentDeck) {
+                value += deck.toString();
+            }
+
+            Log.d("DeckList", value);
         }
     }
 }

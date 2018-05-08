@@ -1,6 +1,7 @@
 package cardfactory.com.extremeschnapsen;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -135,7 +136,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
             index ++;
 
-            int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName() );
+            int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName());
             card.setImageResource(res_id);
         }
     }
@@ -180,7 +181,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     }
 
     @Override
-    public void setMyTurn(final boolean value, final int cardPlayed) {
+    public void setMyTurn(final int cardPlayed) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

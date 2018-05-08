@@ -72,7 +72,7 @@ public class StartHTTPServer {
                             JSONObject jsonObject = new JSONObject(params.get("postData"));
                             String cardIDString = jsonObject.getString("ID");
                             networkDisplay.displayStatus("opposite player played card " + cardIDString);
-                            networkDisplay.setMyTurn(true, Integer.parseInt(cardIDString));
+                            networkDisplay.setMyTurn(Integer.parseInt(cardIDString));
                             message = jsonObject.toString();
                         } catch (Exception ex) {
                             Log.d("HTTPError", ex.getMessage());
