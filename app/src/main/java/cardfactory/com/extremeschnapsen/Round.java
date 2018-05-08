@@ -261,9 +261,17 @@ public class Round {
                         rp.setPointsplayer1(sum_draw_points);
                         player1Won = true;
                     }
+                    else if (!myTurn && isGroupOwner){
+                        rp.setPointsplayer2(sum_draw_points);
+                        player2Won = true;
+                    }
                     else if (myTurn && !isGroupOwner){
                         rp.setPointsplayer2(sum_draw_points);
                         player2Won = true;
+                    }
+                    else if (!myTurn && !isGroupOwner){
+                        rp.setPointsplayer1(sum_draw_points);
+                        player1Won = true;
                     }
 
                 }
