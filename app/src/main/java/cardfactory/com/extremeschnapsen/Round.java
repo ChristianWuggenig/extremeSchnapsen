@@ -210,8 +210,9 @@ public class Round {
         }
     }
 
-    public void compareCards() {
+    public boolean compareCards() {
         //both cards of round are set, continue to compare those
+
 
         Deck cardPlayer1 = getPlayedCardPlayer1();
         Deck cardPlayer2 = getPlayedCardPlayer2();
@@ -219,17 +220,21 @@ public class Round {
         boolean player2Won = false;
         trump = deckDataSource.getTrump();
 
+
+
         if (cardPlayer1 != null && cardPlayer2 != null) {
+            int sum_draw_points = cardPlayer1.getCardValue() + cardPlayer2.getCardValue();
+            RoundPoints rp = new RoundPoints(1,1,0,0);
 
             //spieler 1 hat trumpf, spieler 2 nicht
             if (cardPlayer1.getCardSuit().equals(trump) && !cardPlayer2.getCardSuit().equals(trump)) {
-                points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                rp.setPointsplayer1(sum_draw_points);
                 player1Won = true;
 
             }
             //spieler 2 hat trumpf, spieler 1 nicht
             else if (!cardPlayer1.getCardSuit().equals(trump) && cardPlayer2.getCardSuit().equals(trump)) {
-                points.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                rp.setPointsplayer2(sum_draw_points);
                 player2Won = true;
 
             }
@@ -237,11 +242,11 @@ public class Round {
             else if (cardPlayer1.getCardSuit().equals(trump) && cardPlayer2.getCardSuit().equals(trump)) {
 
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
-                    points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    rp.setPointsplayer1(sum_draw_points);
                     player1Won = true;
 
                 } else {
-                    points.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    rp.setPointsplayer2(sum_draw_points);
                     player2Won = true;
 
                 }
@@ -251,20 +256,20 @@ public class Round {
             else if(!cardPlayer1.getCardSuit().equals(trump) && !cardPlayer2.getCardSuit().equals(trump)) {
 
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
-                    points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    rp.setPointsplayer1(sum_draw_points);
                     player1Won = true;
 
                 } else if (cardPlayer2.getCardValue() > cardPlayer1.getCardValue()) {
-                    points.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                    rp.setPointsplayer2(sum_draw_points);
                     player2Won = true;
 
                 } else if (cardPlayer1.getCardValue() == cardPlayer2.getCardValue()) {
                     if (isGroupOwner) {
-                        points.updatePlayer1Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                        rp.setPointsplayer1(sum_draw_points);
                         player1Won = true;
                     }
                     else {
-                        points.updatePlayer2Points(cardPlayer1.getCardValue() + cardPlayer2.getCardValue());
+                        rp.setPointsplayer2(sum_draw_points);
                         player2Won = true;
                     }
                 }
@@ -272,7 +277,7 @@ public class Round {
             }
 
 
-            roundPointsDataSource.saveRoundPoints(points);
+            roundPointsDataSource.saveRoundPoints(rp);
 
             cardPlayer1.setDeckStatus(7);
             cardPlayer2.setDeckStatus(8);
@@ -301,9 +306,38 @@ public class Round {
             increaseMoves();
 
             deckDataSource.getAllDeck();
-        
-        }
 
+            RoundPoints rp2 = roundPointsDataSource.getCurrentRoundPointsObject();
+
+            if (rp2.getPointsplayer1()>=66){
+
+                if (rp2.getPointsplayer2() >= 33){
+                    // 1 Punkt
+                }
+                else if (rp2.getPointsplayer2() >0 && rp2.getPointsplayer2() <33){
+                    // 2 Punkte
+                }
+                else {
+                    // 3 Punkte
+                }
+                return true;
+
+            }
+            else if (rp2.getPointsplayer2()>=66){
+                if (rp2.getPointsplayer1() >= 33){
+                    // 1 Punkt
+                }
+                else if (rp2.getPointsplayer1() >0 && rp2.getPointsplayer1() <33){
+                    // 2 Punkte
+                }
+                else {
+                    // 3 Punkte
+                }
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
     public boolean checkFor20(List<Deck> cardsOnHand, List<CardImageView> cardImageViews){

@@ -137,7 +137,13 @@ public class RoundPointsDataSource {
         values.put(DbHelper.COLUMN_ROUNDPOINTS_ID, insertId);
         values.put(DbHelper.COLUMN_POINTSPLAYER1, rp.getPointsplayer1());
         values.put(DbHelper.COLUMN_POINTSPLAYER2, rp.getPointsplayer2());
-        database.update(DbHelper.TABLE_ROUNDPOINTS_LIST, values, DbHelper.COLUMN_ROUNDPOINTS_ID + "=" + insertId, null);
+
+        database.update(DbHelper.TABLE_ROUNDPOINTS_LIST,
+                values,
+                DbHelper.COLUMN_CURRENTROUNDPOINTS + "=" + 1,
+                null);
+
+        getAllRoundPoints();
     }
 
 }

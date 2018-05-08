@@ -207,10 +207,11 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
         if(round.playCard(cardID)) {
             txvPlayer.setText("card " + String.valueOf(cardID) + " played");
-            round.compareCards();
+            if(round.compareCards()){
+               this.finish();
+            }
             displayDeck();
         }
-
         else
             txvPlayer.setText("not your turn or end of round reached");
     }
@@ -230,7 +231,10 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
                 }
 
                 round.setMyTurn(true);
-                round.compareCards();
+
+                if(round.compareCards()){
+                 StartGameActivity.this.finish();
+                }
                 displayDeck();
 
             }
