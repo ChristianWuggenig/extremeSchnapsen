@@ -21,6 +21,7 @@ public class StartScreenActivity extends AppCompatActivity {
     private PlayerDataSource playerDataSource;
     private CardDataSource cardDataSource;
     private DeckDataSource deckDataSource;
+    private GamePointsDataSource gamePointsDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class StartScreenActivity extends AppCompatActivity {
         playerDataSource = new PlayerDataSource(this);
         cardDataSource = new CardDataSource(this);
         deckDataSource = new DeckDataSource(this);
+        gamePointsDataSource = new GamePointsDataSource(this);
     }
 
     private boolean isEmptyPlayerList () {
@@ -62,6 +64,7 @@ public class StartScreenActivity extends AppCompatActivity {
         playerDataSource.open();
         cardDataSource.open();
         deckDataSource.open();
+        gamePointsDataSource.open();
 
         //Spielkarten werden in DBTabelle geschrieben, wenn nicht vorhanden
         if (cardDataSource.getAllCards().isEmpty()){
@@ -95,21 +98,32 @@ public class StartScreenActivity extends AppCompatActivity {
         }
 
         //Aus CardList wird eine zufällige DeckList erstellt und in DB geschrieben
-        deckDataSource.shuffelDeck(cardDataSource.getAllCards());
+        //deckDataSource.shuffelDeck(cardDataSource.getAllCards());
 
         Log.d(LOG_TAG, "Folgende Einträge sind in der Datenbank vorhanden:");
-        playerDataSource.getAllPlayers();
-        cardDataSource.getAllCards();
 
-        deckDataSource.updateDeckStatus(1,9);
-        deckDataSource.getAllDeck();
-        deckDataSource.deleteDeckTable();
-        deckDataSource.getAllDeck();
+        gamePointsDataSource.createGamePoints(1,0,0);
+        gamePointsDataSource.getAllGamePoints();
+        gamePointsDataSource.updateGamePoints(1,2,3);
+        gamePointsDataSource.getAllGamePoints();
+        gamePointsDataSource.deleteDeckTable();
+        gamePointsDataSource.getAllGamePoints();
 
-        int[] test = {20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
 
-        deckDataSource.receiveShuffeldDeck(test, cardDataSource.getAllCards());
-        deckDataSource.getAllDeck();
+        //playerDataSource.getAllPlayers();
+        //cardDataSource.getAllCards();
+
+
+
+        //deckDataSource.updateDeckStatus(1,9);
+        //deckDataSource.getAllDeck();
+        //deckDataSource.deleteDeckTable();
+        //deckDataSource.getAllDeck();
+
+        //int[] test = {20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
+
+        //deckDataSource.receiveShuffeldDeck(test, cardDataSource.getAllCards());
+        //deckDataSource.getAllDeck();
 
         Log.d(LOG_TAG, "Ist die PlayerList leer: " + isEmptyPlayerList());
 
@@ -133,5 +147,6 @@ public class StartScreenActivity extends AppCompatActivity {
         playerDataSource.close();
         cardDataSource.close();
         deckDataSource.close();
+        gamePointsDataSource.close();
     }
 }
