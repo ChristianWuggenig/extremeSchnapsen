@@ -139,6 +139,32 @@ public class DeckDataSource {
     //Gegenspieler baut sich aus übergebenen int array und der cardList
     //den Decktable zusammen
 
+    public String getTrump(){
+        List<Deck> deckList = new ArrayList<>();
+
+        Cursor cursor = database.query(DbHelper.TABLE_DECK_LIST,
+                columns, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        Deck deck;
+
+        while(!cursor.isAfterLast()) {
+            deck = cursorToDeck(cursor);
+            deckList.add(deck);
+            //Log.d(LOG_TAG, "ID: " + deck.getDeckID() + ", Inhalt: " + deck.toString());
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+
+        for (Deck trumpdeck : deckList){
+            if (trumpdeck.getDeckTrump() == 1){
+                return trumpdeck.getCardSuit();
+            }
+        }
+        return "";
+    }
+
     public List<Deck> receiveShuffeldDeck(int a[], List<Card> cardList){
         List<Deck> deckList = new ArrayList<>();
 
