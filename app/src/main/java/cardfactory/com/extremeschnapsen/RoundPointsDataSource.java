@@ -146,6 +146,15 @@ public class RoundPointsDataSource {
         getAllRoundPoints();
     }
 
+    //löscht alle Einträge im GamePointstable
+    public void deleteRoundPointsTable() {
+        int anzahl_gelöschte_einträge = database.delete(DbHelper.TABLE_ROUNDPOINTS_LIST,
+                null,
+                null);
+
+        Log.d(LOG_TAG, "Es wurden " + anzahl_gelöschte_einträge + " Einträg im RoundPointstable gelöscht");
+    }
+
 }
 
 

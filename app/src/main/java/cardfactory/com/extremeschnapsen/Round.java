@@ -35,6 +35,7 @@ public class Round {
         cardDataSource.open();
         deckDataSource.open();
         roundPointsDataSource.open();
+        roundPointsDataSource.deleteRoundPointsTable();
         roundPointsDataSource.createRoundPoints(1, 1, 0, 0);
         allCards = new ArrayList<>();
         currentDeck = new ArrayList<>();
