@@ -101,6 +101,11 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
             }
         };
 
+        for (int count = 0; count < 5; count++) {
+            cardList.get(count).setOnClickListener(onClickListener);
+        }
+
+
         txvPlayer = this.findViewById(R.id.txvPlayer);
     }
 
