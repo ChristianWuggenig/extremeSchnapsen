@@ -42,10 +42,16 @@ public class NetworkManager  {
     }
 
     public void sendCard(int cardID) {
+
         if (isServer) {
             httpServer.setCardPlayed(cardID);
         }
         else
             httpClient.sendCard(cardID);
+
+    }
+
+    public void waitForCard() {
+        httpClient.getPlayedCard();
     }
 }
