@@ -170,9 +170,8 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     }
 
     public void ivCardClicked(View view) {
-        ImageView imageView = (ImageView)view;
 
-        switch (imageView.getId()) {
+        switch (view.getId()) {
             case R.id.iv_card_1:
                 playCard((int)cardsOnHand.get(0).getCardID()); //bekomme ich dadurch die richtige karte?
                 break;
