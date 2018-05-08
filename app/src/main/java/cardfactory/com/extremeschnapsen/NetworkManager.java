@@ -34,6 +34,10 @@ public class NetworkManager  {
         httpServer.startServer();
     }
 
+    public void stopHttpServer() {
+        httpServer.stopHTTPServer();
+    }
+
     public void startHttpClient() {
         isServer = false;
 

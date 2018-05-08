@@ -255,26 +255,30 @@ public class Round {
             }
             //keiner von beiden hat einen trumpf
             else if(!cardPlayer1.getCardSuit().equals(trump) && !cardPlayer2.getCardSuit().equals(trump)) {
-
-                if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
-                    rp.setPointsplayer1(sum_draw_points);
-                    player1Won = true;
-
-                } else if (cardPlayer2.getCardValue() > cardPlayer1.getCardValue()) {
-                    rp.setPointsplayer2(sum_draw_points);
-                    player2Won = true;
-
-                } else if (cardPlayer1.getCardValue() == cardPlayer2.getCardValue()) {
-                    if (isGroupOwner) {
+                //nicht die selbe Farbe
+                if (!cardPlayer1.getCardSuit().equals(cardPlayer2.getCardSuit())){
+                    if (myTurn && isGroupOwner) {
                         rp.setPointsplayer1(sum_draw_points);
                         player1Won = true;
                     }
-                    else {
+                    else if (myTurn && !isGroupOwner){
                         rp.setPointsplayer2(sum_draw_points);
                         player2Won = true;
                     }
-                }
 
+                }
+                //selbe Farbe
+                else {
+                    if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
+                        rp.setPointsplayer1(sum_draw_points);
+                        player1Won = true;
+
+                    } else if (cardPlayer2.getCardValue() > cardPlayer1.getCardValue()) {
+                        rp.setPointsplayer2(sum_draw_points);
+                        player2Won = true;
+
+                    }
+                }
             }
 
 
@@ -321,6 +325,8 @@ public class Round {
                 else {
                     // 3 Punkte
                 }
+
+                networkManager.stopHttpServer();
                 return true;
 
             }
@@ -334,6 +340,8 @@ public class Round {
                 else {
                     // 3 Punkte
                 }
+
+                networkManager.stopHttpServer();
                 return true;
             }
             return false;

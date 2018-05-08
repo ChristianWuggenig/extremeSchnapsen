@@ -233,12 +233,18 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
                 round.setMyTurn(true);
 
                 if(round.compareCards()){
-                 StartGameActivity.this.finish();
+                 //StartGameActivity.this.finish();
+                 //StartGameActivity.super.onDestroy();
+                    finishGUI();
                 }
                 displayDeck();
 
             }
         });
 
+    }
+
+    public void finishGUI() {
+        this.finish();
     }
 }

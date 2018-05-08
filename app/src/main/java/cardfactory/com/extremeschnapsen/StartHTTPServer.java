@@ -17,6 +17,7 @@ public class StartHTTPServer {
     int cardPlayed;
     List<Deck> currentDeck;
     INetworkDisplay networkDisplay;
+    NanoHTTPD nanoHTTPD;
 
     public StartHTTPServer(List<Deck> currentDeck, INetworkDisplay networkDisplay) {
         this.cardPlayed = 0;
@@ -26,7 +27,7 @@ public class StartHTTPServer {
 
     public void startServer() {
         try {
-            NanoHTTPD nanoHTTPD = new NanoHTTPD(8080) {
+            nanoHTTPD = new NanoHTTPD(8080) {
                 @Override
                 public Response serve(IHTTPSession session) {
                     String message = "";
@@ -92,5 +93,9 @@ public class StartHTTPServer {
 
     public void setCardPlayed(int cardPlayed) {
         this.cardPlayed = cardPlayed;
+    }
+
+    public void stopHTTPServer() {
+        nanoHTTPD.stop();
     }
 }
