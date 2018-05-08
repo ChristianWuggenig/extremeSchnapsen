@@ -71,12 +71,12 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
 
 
-        cardsToCheckFor20 = new ArrayList<>();
+        /*cardsToCheckFor20 = new ArrayList<>();
         cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_1));
         cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_2));
         cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_3));
         cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_4));
-        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_5));
+        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_5));*/
 
         Intent intent = this.getIntent();
         isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
@@ -134,7 +134,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         playedCardPlayer2 = round.getPlayedCardPlayer2();
         String karte = "";
 
-        round.checkFor20(cardsOnHand, cardsToCheckFor20);
+        //round.checkFor20(cardsOnHand, cardsToCheckFor20);
 
         for(ImageView card : cardList) {
             karte = "";
@@ -160,12 +160,12 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         }
         index = 0;
 
-        for(CardImageView civ : cardsToCheckFor20){
+        /*for(CardImageView civ : cardsToCheckFor20){
             if (index < cardsOnHand.size()) {
                 civ.setCardId (cardsOnHand.get(index).getCardID() );
             }
             index++;
-        }
+        }*/
     }
 
     @Override
@@ -196,13 +196,13 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     }
 
     public void playCard(int cardID) {
-        for(CardImageView civ : cardsToCheckFor20){
+        /*for(CardImageView civ : cardsToCheckFor20){
             if((int) civ.getCardId() == cardID){
                 if( civ.isEnable_20_strike() ){
                     //TODO: was soll passieren wenn die gespielte karte freigeschalten wurde für die 20er ansage ?
                 }
             }
-        }
+        }*/
 
 
         if(round.playCard(cardID)) {

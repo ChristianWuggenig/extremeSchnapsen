@@ -153,7 +153,7 @@ public class Round {
     }
 
     public boolean playCard(int cardID) {
-        if (myTurn && moves <= 10) {
+        if (myTurn && moves <= 100) {
             for (Deck deck : currentDeck) {
                 if (deck.getCardID() == cardID) {
                     if (isGroupOwner) {
@@ -168,7 +168,7 @@ public class Round {
 
             networkManager.sendCard(cardID);
             myTurn = false;
-            this.increaseMoves();
+            //this.increaseMoves();
 
             return true;
         }
@@ -187,10 +187,23 @@ public class Round {
     }
 
     public void getNextFreeCard(int playerID) {
+        boolean found = false;
+
         for (Deck deck : currentDeck) {
             if (deck.getDeckStatus() == 4) {
                 deck.setDeckStatus(playerID);
+                deckDataSource.updateDeckStatus(deck.getCardID(), playerID);
+                found = true;
                 break;
+            }
+        }
+
+        if (!found) {
+            for (Deck deck : currentDeck) {
+                if (deck.getDeckStatus() == 3) {
+                    deck.setDeckStatus(playerID);
+                    deckDataSource.updateDeckStatus(deck.getCardID(), playerID);
+                }
             }
         }
     }
@@ -284,13 +297,15 @@ public class Round {
 
             increaseMoves();
 
-            String value = "";
+            /*String value = "";
 
             for (Deck deck : currentDeck) {
                 value += deck.toString();
             }
 
-            Log.d("DeckList", value);
+            Log.d("DeckList", value);*/
+
+            deckDataSource.getAllDeck();
         
         }
 
