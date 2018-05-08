@@ -63,7 +63,7 @@ public class StartHTTPClient {
             }
         });
 
-        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 10, 1.0f));
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 10, 100, 1.0f));
 
         request.setTag(queueTag);
         requestQueue.add(request);

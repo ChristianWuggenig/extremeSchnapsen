@@ -342,6 +342,16 @@ public class Round {
                     }
                     networkManager.stopHttpServer();
                 }
+                else {
+                    try {
+                        Thread.sleep(5000);
+                    }
+                    catch (InterruptedException e){
+
+                    }
+
+                }
+
                 return true;
 
             }
@@ -364,6 +374,16 @@ public class Round {
                     }
                     networkManager.stopHttpServer();
                 }
+                else {
+                    try {
+                        Thread.sleep(5000);
+                    }
+                    catch (InterruptedException e){
+
+                    }
+
+                }
+
                 return true;
             }
             return false;
