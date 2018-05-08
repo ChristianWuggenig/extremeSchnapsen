@@ -101,12 +101,42 @@ public class RoundPointsDataSource {
         return roundPointsList;
     }
 
+    public RoundPoints getCurrentRoundPointsObject(){
+        List<RoundPoints> roundPointsList = getAllRoundPoints();
+        RoundPoints rp =null;
+
+        for (RoundPoints rpl : roundPointsList){
+            if (rpl.getCurrentroundpoints() == 1){
+                rp = rpl;
+                break;
+            }
+        }
+
+        return rp;
+
+    }
+
     public void saveRoundPoints(RoundPoints pointsToSave){
+
+        List<RoundPoints> roundPointsList = getAllRoundPoints();
+        RoundPoints rp =null;
+
+        for (RoundPoints rpl : roundPointsList){
+            if (rpl.getCurrentroundpoints() == 1){
+                rp = rpl;
+                break;
+            }
+        }
+
+        rp.setPointsplayer1(rp.getPointsplayer1() + pointsToSave.getPointsplayer1());
+        rp.setPointsplayer2(rp.getPointsplayer2() + pointsToSave.getPointsplayer2());
+
+
         ContentValues values = new ContentValues();
-        values.put(DbHelper.COLUMN_CURRENTROUNDPOINTS, pointsToSave.getCurrentroundpoints());
+        values.put(DbHelper.COLUMN_CURRENTROUNDPOINTS, rp.getCurrentroundpoints());
         values.put(DbHelper.COLUMN_ROUNDPOINTS_ID, insertId);
-        values.put(DbHelper.COLUMN_POINTSPLAYER1, pointsToSave.getPointsplayer1());
-        values.put(DbHelper.COLUMN_POINTSPLAYER2, pointsToSave.getPointsplayer2());
+        values.put(DbHelper.COLUMN_POINTSPLAYER1, rp.getPointsplayer1());
+        values.put(DbHelper.COLUMN_POINTSPLAYER2, rp.getPointsplayer2());
         database.update(DbHelper.TABLE_ROUNDPOINTS_LIST, values, DbHelper.COLUMN_ROUNDPOINTS_ID + "=" + insertId, null);
     }
 

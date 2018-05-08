@@ -35,11 +35,11 @@ public class Round {
         cardDataSource.open();
         deckDataSource.open();
         roundPointsDataSource.open();
-        roundPointsDataSource.createRoundPoints(1, 0, 0, 0);
+        roundPointsDataSource.createRoundPoints(1, 1, 0, 0);
         allCards = new ArrayList<>();
         currentDeck = new ArrayList<>();
 
-        points = new RoundPoints(1L, 0, 0, 0);
+        points = roundPointsDataSource.getCurrentRoundPointsObject();
 
         moves = 1;
 
