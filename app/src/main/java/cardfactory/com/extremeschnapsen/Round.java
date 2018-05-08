@@ -333,8 +333,15 @@ public class Round {
                 else {
                     // 3 Punkte
                 }
+                if (isGroupOwner) {
+                    try {
+                        Thread.sleep(2000);
+                    }
+                    catch (InterruptedException e){
 
-                networkManager.stopHttpServer();
+                    }
+                    networkManager.stopHttpServer();
+                }
                 return true;
 
             }
@@ -348,8 +355,15 @@ public class Round {
                 else {
                     // 3 Punkte
                 }
+                if (isGroupOwner) {
+                    try {
+                        Thread.sleep(2000);
+                    }
+                    catch (InterruptedException e){
 
-                networkManager.stopHttpServer();
+                    }
+                    networkManager.stopHttpServer();
+                }
                 return true;
             }
             return false;
