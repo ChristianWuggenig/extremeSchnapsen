@@ -48,6 +48,6 @@ sonarqube {
     properties {
         property 'sonar.jacoco.reportPath', "$buildDir/jacoco"
         property 'sonar.junit.reportsPath',"$buildDir/test-results"
-        property 'sonar.tests', "$buildDir/classes/test"
+        property 'sonar.tests', "$buildDir/test"
     }
 }
