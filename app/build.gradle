@@ -46,8 +46,6 @@ jacoco {
 
 sonarqube {
     properties {
-        property 'sonar.jacoco.reportPath', "$buildDir/jacoco"
-        property 'sonar.junit.reportsPath',"$buildDir/test-results"
         property 'sonar.tests', "src/test"
     }
 }
