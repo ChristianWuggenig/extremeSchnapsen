@@ -33,8 +33,18 @@ jacoco {
     reportsDir = file("$buildDir/jacocoReports")
 }
 
+sonarqube {
+    properties {
+        property 'sonar.jacoco.reportPath', '$buildDir/jacoco'
+        property 'sonar.junit.reportsPath','$buildDir/test-results'
+        property 'sonar.tests', '$buildDir/classes/test'
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+
 
 
