@@ -7,7 +7,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.1'
+        classpath 'com.android.tools.build:gradle:3.1.2'
         
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -24,10 +24,27 @@ allprojects {
         google()
         jcenter()
     }
+
+    apply plugin: "jacoco"
+}
+
+jacoco {
+    toolVersion '0.8.1'
+    reportsDir = file("$buildDir/jacocoReports")
+}
+
+sonarqube {
+    properties {
+        property 'sonar.jacoco.reportPath', '$buildDir/jacoco'
+        property 'sonar.junit.reportsPath','$buildDir/test-results'
+        property 'sonar.tests', '$buildDir/classes/test'
+    }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+
 
 
