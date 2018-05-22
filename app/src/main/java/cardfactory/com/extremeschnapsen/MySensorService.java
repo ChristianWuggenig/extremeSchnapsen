@@ -14,7 +14,7 @@ import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 
-import static dscheriau.accelerometer.R.raw.shufflecards;
+import static cardfactory.com.extremeschnapsen.R.raw.shufflecards;
 
 public class MySensorService extends Service implements SensorEventListener {
 
@@ -60,14 +60,6 @@ public class MySensorService extends Service implements SensorEventListener {
 
     @SuppressLint("MissingPermission")
     private void excuteShakeAction() {
-        //Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        // Vibrate for 500 milliseconds
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //v.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
-        }else{
-            //deprecated in API 26
-            //v.vibrate(500);
-        }
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(1000);
         sound.start();
