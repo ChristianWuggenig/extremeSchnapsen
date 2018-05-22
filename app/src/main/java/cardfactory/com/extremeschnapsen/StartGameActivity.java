@@ -46,6 +46,8 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
         setContentView(R.layout.activity_start_game);
 
+        startService(new Intent(this, MySensorService.class));
+
         builder = new AlertDialog.Builder(StartGameActivity.this);
 
         builder.setMessage(R.string.msgWaitingForOpposite)
