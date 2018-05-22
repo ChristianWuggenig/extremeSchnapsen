@@ -2,7 +2,6 @@ package cardfactory.com.extremeschnapsen;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,22 +10,20 @@ import java.util.List;
 
 public class Round {
 
-    private List<Card> allCards;
-    private List<Deck> currentDeck;
-    private DeckDataSource deckDataSource;
-    private CardDataSource cardDataSource;
-    private RoundPointsDataSource roundPointsDataSource;
+    private List<Card> allCards; //contains a list of all cards
+    private List<Deck> currentDeck; //contains the current deck
+    private DeckDataSource deckDataSource; //contains a reference to the deck-datasource
+    private CardDataSource cardDataSource; //contains a reference to the card-datasource
+    private RoundPointsDataSource roundPointsDataSource; //contains a reference to the roundpoints-datasource
 
-    private RoundPoints points;
+    private NetworkManager networkManager; //the network manager object (singleton)
 
-    private NetworkManager networkManager;
+    private boolean myTurn; //always set after a turn
+    private boolean isGroupOwner; //shows if the current devices is groupowner (= server) or not (= client)
 
-    private boolean myTurn;
-    private boolean isGroupOwner;
+    private int moves; //contains the number of the current moves
 
-    private int moves;
-
-    private String trump;
+    private String trump; //contains the trump card suit (e.g. Kreuz)
 
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
@@ -40,13 +37,11 @@ public class Round {
         allCards = new ArrayList<>();
         currentDeck = new ArrayList<>();
 
-        points = roundPointsDataSource.getCurrentRoundPointsObject();
-
         moves = 1;
 
-        deckDataSource.deleteDeckTable();
+        deckDataSource.deleteDeckTable(); //delete the deck from the database before creating a new one
 
-        networkManager = NetworkManager.getInstance(context, (INetworkDisplay) context);
+        networkManager = NetworkManager.getInstance(context, (INetworkDisplay) context); //get the singleton object from the network-manager
     }
 
     //die Karten auf der Hand zurückbekommen
@@ -71,7 +66,11 @@ public class Round {
 
     }
 
-    public List<Deck> getAllCards() {
+    /**
+     * returns a list of all deck cards
+     * @return list of deck items
+     */
+    public List<Deck> getAllDecks() {
         return deckDataSource.getAllDeck();
     }
 
@@ -108,7 +107,10 @@ public class Round {
         return playedplayer2;
     }
 
-
+    /**
+     * get the played cards from both players
+     * @return list with the played cards from both players
+     */
     public List<Deck> getPlayedCards() {
         List<Deck> playedcards = new ArrayList<>();
 
@@ -127,34 +129,58 @@ public class Round {
         return playedcards;
     }
 
+    /**
+     * initialize a new round and shuffle the deck (server only!)
+     */
     public void initializeRound() {
         allCards = cardDataSource.getAllCards();
         currentDeck = deckDataSource.shuffelDeck(allCards);
         isGroupOwner = true;
     }
 
+    /**
+     * initialize a new round with an already shuffled the deck (client only!)
+     */
     public void getShuffledDeck(int[] shuffledDeckIDs) {
         allCards = cardDataSource.getAllCards();
         currentDeck = deckDataSource.receiveShuffeldDeck(shuffledDeckIDs, allCards);
         isGroupOwner = false;
     }
 
+    /**
+     * get or set if it is my turn or not
+     * @param myTurn is it my turn or not
+     */
     public void setMyTurn(boolean myTurn) {
         this.myTurn = myTurn;
     }
 
+    /**
+     * increase the number of moves
+     */
     public void increaseMoves() {
         moves++;
     }
 
+    /**
+     * start the http-server
+     */
     public void startServer() {
         networkManager.startHttpServer(currentDeck);
     }
 
+    /**
+     * start the http-client
+     */
     public void startClient() {
         networkManager.startHttpClient();
     }
 
+    /**
+     * play a card (send it to the opposite player and save it to the database)
+     * @param cardID contains the id of the played card
+     * @return true if successful, false if it was not my turn or the end of the round has already been reached
+     */
     public boolean playCard(int cardID) {
         if (myTurn && moves <= 100) {
             for (Deck deck : currentDeck) {
@@ -171,7 +197,6 @@ public class Round {
 
             networkManager.sendCard(cardID);
             myTurn = false;
-            //this.increaseMoves();
 
             return true;
         }
@@ -179,6 +204,11 @@ public class Round {
         return false;
     }
 
+    /**
+     * update the status of a given card
+     * @param cardID contains the id of the desired card
+     * @param status contains the new status
+     */
     public void updateCard(int cardID, int status) {
         deckDataSource.updateDeckStatus(cardID, status);
 
@@ -189,6 +219,10 @@ public class Round {
         }
     }
 
+    /**
+     * get the next free card from the deck
+     * @param playerID used to identify which player gets the free card
+     */
     public void getNextFreeCard(int playerID) {
         boolean found = false;
 
@@ -211,6 +245,10 @@ public class Round {
         }
     }
 
+    /**
+     * compares the two played cards and decides which player gets the appropriate round points
+     * @return
+     */
     public boolean compareCards() {
         //both cards of round are set, continue to compare those
 

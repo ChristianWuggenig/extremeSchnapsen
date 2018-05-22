@@ -34,7 +34,7 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
 
     //is executed every time a system action with a defined filter in "intentFilters" is thrown
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, Intent intent) {
         String action = intent.getAction();
 
         //decide which P2P-Action was thrown
@@ -64,9 +64,9 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
                 @Override
                 public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
                     if(wifiP2pInfo.groupFormed){
-                        Intent startGameActivityIntent = new Intent(searchActivity.getApplicationContext(), StartGameActivity.class);
+                        Intent startGameActivityIntent = new Intent(context, StartGameActivity.class);
                         startGameActivityIntent.putExtra("IS_GROUP_OWNER", wifiP2pInfo.isGroupOwner);
-                        searchActivity.startActivity(startGameActivityIntent);
+                        context.startActivity(startGameActivityIntent);
                     }
                 }
             });
