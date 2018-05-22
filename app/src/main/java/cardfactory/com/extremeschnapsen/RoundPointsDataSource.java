@@ -17,11 +17,21 @@ public class RoundPointsDataSource {
     private DbHelper dbHelper;
     private long insertId;
 
+
+
     private String[] columns = {
             DbHelper.COLUMN_ROUNDPOINTS_ID,
             DbHelper.COLUMN_CURRENTROUNDPOINTS,
             DbHelper.COLUMN_POINTSPLAYER1,
-            DbHelper.COLUMN_POINTSPLAYER2
+            DbHelper.COLUMN_POINTSPLAYER2,
+            DbHelper.COLUMN_ROUND_PHASE,
+            DbHelper.COLUMN_ROUND_TRUMPEXCHANGED,
+            DbHelper.COLUMN_ROUND_SIGHTJOKERPLAYER1,
+            DbHelper.COLUMN_ROUND_SIGHTJOKERPLAYER2,
+            DbHelper.COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER1,
+            DbHelper.COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER2,
+            DbHelper.COLUMN_ROUND_CARD_EXCHANGE_PLAYER1,
+            DbHelper.COLUMN_ROUND_CARD_EXCHANGE_PLAYER2
     };
 
     public RoundPointsDataSource(Context context) {
@@ -46,6 +56,14 @@ public class RoundPointsDataSource {
         values.put(DbHelper.COLUMN_CURRENTROUNDPOINTS, CurrentRoundPointsID);
         values.put(DbHelper.COLUMN_POINTSPLAYER1, PointsPlayer1);
         values.put(DbHelper.COLUMN_POINTSPLAYER2, PointsPlayer2);
+        values.put(DbHelper.COLUMN_ROUND_PHASE, 0);
+        values.put(DbHelper.COLUMN_ROUND_TRUMPEXCHANGED, 0);
+        values.put(DbHelper.COLUMN_ROUND_SIGHTJOKERPLAYER1, 0);
+        values.put(DbHelper.COLUMN_ROUND_SIGHTJOKERPLAYER2, 0);
+        values.put(DbHelper.COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER1, 0);
+        values.put(DbHelper.COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER2, 0);
+        values.put(DbHelper.COLUMN_ROUND_CARD_EXCHANGE_PLAYER1, 0);
+        values.put(DbHelper.COLUMN_ROUND_CARD_EXCHANGE_PLAYER2, 0);
 
         insertId = database.insert(DbHelper.TABLE_ROUNDPOINTS_LIST, null, values);
 
@@ -65,18 +83,35 @@ public class RoundPointsDataSource {
         int idCurrentRoundPoints = cursor.getColumnIndex(DbHelper.COLUMN_CURRENTROUNDPOINTS);
         int idPointsPlayer1 = cursor.getColumnIndex(DbHelper.COLUMN_POINTSPLAYER1);
         int idPointsPlayer2 = cursor.getColumnIndex(DbHelper.COLUMN_POINTSPLAYER2);
+        int idRoundPhase = cursor.getColumnIndex(DbHelper.COLUMN_ROUND_PHASE);
+        int idTrumpExchanged = cursor.getColumnIndex(DbHelper.COLUMN_ROUND_TRUMPEXCHANGED);
+        int idSightJoker1 = cursor.getColumnIndex(DbHelper.COLUMN_ROUND_SIGHTJOKERPLAYER1);
+        int idSightJoker2 = cursor.getColumnIndex(DbHelper.COLUMN_ROUND_SIGHTJOKERPLAYER2);
+        int idParrySightJoker1 = cursor.getColumnIndex(DbHelper.COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER1);
+        int idParrySightJoker2 = cursor.getColumnIndex(DbHelper.COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER2);
+        int idCardExchange1 = cursor.getColumnIndex(DbHelper.COLUMN_ROUND_CARD_EXCHANGE_PLAYER1);
+        int idCardExchange2 = cursor.getColumnIndex(DbHelper.COLUMN_ROUND_CARD_EXCHANGE_PLAYER2);
 
 
         int RoundPointsID = cursor.getInt(idRoundPointsID);
         int CurrentRoundPoints = cursor.getInt(idCurrentRoundPoints);
         int PointsPlayer1 = cursor.getInt(idPointsPlayer1);
         int PointsPlayer2 = cursor.getInt(idPointsPlayer2);
-
+        int RoundPhase = cursor.getInt(idRoundPhase);
+        int TrumpExchanged = cursor.getInt(idTrumpExchanged);
+        int SightJoker1 = cursor.getInt(idSightJoker1);
+        int SightJoker2 = cursor.getInt(idSightJoker2);
+        int ParrySightJoker1 = cursor.getInt(idParrySightJoker1);
+        int ParrySightJoker2 = cursor.getInt(idParrySightJoker2);
+        int CardExchange1 = cursor.getInt(idCardExchange1);
+        int CardExchange2 = cursor.getInt(idCardExchange2);
 
         long id = cursor.getLong(idRoundPointsID);
 
         RoundPoints roundPoints;
-        roundPoints = new RoundPoints(RoundPointsID, CurrentRoundPoints, PointsPlayer1, PointsPlayer2);
+        roundPoints = new RoundPoints(RoundPointsID, CurrentRoundPoints, PointsPlayer1, PointsPlayer2,
+                RoundPhase, TrumpExchanged, SightJoker1, SightJoker2, ParrySightJoker1,
+                ParrySightJoker2, CardExchange1, CardExchange2);
 
         return roundPoints;
     }
@@ -144,6 +179,40 @@ public class RoundPointsDataSource {
                 null);
 
         getAllRoundPoints();
+    }
+
+    public void updtateTrumpExchanged(RoundPoints rp){
+        ContentValues values = new ContentValues();
+
+        values.put(DbHelper.COLUMN_ROUND_TRUMPEXCHANGED, rp.getTrumpExchanged());
+
+        database.update(DbHelper.TABLE_ROUNDPOINTS_LIST,
+                values,
+                DbHelper.COLUMN_CURRENTROUNDPOINTS + "=" + 1,
+                null);
+
+        getAllRoundPoints();
+
+    }
+
+    public void updateJoker(RoundPoints rp){
+
+        ContentValues values = new ContentValues();
+
+        values.put(DbHelper.COLUMN_ROUND_SIGHTJOKERPLAYER1, rp.getSightJokerPlayer1());
+        values.put(DbHelper.COLUMN_ROUND_SIGHTJOKERPLAYER2, rp.getSightJokerPlayer2());
+        values.put(DbHelper.COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER1, rp.getParrySightJokerPlayer1());
+        values.put(DbHelper.COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER2, rp.getParrySightJokerPlayer2());
+        values.put(DbHelper.COLUMN_ROUND_CARD_EXCHANGE_PLAYER1, rp.getCardExchangeJokerPlayer1());
+        values.put(DbHelper.COLUMN_ROUND_CARD_EXCHANGE_PLAYER2, rp.getCardExchangeJokerPlayer2());
+
+        database.update(DbHelper.TABLE_ROUNDPOINTS_LIST,
+                values,
+                DbHelper.COLUMN_CURRENTROUNDPOINTS + "=" + 1,
+                null);
+
+        getAllRoundPoints();
+
     }
 
     //löscht alle Einträge im GamePointstable

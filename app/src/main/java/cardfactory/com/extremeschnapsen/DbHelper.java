@@ -44,10 +44,20 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DECKSTATUS = "deckStatus";
     public static final String COLUMN_DECKTRUMP = "decktrump";
 
+
     public static final String COLUMN_ROUNDPOINTS_ID = "id";
     public static final String COLUMN_CURRENTROUNDPOINTS = "current";
     public static final String COLUMN_POINTSPLAYER1 = "pointsplayer1";
     public static final String COLUMN_POINTSPLAYER2 = "pointsplayer2";
+    public static final String COLUMN_ROUND_PHASE = "roundphase";
+    public static final String COLUMN_ROUND_TRUMPEXCHANGED = "trumpexchanged";
+    public static final String COLUMN_ROUND_SIGHTJOKERPLAYER1 = "sightjokerplayer1";
+    public static final String COLUMN_ROUND_SIGHTJOKERPLAYER2 = "sightjokerplayer2";
+    public static final String COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER1 = "parryightjokerplayer1";
+    public static final String COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER2 = "parrysightjokerplayer2";
+    public static final String COLUMN_ROUND_CARD_EXCHANGE_PLAYER1 = "cardexchangeplayer1";
+    public static final String COLUMN_ROUND_CARD_EXCHANGE_PLAYER2 = "cardexchangeplayer2";
+
 
     public static final String COLUMN_GAME_POINTS_ID = "_id";
     public static final String COLUMN_GAME_ID = "_gameID";
@@ -82,7 +92,16 @@ public class DbHelper extends SQLiteOpenHelper {
                     "(" + COLUMN_ROUNDPOINTS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_CURRENTROUNDPOINTS + " INTEGER NOT NULL, " +
                     COLUMN_POINTSPLAYER1 + " INTEGER NOT NULL, " +
-                    COLUMN_POINTSPLAYER2 + " INTEGER NOT NULL);";
+                    COLUMN_POINTSPLAYER2 + " INTEGER NOT NULL, " +
+                    COLUMN_ROUND_PHASE + " INTEGER, " +
+                    COLUMN_ROUND_TRUMPEXCHANGED + " INTEGER, " +
+                    COLUMN_ROUND_SIGHTJOKERPLAYER1 + " INTEGER, " +
+                    COLUMN_ROUND_SIGHTJOKERPLAYER2 + " INTEGER, " +
+                    COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER1 + " INTEGER, " +
+                    COLUMN_ROUND_PARRY_SIGHTJOKERPLAYER2 + " INTEGER, " +
+                    COLUMN_ROUND_CARD_EXCHANGE_PLAYER1 + " INTEGER, " +
+                    COLUMN_ROUND_CARD_EXCHANGE_PLAYER2 + " INTEGER);";
+
 
     public static final String SQL_CREATE_GAME_POINTS_TABLE =
             "CREATE TABLE " + TABLE_GAME_POINTS_LIST +

@@ -22,6 +22,7 @@ public class StartScreenActivity extends AppCompatActivity {
     private CardDataSource cardDataSource;
     private DeckDataSource deckDataSource;
     private GamePointsDataSource gamePointsDataSource;
+    private RoundPointsDataSource roundPointsDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class StartScreenActivity extends AppCompatActivity {
         playerDataSource = new PlayerDataSource(this);
         cardDataSource = new CardDataSource(this);
         deckDataSource = new DeckDataSource(this);
+        roundPointsDataSource = new RoundPointsDataSource(this);
         gamePointsDataSource = new GamePointsDataSource(this);
     }
 
@@ -64,6 +66,7 @@ public class StartScreenActivity extends AppCompatActivity {
         playerDataSource.open();
         cardDataSource.open();
         deckDataSource.open();
+        roundPointsDataSource.open();
         gamePointsDataSource.open();
 
         //Spielkarten werden in DBTabelle geschrieben, wenn nicht vorhanden
@@ -100,7 +103,19 @@ public class StartScreenActivity extends AppCompatActivity {
         //Aus CardList wird eine zufällige DeckList erstellt und in DB geschrieben
         //deckDataSource.shuffelDeck(cardDataSource.getAllCards());
 
-        Log.d(LOG_TAG, "Folgende Einträge sind in der Datenbank vorhanden:");
+        Log.d(LOG_TAG, "Folgende Einträge sind in der RoundPoint Datenbank vorhanden:");
+
+        RoundPoints rp = new RoundPoints(0,1,10,20,0,0,1,1,1,1,1,1);
+        roundPointsDataSource.deleteRoundPointsTable();
+
+        roundPointsDataSource.createRoundPoints(1,1,0,0);
+        roundPointsDataSource.getAllRoundPoints();
+        roundPointsDataSource.updateJoker(rp);
+        rp.setTrumpExchanged(1);
+        roundPointsDataSource.updtateTrumpExchanged(rp);
+        roundPointsDataSource.deleteRoundPointsTable();
+
+        Log.d(LOG_TAG, "Folgende Einträge sind in der GamePoint Datenbank vorhanden:");
 
         gamePointsDataSource.createGamePoints(1,0,0);
         gamePointsDataSource.getAllGamePoints();
@@ -147,6 +162,7 @@ public class StartScreenActivity extends AppCompatActivity {
         playerDataSource.close();
         cardDataSource.close();
         deckDataSource.close();
+        roundPointsDataSource.close();
         gamePointsDataSource.close();
     }
 }
