@@ -6,6 +6,8 @@ public class RoundPoints {
     private int currentroundpoints;
     private int pointsplayer1;
     private int pointsplayer2;
+    private int hiddenpointsplayer1; //für 20 und 40
+    private int hiddenpointsplayer2; //für 20 und 40
     private int rundenphase; // 0 Normal, 1 Schlussphase, 2 Zugedreht
     private int trumpExchanged; // 0 für nein, 1 für ja;
     // bei den Jokern gilt -> 0 wurde noch nicht gespielt; 1 wurde gespielt
@@ -23,6 +25,8 @@ public class RoundPoints {
         this.currentroundpoints = currentroundpoints;
         this.pointsplayer1 = pointsplayer1;
         this.pointsplayer2 = pointsplayer2;
+        this.hiddenpointsplayer1 = 0;
+        this.hiddenpointsplayer2 = 0;
         this.rundenphase = 0;
         this.trumpExchanged = 0;
         this.sightJokerPlayer1 = 0;
@@ -33,7 +37,26 @@ public class RoundPoints {
         this.cardExchangeJokerPlayer2 = 0;
     }
 
+    public RoundPoints (long roundpointsID, int currentroundpoints, int pointsplayer1, int pointsplayer2, int hiddenpointsplayer1, int hiddenpointsplayer2){
+        this.roundpointsID = roundpointsID;
+        this.currentroundpoints = currentroundpoints;
+        this.pointsplayer1 = pointsplayer1;
+        this.pointsplayer2 = pointsplayer2;
+        this.hiddenpointsplayer1 = hiddenpointsplayer1;
+        this.hiddenpointsplayer2 = hiddenpointsplayer2;
+        this.rundenphase = 0;
+        this.trumpExchanged = 0;
+        this.sightJokerPlayer1 = 0;
+        this.sightJokerPlayer2 = 0;
+        this.parrySightJokerPlayer1 = 0;
+        this.parrySightJokerPlayer2 = 0;
+        this.cardExchangeJokerPlayer1 = 0;
+        this.cardExchangeJokerPlayer2 = 0;
+    }
+
+
     public RoundPoints(long roundpointsID, int currentroundpoints, int pointsplayer1, int pointsplayer2,
+                       int hiddenpointsplayer1, int hiddenpointsplayer2,
                        int rundenphase, int trumpExchanged, int sightJokerPlayer1,
                        int sightJokerPlayer2, int parrySightJokerPlayer1, int parrySightJokerPlayer2,
                        int cardExchangeJokerPlayer1, int cardExchangeJokerPlayer2) {
@@ -42,6 +65,8 @@ public class RoundPoints {
         this.currentroundpoints = currentroundpoints;
         this.pointsplayer1 = pointsplayer1;
         this.pointsplayer2 = pointsplayer2;
+        this.hiddenpointsplayer1 = hiddenpointsplayer1;
+        this.hiddenpointsplayer2 = hiddenpointsplayer2;
         this.rundenphase = rundenphase;
         this.trumpExchanged = trumpExchanged;
         this.sightJokerPlayer1 = sightJokerPlayer1;
@@ -90,6 +115,22 @@ public class RoundPoints {
 
     public void updatePlayer2Points(int pointsToAdd){
         this.pointsplayer2 += pointsToAdd;
+    }
+
+    public int getHiddenpointsplayer1() {
+        return hiddenpointsplayer1;
+    }
+
+    public void setHiddenpointsplayer1(int hiddenpointsplayer1) {
+        this.hiddenpointsplayer1 = hiddenpointsplayer1;
+    }
+
+    public int getHiddenpointsplayer2() {
+        return hiddenpointsplayer2;
+    }
+
+    public void setHiddenpointsplayer2(int hiddenpointsplayer2) {
+        this.hiddenpointsplayer2 = hiddenpointsplayer2;
     }
 
     public int getRundenphase() {
@@ -158,6 +199,7 @@ public class RoundPoints {
 
     public String toString(){
         String output = roundpointsID + " " + currentroundpoints + " " + pointsplayer1 + " " + pointsplayer2 + " " +
+                hiddenpointsplayer1 + " " + hiddenpointsplayer2 + " " +
                 rundenphase + " " + trumpExchanged + " " + sightJokerPlayer1 + " " + sightJokerPlayer2 + " " +
                 parrySightJokerPlayer1 + " " + parrySightJokerPlayer2 + " " + cardExchangeJokerPlayer1 + " "
                 + cardExchangeJokerPlayer2;

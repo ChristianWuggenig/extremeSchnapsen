@@ -30,6 +30,8 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static final String COLUMN_PLAYER_ID = "_id";
     public static final String COLUMN_PLAYER_USERNAME = "username";
+    public static final String COLUMN_PLAYER_PLAYED_GAMES = "playedgames";
+    public static final String COLUMN_PLAYER_WON_GAMES = "wongames";
 
     public static final String COLUMN_CARD_ID = "_id";
     public static final String COLUMN_CARDSUIT = "cardSuit";
@@ -49,6 +51,8 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CURRENTROUNDPOINTS = "current";
     public static final String COLUMN_POINTSPLAYER1 = "pointsplayer1";
     public static final String COLUMN_POINTSPLAYER2 = "pointsplayer2";
+    public static final String COLUMN_HIDDENPOINTSPLAYER1 = "hiddenpointsplayer1";
+    public static final String COLUMN_HIDDENPOINTSPLAYER2 = "hiddenpointsplayer2";
     public static final String COLUMN_ROUND_PHASE = "roundphase";
     public static final String COLUMN_ROUND_TRUMPEXCHANGED = "trumpexchanged";
     public static final String COLUMN_ROUND_SIGHTJOKERPLAYER1 = "sightjokerplayer1";
@@ -68,7 +72,9 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String SQL_CREATE_PLAYER_TABLE =
             "CREATE TABLE " + TABLE_PLAYER_LIST +
                     "(" + COLUMN_PLAYER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    COLUMN_PLAYER_USERNAME + " TEXT NOT NULL);";
+                    COLUMN_PLAYER_PLAYED_GAMES + " INTEGER, " +
+                    COLUMN_PLAYER_USERNAME + " TEXT NOT NULL, " +
+                    COLUMN_PLAYER_WON_GAMES + " INTEGER);";
 
     public static final String SQL_CREATE_CARD_TABLE =
             "CREATE TABLE " + TABLE_CARD_LIST +
@@ -93,6 +99,8 @@ public class DbHelper extends SQLiteOpenHelper {
                     COLUMN_CURRENTROUNDPOINTS + " INTEGER NOT NULL, " +
                     COLUMN_POINTSPLAYER1 + " INTEGER NOT NULL, " +
                     COLUMN_POINTSPLAYER2 + " INTEGER NOT NULL, " +
+                    COLUMN_HIDDENPOINTSPLAYER1 + " INTEGER, " +
+                    COLUMN_HIDDENPOINTSPLAYER2 + " INTEGER, " +
                     COLUMN_ROUND_PHASE + " INTEGER, " +
                     COLUMN_ROUND_TRUMPEXCHANGED + " INTEGER, " +
                     COLUMN_ROUND_SIGHTJOKERPLAYER1 + " INTEGER, " +

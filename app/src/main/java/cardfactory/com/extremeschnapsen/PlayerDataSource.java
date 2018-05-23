@@ -26,7 +26,9 @@ public class PlayerDataSource {
 
     private String[] columns = {
             DbHelper.COLUMN_PLAYER_ID,
-            DbHelper.COLUMN_PLAYER_USERNAME
+            DbHelper.COLUMN_PLAYER_USERNAME,
+            DbHelper.COLUMN_PLAYER_PLAYED_GAMES,
+            DbHelper.COLUMN_PLAYER_WON_GAMES
     };
 
     public PlayerDataSource(Context context) {
@@ -48,6 +50,8 @@ public class PlayerDataSource {
     public Player createPlayer(String username) {
         ContentValues values = new ContentValues();
         values.put(DbHelper.COLUMN_PLAYER_USERNAME, username);
+        values.put(DbHelper.COLUMN_PLAYER_PLAYED_GAMES, 0);
+        values.put(DbHelper.COLUMN_PLAYER_WON_GAMES, 0);
 
         long insertId = database.insert(DbHelper.TABLE_PLAYER_LIST, null, values);
 
@@ -65,11 +69,16 @@ public class PlayerDataSource {
     private Player cursorToPlayer(Cursor cursor) {
         int idIndex = cursor.getColumnIndex(DbHelper.COLUMN_PLAYER_ID);
         int idUsername = cursor.getColumnIndex(DbHelper.COLUMN_PLAYER_USERNAME);
+        int idPlayedGames = cursor.getColumnIndex(DbHelper.COLUMN_PLAYER_PLAYED_GAMES);
+        int idWonGames = cursor.getColumnIndex(DbHelper.COLUMN_PLAYER_WON_GAMES);
 
         String username = cursor.getString(idUsername);
+        int playedGames = cursor.getInt(idPlayedGames);
+        int wonGames = cursor.getInt(idWonGames);
         long id = cursor.getLong(idIndex);
 
-        Player player = new Player(id, username);
+
+        Player player = new Player(id, username, playedGames, wonGames);
 
         return player;
     }
@@ -93,6 +102,40 @@ public class PlayerDataSource {
         cursor.close();
 
         return playerList;
+    }
+
+    public Player getCurrentPlayerObject(){
+        List<Player> playerList = getAllPlayers();
+        Player p =null;
+
+        for (Player pl : playerList){
+            if (pl.getId() != 0){
+                p = pl;
+                break;
+            }
+        }
+
+        return p;
+
+    }
+
+    public void updtatePlayerStatistics(int played_games, int won_games){
+        Player player = getCurrentPlayerObject();
+        player.setPlayed_games(player.getPlayed_games() + played_games);
+        player.setWon_games(player.getWon_games() + won_games);
+
+        ContentValues values = new ContentValues();
+
+        values.put(DbHelper.COLUMN_PLAYER_PLAYED_GAMES, player.getPlayed_games());
+        values.put(DbHelper.COLUMN_PLAYER_PLAYED_GAMES, player.getWon_games());
+
+        database.update(DbHelper.TABLE_PLAYER_LIST,
+                values,
+                DbHelper.COLUMN_PLAYER_ID + ">=" + 1,
+                null);
+
+        getAllPlayers();
+
     }
 
 }

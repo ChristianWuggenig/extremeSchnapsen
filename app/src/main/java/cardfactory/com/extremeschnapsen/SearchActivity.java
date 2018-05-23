@@ -39,6 +39,9 @@ public class SearchActivity extends AppCompatActivity {
     private ArrayAdapter<WifiP2pDevice> deviceAdapter;
     private AppCompatButton btnSearch;
 
+    //Game
+    public static Game game;
+
     //Define list of available devices
     private List<WifiP2pDevice> devices = new ArrayList<>();
 

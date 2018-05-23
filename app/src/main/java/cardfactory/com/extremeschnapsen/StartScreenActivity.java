@@ -105,7 +105,7 @@ public class StartScreenActivity extends AppCompatActivity {
 
         Log.d(LOG_TAG, "Folgende Einträge sind in der RoundPoint Datenbank vorhanden:");
 
-        RoundPoints rp = new RoundPoints(0,1,10,20,0,0,1,1,1,1,1,1);
+        RoundPoints rp = new RoundPoints(0,1,10,20,0,0,0,0,1,1,1,1,1,1);
         roundPointsDataSource.deleteRoundPointsTable();
 
         roundPointsDataSource.createRoundPoints(1,1,0,0);
@@ -121,7 +121,7 @@ public class StartScreenActivity extends AppCompatActivity {
         gamePointsDataSource.getAllGamePoints();
         gamePointsDataSource.updateGamePoints(1,2,3);
         gamePointsDataSource.getAllGamePoints();
-        gamePointsDataSource.deleteDeckTable();
+        gamePointsDataSource.deleteGamePoinsTable();
         gamePointsDataSource.getAllGamePoints();
 
 

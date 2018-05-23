@@ -1,6 +1,7 @@
 package cardfactory.com.extremeschnapsen;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -16,6 +17,8 @@ public class Round {
     private DeckDataSource deckDataSource;
     private CardDataSource cardDataSource;
     private RoundPointsDataSource roundPointsDataSource;
+    //Game Deklaration -> Instanz unten
+    Game game_round;
 
     private RoundPoints points;
 
@@ -47,6 +50,9 @@ public class Round {
         deckDataSource.deleteDeckTable();
 
         networkManager = NetworkManager.getInstance(context, (INetworkDisplay) context);
+
+        game_round = new Game (context, true);
+
     }
 
     //die Karten auf der Hand zurückbekommen
@@ -265,7 +271,6 @@ public class Round {
         trump = deckDataSource.getTrump();
 
 
-
         if (cardPlayer1 != null && cardPlayer2 != null) {
             int sum_draw_points = cardPlayer1.getCardValue() + cardPlayer2.getCardValue();
             RoundPoints rp = new RoundPoints(1,1,0,0);
@@ -334,6 +339,9 @@ public class Round {
 
 
             roundPointsDataSource.saveRoundPoints(rp);
+            //wenn noch keinen Stuch und 20/40 angesagt; und jetzt ein Stuch -> so werden
+            //die "versteckten Punkte" jetzt gutgeschrieben
+            HiddenPointsToRealPoints();
 
             cardPlayer1.setDeckStatus(7);
             cardPlayer2.setDeckStatus(8);
@@ -369,13 +377,17 @@ public class Round {
 
                 if (rp2.getPointsplayer2() >= 33){
                     // 1 Punkt
+                    game_round.updateGamePoints(1,0);
                 }
                 else if (rp2.getPointsplayer2() >0 && rp2.getPointsplayer2() <33){
                     // 2 Punkte
+                    game_round.updateGamePoints(2,0);
                 }
                 else {
                     // 3 Punkte
+                    game_round.updateGamePoints(3,0);
                 }
+                game_round.gpds.getAllGamePoints();
                 if (isGroupOwner) {
                     try {
                         Thread.sleep(2000);
@@ -401,13 +413,17 @@ public class Round {
             else if (rp2.getPointsplayer2()>=66){
                 if (rp2.getPointsplayer1() >= 33){
                     // 1 Punkt
+                    game_round.updateGamePoints(0,1);
                 }
                 else if (rp2.getPointsplayer1() >0 && rp2.getPointsplayer1() <33){
                     // 2 Punkte
+                    game_round.updateGamePoints(0,2);
                 }
                 else {
                     // 3 Punkte
+                    game_round.updateGamePoints(0,3);
                 }
+                game_round.gpds.getAllGamePoints();
                 if (isGroupOwner) {
                     try {
                         Thread.sleep(2000);
@@ -433,6 +449,112 @@ public class Round {
         }
         return false;
     }
+
+    //ob Stuch bereits vorhanden
+    public boolean checkForStuch(){
+        boolean checkStuch = false;
+        this.points = this.roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if(isGroupOwner && points.getPointsplayer1()>0){
+            checkStuch = true;
+        }
+        if(!isGroupOwner && points.getPointsplayer2()>0){
+            checkStuch = true;
+        }
+        return checkStuch;
+    }
+
+    //nach Message, wenn 20/40 ausgespielt wurde -> Information, welche Farbe wird benötigt
+    public void receiveCheck2040(String farbe){
+        int i = 0;
+        RoundPoints rp = new RoundPoints(1,1,0,0);
+
+        this.trump = deckDataSource.getTrump();
+
+        if (trump == farbe)
+            i=4;
+        else
+            i=2;
+
+        //20er 40er
+        if (i == 2 || i ==4) {
+            if (checkForStuch()){
+                if (isGroupOwner) {
+                    rp.setPointsplayer1(10 * i);
+                }
+                else{
+                    rp.setPointsplayer2(10 * i);
+                }
+            }
+            else{
+                if (isGroupOwner){
+                    rp.setHiddenpointsplayer1(10*i);
+                }
+                else{
+                    rp.setHiddenpointsplayer2(10*i);
+                }
+            }
+            this.roundPointsDataSource.saveRoundPoints(rp);
+        }
+    }
+
+    //Der Button Herz, Pik, Karo oder Kreuz wird gedrückt um 20/40 anzusagen
+    public String check2040(String farbe){
+        int i = 0;
+        String check2040 = "";
+        RoundPoints rp = new RoundPoints(1,1,0,0);
+
+        for (Deck deck : this.getCardsOnHand()){
+            if (farbe.equals(deck.getCardSuit()) && deck.getCardValue() <=4 && deck.getCardValue() >2){
+                if(deck.getDeckTrump() == 1)
+                i = 2 + i;
+                else
+                i++;
+            }
+        }
+        //20er 40er
+        if (i == 2 || i ==4) {
+            check2040 = farbe;
+            if (checkForStuch()){
+               if (isGroupOwner) {
+                   rp.setPointsplayer1(10 * i);
+               }
+               else{
+                   rp.setPointsplayer2(10 * i);
+               }
+            }
+            else{
+               if (isGroupOwner){
+                   rp.setHiddenpointsplayer1(10*i);
+               }
+               else{
+                   rp.setHiddenpointsplayer2(10*i);
+
+               }
+            }
+            this.roundPointsDataSource.saveRoundPoints(rp);
+        }
+        //als Rückgabeparameter für Message an anderen Spieler
+        return check2040;
+    }
+
+    //Checkt, ob jetzt Stuch verhanden ist, um Punkte gutzuschreiben
+    public void HiddenPointsToRealPoints(){
+        this.points = this.roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if (points.getPointsplayer1() > 0 && points.getHiddenpointsplayer1() > 0) {
+            points.setPointsplayer1(points.getPointsplayer1() + points.getHiddenpointsplayer1());
+            points.setHiddenpointsplayer1(0);
+            this.roundPointsDataSource.updateRoundPoints(points);
+        }
+        else if (points.getPointsplayer2() > 0 && points.getHiddenpointsplayer2() > 0) {
+                points.setPointsplayer2(points.getPointsplayer2() + points.getHiddenpointsplayer2());
+                points.setHiddenpointsplayer2(0);
+                this.roundPointsDataSource.updateRoundPoints(points);
+        }
+
+    }
+
 
     public boolean checkFor20(List<Deck> cardsOnHand, List<CardImageView> cardImageViews){
 

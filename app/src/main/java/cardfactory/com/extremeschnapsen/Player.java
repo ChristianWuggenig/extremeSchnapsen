@@ -11,12 +11,26 @@ public class Player {
 
     private long id;
     private String username;
+    private int played_games;
+    private int won_games;
 
 
     public Player (long id, String username){
         this.id = id;
         this.username = username;
+        this.played_games = 0;
+        this.won_games = 0;
+    }
 
+    public Player (){
+
+    }
+
+    public Player(long id, String username, int played_games, int won_games) {
+        this.id = id;
+        this.username = username;
+        this.played_games = played_games;
+        this.won_games = won_games;
     }
 
     public long getId() {
@@ -35,8 +49,24 @@ public class Player {
         this.username = username;
     }
 
+    public int getPlayed_games() {
+        return played_games;
+    }
+
+    public void setPlayed_games(int played_games) {
+        this.played_games = played_games;
+    }
+
+    public int getWon_games() {
+        return won_games;
+    }
+
+    public void setWon_games(int won_games) {
+        this.won_games = won_games;
+    }
+
     public String toString(){
-        String output = id + " " + username;
+        String output = id + " " + username + " " + played_games + " " + won_games + " ";
      return output;
     }
 }

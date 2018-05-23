@@ -22,6 +22,9 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     List<Deck> playedCards;
     Deck playedCardPlayer1;
     Deck playedCardPlayer2;
+    //für Game Object -> serializable
+    //Intent i = getIntent();
+    //Game game_test = (Game)i.getSerializableExtra("game_s");
 
     List<ImageView> cardList;
     List<CardImageView> cardsToCheckFor20;
