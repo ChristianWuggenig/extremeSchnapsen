@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,9 +9,11 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import cardfactory.com.extremeschnapsen.models.RoundPoints;
+
 public class RoundPointsDataSource {
 
-    private static final String LOG_TAG = cardfactory.com.extremeschnapsen.RoundPointsDataSource.class.getSimpleName();
+    private static final String LOG_TAG = RoundPointsDataSource.class.getSimpleName();
 
     private SQLiteDatabase database;
     private DbHelper dbHelper;

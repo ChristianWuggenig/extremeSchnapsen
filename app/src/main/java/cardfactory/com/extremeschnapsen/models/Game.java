@@ -1,6 +1,8 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.models;
 
 import android.content.Context;
+
+import cardfactory.com.extremeschnapsen.database.GamePointsDataSource;
 
 /**
  * Created by NapeStar on 08.05.18.

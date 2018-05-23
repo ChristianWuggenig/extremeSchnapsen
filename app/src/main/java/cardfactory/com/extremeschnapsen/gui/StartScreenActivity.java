@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.gui;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,14 @@ import android.util.Log;
 import android.view.Window;
 
 import java.util.List;
+
+import cardfactory.com.extremeschnapsen.models.Card;
+import cardfactory.com.extremeschnapsen.database.CardDataSource;
+import cardfactory.com.extremeschnapsen.database.DeckDataSource;
+import cardfactory.com.extremeschnapsen.database.GamePointsDataSource;
+import cardfactory.com.extremeschnapsen.models.Player;
+import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
+import cardfactory.com.extremeschnapsen.R;
 
 
 /**

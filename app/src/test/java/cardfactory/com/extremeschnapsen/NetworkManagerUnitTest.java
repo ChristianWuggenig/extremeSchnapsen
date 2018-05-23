@@ -8,6 +8,11 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import cardfactory.com.extremeschnapsen.models.Deck;
+import cardfactory.com.extremeschnapsen.models.Player;
+import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
+import cardfactory.com.extremeschnapsen.networking.NetworkManager;
+
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -15,12 +20,15 @@ public class NetworkManagerUnitTest {
     NetworkManager networkManager;
     Context context;
     INetworkDisplay networkDisplay;
+    Player player;
 
     @Before
     public void init() {
         context = mock(Context.class);
         networkDisplay = mock(INetworkDisplay.class);
         networkManager = NetworkManager.getInstance(context, networkDisplay);
+        player = mock(Player.class);
+        when(player.getUsername()).thenReturn("testUser");
     }
 
     @After
@@ -32,7 +40,7 @@ public class NetworkManagerUnitTest {
 
     @Test
     public void testStartHttpServer() {
-        networkManager.startHttpServer(new ArrayList<Deck>());
+        networkManager.startHttpServer(new ArrayList<Deck>(), player);
 
         assertTrue(true); //if the statement above does not fail, then the test is successful
     }
@@ -47,7 +55,7 @@ public class NetworkManagerUnitTest {
     //the nullpointerexception is thrown in the volley-class, because the requestqueue cannot be created on a mock-object
     @Test (expected = NullPointerException.class)
     public void testStartHttpClient() {
-        networkManager.startHttpClient();
+        networkManager.startHttpClient(player);
 
         fail("Exception not thrown"); //if the statement above does not fail, then the test failed
     }
@@ -55,7 +63,7 @@ public class NetworkManagerUnitTest {
     //the nullpointerexception is thrown in the volley-class, because the requestqueue cannot be created on a mock-object
     @Test (expected = NullPointerException.class)
     public void testSendCardWithClient() {
-        networkManager.startHttpClient(); //to start as client
+        networkManager.startHttpClient(player); //to start as client
 
         networkManager.sendCard(1);
 
@@ -64,7 +72,7 @@ public class NetworkManagerUnitTest {
 
     @Test
     public void testSendCardWithServer() {
-        networkManager.startHttpServer(new ArrayList<Deck>()); //to start as client
+        networkManager.startHttpServer(new ArrayList<Deck>(), player); //to start as client
 
         networkManager.sendCard(1);
 

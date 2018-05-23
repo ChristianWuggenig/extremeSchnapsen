@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.gameengine;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,6 +8,18 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import cardfactory.com.extremeschnapsen.database.CardDataSource;
+import cardfactory.com.extremeschnapsen.database.DeckDataSource;
+import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
+import cardfactory.com.extremeschnapsen.database.RoundPointsDataSource;
+import cardfactory.com.extremeschnapsen.models.Card;
+import cardfactory.com.extremeschnapsen.models.CardImageView;
+import cardfactory.com.extremeschnapsen.models.Deck;
+import cardfactory.com.extremeschnapsen.models.Player;
+import cardfactory.com.extremeschnapsen.models.RoundPoints;
+import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
+import cardfactory.com.extremeschnapsen.networking.NetworkManager;
+
 public class Round {
 
     private List<Card> allCards; //contains a list of all cards
@@ -15,6 +27,7 @@ public class Round {
     private DeckDataSource deckDataSource; //contains a reference to the deck-datasource
     private CardDataSource cardDataSource; //contains a reference to the card-datasource
     private RoundPointsDataSource roundPointsDataSource; //contains a reference to the roundpoints-datasource
+    private PlayerDataSource playerDataSource; //contains a reference to the player-datasource
 
     private NetworkManager networkManager; //the network manager object (singleton)
 
@@ -24,6 +37,8 @@ public class Round {
     private int moves; //contains the number of the current moves
 
     private String trump; //contains the trump card suit (e.g. Kreuz)
+
+    private Player player;
 
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
@@ -42,6 +57,12 @@ public class Round {
         deckDataSource.deleteDeckTable(); //delete the deck from the database before creating a new one
 
         networkManager = NetworkManager.getInstance(context, (INetworkDisplay) context); //get the singleton object from the network-manager
+
+        playerDataSource = new PlayerDataSource(context);
+        playerDataSource.open();
+
+        List<Player> players = playerDataSource.getAllPlayers();
+        player = players.get(0);
     }
 
     //die Karten auf der Hand zurückbekommen
@@ -166,14 +187,14 @@ public class Round {
      * start the http-server
      */
     public void startServer() {
-        networkManager.startHttpServer(currentDeck);
+        networkManager.startHttpServer(currentDeck, player);
     }
 
     /**
      * start the http-client
      */
     public void startClient() {
-        networkManager.startHttpClient();
+        networkManager.startHttpClient(player);
     }
 
     /**
@@ -558,4 +579,7 @@ public class Round {
         return result;
     }
 
+    public String getUsername() {
+        return player.getUsername();
+    }
 }

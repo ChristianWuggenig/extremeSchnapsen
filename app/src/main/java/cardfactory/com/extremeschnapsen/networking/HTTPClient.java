@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.networking;
 
 import android.content.Context;
 import android.util.Log;
@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cardfactory.com.extremeschnapsen.models.Player;
+
 public class HTTPClient {
 
     private INetworkDisplay networkDisplay; //the network display interface object
@@ -21,9 +23,12 @@ public class HTTPClient {
 
     private static final String queueTag = "extremeSchnapsen"; //contains the queueTag for volley
 
-    public HTTPClient(Context context, INetworkDisplay networkDisplay) {
+    private Player player; //contains the current player
+
+    public HTTPClient(Context context, INetworkDisplay networkDisplay, Player player) {
         this.networkDisplay = networkDisplay;
         this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
+        this.player = player;
     }
 
     /**
@@ -32,11 +37,12 @@ public class HTTPClient {
      */
     public void getDeck() {
 
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, serverIP, new JSONArray(), new Response.Listener<JSONArray>() {
+        final JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, serverIP + "?Name=" + player.getUsername(), new JSONArray(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
                 int[] shuffledDeckIDs = new int[20];
+                String playerName = "";
 
                 try {
                     //converts the ID-String into an int-array
@@ -44,11 +50,15 @@ public class HTTPClient {
                         JSONObject jsonObject = response.getJSONObject(count);
                         shuffledDeckIDs[count] = jsonObject.getInt("ID");
                     }
+
+                    JSONObject jsonObject = response.getJSONObject(20);
+                    playerName = jsonObject.getString("Name");
+
                 } catch (Exception ex) {
                     Log.d("JSONError", ex.getMessage());
                 }
 
-                networkDisplay.displayShuffledDeck(shuffledDeckIDs); //display the updated deck
+                networkDisplay.displayShuffledDeck(shuffledDeckIDs, playerName); //display the updated deck and the opposite players name
                 networkDisplay.displayStatus("Deck received, first card has id: " + String.valueOf(shuffledDeckIDs[0]));
                 networkDisplay.dismissDialog();
             }

@@ -1,7 +1,10 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.networking;
 
 import android.content.Context;
 import java.util.List;
+
+import cardfactory.com.extremeschnapsen.models.Deck;
+import cardfactory.com.extremeschnapsen.models.Player;
 
 public class NetworkManager  {
 
@@ -37,10 +40,10 @@ public class NetworkManager  {
      * starts the http-server and holds the current deck for the client
      * @param currentDeck the current, shuffled deck
      */
-    public void startHttpServer(List<Deck> currentDeck) {
+    public void startHttpServer(List<Deck> currentDeck, Player player) {
         isServer = true;
 
-        httpServer = new HTTPServer(currentDeck, networkDisplay);
+        httpServer = new HTTPServer(currentDeck, networkDisplay, player);
         httpServer.startServer();
     }
 
@@ -54,10 +57,10 @@ public class NetworkManager  {
     /**
      * start the http-client
      */
-    public void startHttpClient() {
+    public void startHttpClient(Player player) {
         isServer = false;
 
-        httpClient = new HTTPClient(context, networkDisplay);
+        httpClient = new HTTPClient(context, networkDisplay, player);
         httpClient.getDeck(); //get the current deck from server
     }
 

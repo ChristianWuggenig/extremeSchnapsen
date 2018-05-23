@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.models;
 
 import android.content.Context;
 import android.util.AttributeSet;

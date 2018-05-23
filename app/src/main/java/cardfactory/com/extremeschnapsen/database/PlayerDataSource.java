@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +7,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import java.util.ArrayList;
 import java.util.List;
+
+import cardfactory.com.extremeschnapsen.models.Player;
+
 /**
  * Created by NapeStar on 04.04.18.
  *This class is a Data Acces Object (DAO) and resposible for the CRUD management.

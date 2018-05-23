@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:background="@drawable/background"
     android:layout_height="match_parent"
-    tools:context="cardfactory.com.extremeschnapsen.RegisterActivity">
+    tools:context="cardfactory.com.extremeschnapsen.gui.RegisterActivity">
 
     <TextView
         android:id="@+id/usernameTextView"

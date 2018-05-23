@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.services;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -13,6 +13,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
+
+import cardfactory.com.extremeschnapsen.R;
 
 import static cardfactory.com.extremeschnapsen.R.raw.shufflecards;
 

@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.gui;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,6 +24,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cardfactory.com.extremeschnapsen.R;
+import cardfactory.com.extremeschnapsen.networking.WiFiP2PBroadcastReceiver;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -177,12 +180,12 @@ public class SearchActivity extends AppCompatActivity {
                 p2pManager.connect(p2pChannel, config, new WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
-                        //move on to next activity and start the game
+
                     }
 
                     @Override
                     public void onFailure(int i) {
-                        //display the user a message that the connection could not be established
+
                     }
                 });
             }

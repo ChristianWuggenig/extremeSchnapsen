@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.gui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+
+import cardfactory.com.extremeschnapsen.R;
+import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
 
 //import android.widget.ArrayAdapter;
 //import android.widget.ListView;

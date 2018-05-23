@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.models;
 
 /**
  * Created by NapeStar on 03.04.18.

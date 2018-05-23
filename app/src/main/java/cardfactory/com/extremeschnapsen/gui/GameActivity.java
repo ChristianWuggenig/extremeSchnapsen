@@ -1,7 +1,6 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.gui;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
@@ -15,29 +14,38 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StartGameActivity extends AppCompatActivity implements INetworkDisplay {
+import cardfactory.com.extremeschnapsen.models.CardImageView;
+import cardfactory.com.extremeschnapsen.models.Deck;
+import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
+import cardfactory.com.extremeschnapsen.services.MySensorService;
+import cardfactory.com.extremeschnapsen.R;
+import cardfactory.com.extremeschnapsen.gameengine.Round;
 
-    private ConstraintLayout deckholder;
-    List<Deck> cardsOnHand;
-    Deck open;
-    List<Deck> playedCards;
-    Deck playedCardPlayer1;
-    Deck playedCardPlayer2;
+public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
-    List<ImageView> cardList;
-    List<CardImageView> cardsToCheckFor20;
+    private static ConstraintLayout deckholder;
+    private static List<Deck> cardsOnHand;
+    private static Deck open;
+    private static List<Deck> playedCards;
+    private static Deck playedCardPlayer1;
+    private static Deck playedCardPlayer2;
 
-    TextView txvPlayer;
+    private static List<ImageView> cardList;
+    private static List<CardImageView> cardsToCheckFor20;
 
-    Round round;
+    private static TextView txvPlayer;
+    private static TextView txvPlayer1;
+    private static TextView txvPlayer2;
 
-    boolean isGroupOwner;
+    private static Round round;
 
-    private View.OnClickListener onClickListener;
+    private static boolean isGroupOwner;
 
-    private AlertDialog.Builder builder;
+    private static View.OnClickListener onClickListener;
 
-    private AlertDialog dialog;
+    private static AlertDialog.Builder builder;
+
+    private static AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +55,12 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
         setContentView(R.layout.activity_start_game);
 
-        startService(new Intent(this, MySensorService.class));
+        //startService(new Intent(this, MySensorService.class));
 
         builder = new AlertDialog.Builder(this);
 
         builder.setMessage(R.string.msgWaitingForOpposite)
-        .setTitle(R.string.msgWaiting);
+                .setTitle(R.string.msgWaiting);
 
         dialog = builder.create();
 
@@ -79,6 +87,10 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_4));
         cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_5));*/
 
+        txvPlayer = this.findViewById(R.id.txvPlayer);
+        txvPlayer1 = this.findViewById(R.id.txv_user1);
+        txvPlayer2 = this.findViewById(R.id.txv_user2);
+
         Intent intent = this.getIntent();
         isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
 
@@ -88,11 +100,15 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
             round.initializeRound();
             round.startServer();
             round.setMyTurn(false);
+            txvPlayer1.setText(round.getUsername());
+            txvPlayer2.setText(R.string.msgWaiting);
             displayDeck();
         }
         else {
             round.startClient();
             round.setMyTurn(true);
+            txvPlayer2.setText(round.getUsername());
+            txvPlayer1.setText(R.string.msgWaiting);
         }
 
         onClickListener = new View.OnClickListener() {
@@ -107,7 +123,17 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         }
 
 
-        txvPlayer = this.findViewById(R.id.txvPlayer);
+
+    }
+
+    @Override
+    public void dismissDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dialog.dismiss();
+            }
+        });
     }
 
     @Override
@@ -121,16 +147,6 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
             }
         });
 
-    }
-
-    @Override
-    public void dismissDialog() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                dialog.dismiss();
-            }
-        });
     }
 
     public void displayDeck() {
@@ -179,9 +195,16 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     }
 
     @Override
-    public void displayShuffledDeck(int[] shuffledDeckIDs) {
-        round.getShuffledDeck(shuffledDeckIDs);
-        displayDeck();
+    public void displayShuffledDeck(final int[] shuffledDeckIDs, final String playerName) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                round.getShuffledDeck(shuffledDeckIDs);
+                txvPlayer1.setText(playerName);
+                displayDeck();
+            }
+        });
+
     }
 
     public void ivCardClicked(View view) {
@@ -218,7 +241,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         if(round.playCard(cardID)) {
             txvPlayer.setText("card " + String.valueOf(cardID) + " played");
             if(round.compareCards()){
-               recreate();
+                finish();
             }
             displayDeck();
         }
@@ -243,9 +266,9 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
                 round.setMyTurn(true);
 
                 if(round.compareCards()){
-                 //StartGameActivity.this.finish();
-                 //StartGameActivity.super.onDestroy();
-                    recreate();
+                 //GameActivity.this.finish();
+                 //GameActivity.super.onDestroy();
+                    finish();
                 }
                 displayDeck();
 
@@ -256,5 +279,15 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
     public void finishGUI() {
         this.finish();
+    }
+
+    @Override
+    public void displayPlayer(final String playerName) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txvPlayer2.setText(playerName);
+            }
+        });
     }
 }

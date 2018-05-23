@@ -1,7 +1,5 @@
 package cardfactory.com.extremeschnapsen;
 
-import android.content.Context;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cardfactory.com.extremeschnapsen.models.Deck;
+import cardfactory.com.extremeschnapsen.models.Player;
+import cardfactory.com.extremeschnapsen.networking.HTTPServer;
+import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
+
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -22,6 +25,7 @@ public class HTTPServerUnitTest {
 
     INetworkDisplay networkDisplay;
     List<Deck> currentDeck;
+    Player player;
 
     @Before
     public void init() {
@@ -34,7 +38,10 @@ public class HTTPServerUnitTest {
             currentDeck.add(deck);
         }
 
-        httpServer = new HTTPServer(currentDeck, networkDisplay);
+        player = mock(Player.class);
+        when(player.getUsername()).thenReturn("testUser");
+
+        httpServer = new HTTPServer(currentDeck, networkDisplay, player);
     }
 
     @After
@@ -61,6 +68,7 @@ public class HTTPServerUnitTest {
 
     @Test
     public void testStopHTTPServer() {
+        httpServer.startServer(); //needs to be started first
         httpServer.stopHTTPServer();
 
         //if the statement above does not throw an exception, then the test is successful
@@ -69,7 +77,8 @@ public class HTTPServerUnitTest {
 
     @Test
     public void testSendAllDeck() {
-        String response = httpServer.sendAllDeck();
+
+        String response = httpServer.sendAllDeck(new HashMap<String, List<String>>());
 
         try {
             JSONObject jsonObject = new JSONArray(response).getJSONObject(0);

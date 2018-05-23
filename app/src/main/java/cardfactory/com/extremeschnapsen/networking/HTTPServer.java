@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.networking;
 
 import android.util.Log;
 
@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cardfactory.com.extremeschnapsen.models.Deck;
+import cardfactory.com.extremeschnapsen.models.Player;
 import fi.iki.elonen.NanoHTTPD;
 
 public class HTTPServer {
@@ -22,10 +24,13 @@ public class HTTPServer {
 
     private NanoHTTPD nanoHTTPD; //contains the nanohttpd-server
 
-    public HTTPServer(List<Deck> currentDeck, INetworkDisplay networkDisplay) {
+    private Player player; //contains the current player
+
+    public HTTPServer(List<Deck> currentDeck, INetworkDisplay networkDisplay, Player player) {
         this.cardPlayed = 0;
         this.currentDeck = currentDeck;
         this.networkDisplay = networkDisplay;
+        this.player = player;
     }
 
     /**
@@ -43,12 +48,16 @@ public class HTTPServer {
                         Map<String, List<String>> params = session.getParameters();
 
                         //if the parameter list is empty, then the client wants to get the current deck
-                        if (params.size() == 0) {
-                            message = sendAllDeck();
+                        if (params.size() != 0) {
+                            if (params.get("Name") != null) {
+                                message = sendAllDeck(params);
+                            } else if (params.get("ID") != null) {
+                                message = sendCurrentlyPlayedCard();
+                            }
                         }
                         //if the parameter list is not 0, then the client wants to get the currently played card from the server
                         else {
-                            message = sendCurrentlyPlayedCard();
+
                         }
                     }
                     //check if the request-method is POST
@@ -100,7 +109,7 @@ public class HTTPServer {
      * send the shuffled deck ids to the client
      * @return returns the response string with the ids in json format
      */
-    public String sendAllDeck() {
+    public String sendAllDeck(Map<String, List<String>> params) {
         JSONArray jsonArray = new JSONArray();
 
         //create json-objects to insert the cardIDs
@@ -110,11 +119,17 @@ public class HTTPServer {
                 jsonObject.put("ID", deck.getCardID());
                 jsonArray.put(jsonObject);
             }
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("Name", player.getUsername());
+            jsonArray.put(jsonObject);
+
         } catch (JSONException ex) {
             Log.d("JSONError", ex.getMessage());
         }
 
         networkDisplay.displayStatus(currentDeck.get(0).toString());
+        networkDisplay.displayPlayer(params.get("Name").get(0));
         networkDisplay.dismissDialog();
 
         return jsonArray.toString(); //convert the jsonArray of cardIDs to a string message for the response

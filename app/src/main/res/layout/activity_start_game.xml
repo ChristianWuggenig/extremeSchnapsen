@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context="cardfactory.com.extremeschnapsen.StartGameActivity">
+    tools:context="cardfactory.com.extremeschnapsen.gui.GameActivity">
 
     <TextView
         android:id="@+id/txv_mypoints"
@@ -65,7 +65,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <cardfactory.com.extremeschnapsen.CardImageView
+        <cardfactory.com.extremeschnapsen.models.CardImageView
             android:id="@+id/iv_card_1"
             android:layout_width="84dp"
             android:layout_height="0dp"
@@ -77,7 +77,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <cardfactory.com.extremeschnapsen.CardImageView
+        <cardfactory.com.extremeschnapsen.models.CardImageView
             android:id="@+id/iv_card_2"
             android:layout_width="84dp"
             android:layout_height="0dp"
@@ -91,7 +91,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.06999999" />
 
-        <cardfactory.com.extremeschnapsen.CardImageView
+        <cardfactory.com.extremeschnapsen.models.CardImageView
             android:id="@+id/iv_card_3"
             android:layout_width="84dp"
             android:layout_height="0dp"
@@ -103,7 +103,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
 
-        <cardfactory.com.extremeschnapsen.CardImageView
+        <cardfactory.com.extremeschnapsen.models.CardImageView
             android:id="@+id/iv_card_4"
             android:layout_width="84dp"
             android:layout_height="0dp"
@@ -115,7 +115,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <cardfactory.com.extremeschnapsen.CardImageView
+        <cardfactory.com.extremeschnapsen.models.CardImageView
             android:id="@+id/iv_card_5"
             android:layout_width="84dp"
             android:layout_height="0dp"
@@ -302,7 +302,6 @@
         android:layout_height="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginTop="8dp"
-        android:text="🔎"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -315,7 +314,6 @@
         android:layout_height="32dp"
         android:layout_marginEnd="4dp"
         android:layout_marginTop="8dp"
-        android:text="👀"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -329,7 +327,6 @@
         android:layout_height="32dp"
         android:layout_marginEnd="60dp"
         android:layout_marginTop="8dp"
-        android:text="♲"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -345,7 +342,6 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="♦︎"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -363,7 +359,6 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="♠︎"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -380,7 +375,6 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
-        android:text="♣︎"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_deck"
@@ -396,7 +390,6 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="♥︎"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_deck"

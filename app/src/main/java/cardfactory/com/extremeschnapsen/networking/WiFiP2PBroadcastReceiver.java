@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.networking;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.net.wifi.p2p.*;
 import android.util.Log;
 import android.widget.Toast;
+
+import cardfactory.com.extremeschnapsen.R;
+import cardfactory.com.extremeschnapsen.gui.SearchActivity;
+import cardfactory.com.extremeschnapsen.gui.StartGameActivity;
 
 /**
  * Created by Christian on 03.04.2018.

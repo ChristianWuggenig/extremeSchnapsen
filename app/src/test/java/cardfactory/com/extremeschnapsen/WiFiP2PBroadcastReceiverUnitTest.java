@@ -6,6 +6,10 @@ import android.net.wifi.p2p.WifiP2pManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import cardfactory.com.extremeschnapsen.gui.SearchActivity;
+import cardfactory.com.extremeschnapsen.networking.WiFiP2PBroadcastReceiver;
+
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 

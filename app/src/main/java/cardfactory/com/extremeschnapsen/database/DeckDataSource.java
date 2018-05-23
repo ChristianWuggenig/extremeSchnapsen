@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,6 +9,9 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import cardfactory.com.extremeschnapsen.models.Card;
+import cardfactory.com.extremeschnapsen.models.Deck;
 
 /**
  * Created by NapeStar on 21.04.18.
