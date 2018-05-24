@@ -21,4 +21,10 @@
     <string name="btn_menu_profil">Benutzerprofil</string>
     <string name="btn_menu_settings">Spieleinstellungen</string>
     <string name="btn_menu_start_game">Spiel Starten</string>
+
+    <string name="msgPlayerWon">Der Stich gehört dir, du bist am Zug</string>
+    <string name="msgPlayerLost">Der Stich ging an den Gegner, er ist nun dran</string>
+    <string name="msgWaitingForOpppositeMove">Warten auf Zug des Gegners</string>
+    <string name="msgYourTurn">Du bist am Zug</string>
+    <string name="msgWaitingForConnection">Warten auf Verbindung</string>
 </resources>

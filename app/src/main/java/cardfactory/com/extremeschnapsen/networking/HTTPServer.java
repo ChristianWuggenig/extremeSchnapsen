@@ -128,7 +128,8 @@ public class HTTPServer {
             Log.d("JSONError", ex.getMessage());
         }
 
-        networkDisplay.displayStatus(currentDeck.get(0).toString());
+        //networkDisplay.displayStatus(currentDeck.get(0).toString());
+        networkDisplay.displayStatus("waiting");
         networkDisplay.displayPlayer(params.get("Name").get(0));
         networkDisplay.dismissDialog();
 
@@ -165,9 +166,10 @@ public class HTTPServer {
 
             networkDisplay.displayStatus("opposite player played card " + cardIDString);*/
             int cardID = jsonObject.getInt("ID");
-            networkDisplay.displayStatus("opposite player played card " + String.valueOf(cardID));
+            //networkDisplay.displayStatus("opposite player played card " + String.valueOf(cardID));
             //networkDisplay.setMyTurn(Integer.parseInt(cardIDString));
             networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
+            //networkDisplay.displayStatus("yourTurn");
 
             return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
         } catch (JSONException ex) {

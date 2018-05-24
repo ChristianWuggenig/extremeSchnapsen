@@ -59,7 +59,7 @@ public class HTTPClient {
                 }
 
                 networkDisplay.displayShuffledDeck(shuffledDeckIDs, playerName); //display the updated deck and the opposite players name
-                networkDisplay.displayStatus("Deck received, first card has id: " + String.valueOf(shuffledDeckIDs[0]));
+                networkDisplay.displayStatus("yourTurn");
                 networkDisplay.dismissDialog();
             }
         }, new Response.ErrorListener() {
@@ -93,8 +93,9 @@ public class HTTPClient {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, serverIP, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                networkDisplay.displayStatus("Card " + cardID + " successfully sent");
-                HTTPClient.this.getPlayedCard(); //start the listener for a played card
+                //networkDisplay.displayStatus("Card " + cardID + " successfully sent");
+                alreadyReceived = false;
+                //networkDisplay.waitForCard(); //start the listener for a played card
             }
         }, new Response.ErrorListener() {
             @Override
@@ -106,41 +107,55 @@ public class HTTPClient {
         requestQueue.add(request);
     }
 
+    private boolean alreadyReceived = false;
+
+    public void setAlreadyReceived(boolean alreadyReceived) {
+        this.alreadyReceived = alreadyReceived;
+    }
+
     /**
      * get the played card from the server. if the cardID is not 0, then the server has played a card
      */
     public void getPlayedCard() {
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, serverIP + "?ID=1", new JSONObject(), new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    //check if the returned id is 0, if yes, try again in 500ms, if no, display the played card
-                    if((int)response.get("ID") != 0) {
-                        networkDisplay.displayStatus("Server played card " + response.get("ID"));
-                        networkDisplay.setMyTurn(response.getInt("ID"));
-                    } else {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException ex) {
-                            Log.d("ThreadError", ex.getMessage());
+        if(!alreadyReceived) {
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, serverIP + "?ID=1", new JSONObject(), new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        //check if the returned id is 0, if yes, try again in 500ms, if no, display the played card
+                        if((int)response.get("ID") != 0) {
+                            networkDisplay.displayStatus("yourTurn");
+                            networkDisplay.setMyTurn(response.getInt("ID"));
+                            alreadyReceived = true;
+                        } else {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException ex) {
+                                Log.d("ThreadError", ex.getMessage());
+                            }
+
+                            //getPlayedCard(); //call the same method again to send a new request
+
+                            networkDisplay.waitForCard();
+                            Log.d("Waiting", "waiting for card");
                         }
 
-                        getPlayedCard(); //call the same method again to send a new request
+                    } catch (JSONException ex) {
+                        Log.d("JSONError", ex.getMessage());
                     }
-
-                } catch (JSONException ex) {
-                    Log.d("JSONError", ex.getMessage());
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("VolleyError", error.getMessage());
-            }
-        });
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("VolleyError", error.getMessage());
+                }
+            });
 
-        requestQueue.add(request);
+            requestQueue.add(request);
+        }
+
+
 
     }
 }

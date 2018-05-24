@@ -102,6 +102,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             round.setMyTurn(false);
             txvPlayer1.setText(round.getUsername());
             txvPlayer2.setText(R.string.msgWaiting);
+            txvPlayer.setText(R.string.msgWaitingForConnection);
             displayDeck();
         }
         else {
@@ -142,11 +143,22 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                txvPlayer.setText(message);
-
+                switch (message) {
+                    case "won":
+                        txvPlayer.setText(R.string.msgPlayerWon);
+                        break;
+                    case "lost":
+                        txvPlayer.setText(R.string.msgPlayerLost);
+                        break;
+                    case "waiting":
+                        txvPlayer.setText(R.string.msgWaitingForOpppositeMove);
+                        break;
+                    case "yourTurn":
+                        txvPlayer.setText(R.string.msgYourTurn);
+                        break;
+                }
             }
         });
-
     }
 
     public void displayDeck() {
@@ -289,5 +301,10 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                 txvPlayer2.setText(playerName);
             }
         });
+    }
+
+    @Override
+    public void waitForCard() {
+        round.waitForCard();
     }
 }

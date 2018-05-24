@@ -77,8 +77,11 @@ public class HTTPServerUnitTest {
 
     @Test
     public void testSendAllDeck() {
-
-        String response = httpServer.sendAllDeck(new HashMap<String, List<String>>());
+        Map<String, List<String>> map = new HashMap<>();
+        List<String> list = new ArrayList<>();
+        list.add("testName");
+        map.put("Name", list);
+        String response = httpServer.sendAllDeck(map);
 
         try {
             JSONObject jsonObject = new JSONArray(response).getJSONObject(0);

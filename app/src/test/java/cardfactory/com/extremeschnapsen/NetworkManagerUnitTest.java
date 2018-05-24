@@ -82,7 +82,7 @@ public class NetworkManagerUnitTest {
     //the nullpointerexception is thrown in the volley-class, because the requestqueue cannot be created on a mock-object
     @Test (expected = NullPointerException.class)
     public void testWaitForCard() {
-        networkManager.waitForCard();
+        networkManager.waitForCard(false);
 
         fail("Exception not thrown"); //if the statement above does not fail, then the test failed
     }

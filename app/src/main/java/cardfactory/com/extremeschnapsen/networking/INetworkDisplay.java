@@ -22,4 +22,6 @@ public interface INetworkDisplay {
     void displayPlayer(String playerName);
 
     void dismissDialog();
+
+    void waitForCard();
 }

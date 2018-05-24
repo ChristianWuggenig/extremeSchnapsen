@@ -81,7 +81,8 @@ public class NetworkManager  {
     /**
      * called when the client has to wait for a played card from the server
      */
-    public void waitForCard() {
+    public void waitForCard(boolean alreadyReceived) {
+        httpClient.setAlreadyReceived(alreadyReceived);
         httpClient.getPlayedCard();
     }
 }

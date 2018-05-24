@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.database.CardDataSource;
 import cardfactory.com.extremeschnapsen.database.DeckDataSource;
 import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
@@ -40,6 +41,8 @@ public class Round {
 
     private Player player;
 
+    private INetworkDisplay networkDisplay;
+
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
         cardDataSource = new CardDataSource(context);
@@ -56,7 +59,9 @@ public class Round {
 
         deckDataSource.deleteDeckTable(); //delete the deck from the database before creating a new one
 
-        networkManager = NetworkManager.getInstance(context, (INetworkDisplay) context); //get the singleton object from the network-manager
+        networkDisplay = (INetworkDisplay)context;
+
+        networkManager = NetworkManager.getInstance(context, networkDisplay); //get the singleton object from the network-manager
 
         playerDataSource = new PlayerDataSource(context);
         playerDataSource.open();
@@ -207,7 +212,7 @@ public class Round {
             for (Deck deck : currentDeck) {
                 if (deck.getCardID() == cardID) {
                     if (isGroupOwner) {
-                        deck.setDeckStatus(5); //wie bekomme ich das in die GUI?
+                        deck.setDeckStatus(5);
                         deckDataSource.updateDeckStatus(deck.getCardID(), 5);
                     } else {
                         deck.setDeckStatus(6);
@@ -223,6 +228,10 @@ public class Round {
         }
 
         return false;
+    }
+
+    public void waitForCard() {
+        networkManager.waitForCard(false);
     }
 
     /**
@@ -360,19 +369,23 @@ public class Round {
                 myTurn = true;
                 getNextFreeCard(1);
                 getNextFreeCard(2);
+                networkDisplay.displayStatus("won");
             } else if (player2Won && !isGroupOwner) {
                 myTurn = true;
                 getNextFreeCard(2);
                 getNextFreeCard(1);
+                networkDisplay.displayStatus("won");
             } else if (player1Won && !isGroupOwner) {
                 myTurn = false;
-                networkManager.waitForCard();
+                networkManager.waitForCard(false);
                 getNextFreeCard(1);
                 getNextFreeCard(2);
+                networkDisplay.displayStatus("lost");
             } else if (player2Won && isGroupOwner) {
                 myTurn = false;
                 getNextFreeCard(2);
                 getNextFreeCard(1);
+                networkDisplay.displayStatus("lost");
             }
 
             increaseMoves();
@@ -394,7 +407,7 @@ public class Round {
                 }
                 if (isGroupOwner) {
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(500);
                     }
                     catch (InterruptedException e){
 
@@ -403,7 +416,7 @@ public class Round {
                 }
                 else {
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(1000);
                     }
                     catch (InterruptedException e){
 
@@ -446,6 +459,17 @@ public class Round {
                 return true;
             }
             return false;
+        } else if (cardPlayer1 == null && cardPlayer2 != null && !isGroupOwner) {
+            networkManager.waitForCard(false);
+            networkDisplay.displayStatus("waiting");
+        } else if (cardPlayer1 != null && cardPlayer2 == null && !isGroupOwner) {
+            networkDisplay.displayStatus("yourTurn");
+        } else if (cardPlayer1 == null && cardPlayer2 != null && isGroupOwner) {
+            networkDisplay.displayStatus("yourTurn");
+        } else if (cardPlayer1 != null && cardPlayer2 == null && isGroupOwner) {
+            networkDisplay.displayStatus("waiting");
+        } else {
+            networkDisplay.displayStatus("waiting");
         }
         return false;
     }
