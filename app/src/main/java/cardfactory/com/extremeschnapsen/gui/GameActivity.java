@@ -23,7 +23,6 @@ import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
 import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.gameengine.Round;
-import cardfactory.com.extremeschnapsen.services.LightSensorService;
 
 public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
