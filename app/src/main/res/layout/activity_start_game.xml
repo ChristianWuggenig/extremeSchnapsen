@@ -296,11 +296,24 @@
         tools:ignore="MissingConstraints" />
 
     <Button
-        android:id="@+id/btn_endtarnjoker"
+        android:id="@+id/btn_bluffed20"
         style="@style/CustomButton"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="8dp"
+        android:text="❔"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/btn_endtarnjoker2"
+        style="@style/CustomButton"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="60dp"
         android:layout_marginTop="8dp"
         android:text="🔎"
         app:layout_constraintBottom_toBottomOf="parent"
