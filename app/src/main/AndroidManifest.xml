@@ -54,6 +54,10 @@
             android:name=".services.MySensorService"
             android:label="MySensorService" />
 
+        <service
+            android:name=".services.LightSensorService"
+            android:label="LightSensorService" />
+
         <activity android:name=".gui.StartGameActivity"></activity>
     </application>
 

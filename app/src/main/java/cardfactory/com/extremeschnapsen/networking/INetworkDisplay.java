@@ -24,4 +24,6 @@ public interface INetworkDisplay {
     void dismissDialog();
 
     void waitForCard();
+
+    void updateDeck();
 }

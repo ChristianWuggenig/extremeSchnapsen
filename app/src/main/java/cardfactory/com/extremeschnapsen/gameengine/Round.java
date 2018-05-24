@@ -39,9 +39,9 @@ public class Round {
 
     private String trump; //contains the trump card suit (e.g. Kreuz)
 
-    private Player player;
+    private Player player; //contains the current player
 
-    private INetworkDisplay networkDisplay;
+    private INetworkDisplay networkDisplay; //contains the networkDisplay-object for displaying status messages
 
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
@@ -90,6 +90,14 @@ public class Round {
         }
         return deckonhands;
 
+    }
+
+    /**
+     * get the name of the current user
+     * @return the name of the current user
+     */
+    public String getUsername() {
+        return player.getUsername();
     }
 
     /**
@@ -230,6 +238,9 @@ public class Round {
         return false;
     }
 
+    /**
+     * tell the volley-client to wait for a card from the server
+     */
     public void waitForCard() {
         networkManager.waitForCard(false);
     }
@@ -282,14 +293,13 @@ public class Round {
     public boolean compareCards() {
         //both cards of round are set, continue to compare those
 
-
         Deck cardPlayer1 = getPlayedCardPlayer1();
         Deck cardPlayer2 = getPlayedCardPlayer2();
         boolean player1Won = false;
         boolean player2Won = false;
         trump = deckDataSource.getTrump();
 
-
+        networkDisplay.updateDeck();
 
         if (cardPlayer1 != null && cardPlayer2 != null) {
             int sum_draw_points = cardPlayer1.getCardValue() + cardPlayer2.getCardValue();
@@ -462,14 +472,19 @@ public class Round {
         } else if (cardPlayer1 == null && cardPlayer2 != null && !isGroupOwner) {
             networkManager.waitForCard(false);
             networkDisplay.displayStatus("waiting");
+            networkDisplay.updateDeck();
         } else if (cardPlayer1 != null && cardPlayer2 == null && !isGroupOwner) {
             networkDisplay.displayStatus("yourTurn");
+            networkDisplay.updateDeck();
         } else if (cardPlayer1 == null && cardPlayer2 != null && isGroupOwner) {
             networkDisplay.displayStatus("yourTurn");
+            networkDisplay.updateDeck();
         } else if (cardPlayer1 != null && cardPlayer2 == null && isGroupOwner) {
             networkDisplay.displayStatus("waiting");
+            networkDisplay.updateDeck();
         } else {
             networkDisplay.displayStatus("waiting");
+            networkDisplay.updateDeck();
         }
         return false;
     }
@@ -601,9 +616,5 @@ public class Round {
         }
 
         return result;
-    }
-
-    public String getUsername() {
-        return player.getUsername();
     }
 }

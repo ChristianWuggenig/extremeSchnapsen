@@ -1,8 +1,11 @@
 package cardfactory.com.extremeschnapsen.gui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
+import android.content.IntentFilter;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +21,9 @@ import java.util.List;
 import cardfactory.com.extremeschnapsen.models.CardImageView;
 import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
-import cardfactory.com.extremeschnapsen.services.MySensorService;
 import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.gameengine.Round;
+import cardfactory.com.extremeschnapsen.services.LightSensorService;
 
 public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
@@ -53,7 +57,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         getSupportActionBar().hide();
 
-        setContentView(R.layout.activity_start_game);
+        setContentView(R.layout.activity_game);
 
         //startService(new Intent(this, MySensorService.class));
 
@@ -122,9 +126,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         for (int count = 0; count < 5; count++) {
             cardList.get(count).setOnClickListener(onClickListener);
         }
-
-
-
     }
 
     @Override
@@ -251,14 +252,10 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
 
         if(round.playCard(cardID)) {
-            txvPlayer.setText("card " + String.valueOf(cardID) + " played");
             if(round.compareCards()){
                 finish();
             }
-            displayDeck();
         }
-        else
-            txvPlayer.setText("not your turn or end of round reached");
     }
 
     @Override
@@ -282,15 +279,14 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                  //GameActivity.super.onDestroy();
                     finish();
                 }
-                displayDeck();
-
             }
         });
 
     }
 
-    public void finishGUI() {
-        this.finish();
+    @Override
+    public void updateDeck() {
+        displayDeck();
     }
 
     @Override
