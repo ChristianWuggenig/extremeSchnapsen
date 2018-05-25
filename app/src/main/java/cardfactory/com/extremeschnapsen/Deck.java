@@ -10,6 +10,13 @@ public class Deck extends Card {
     private int deckStatus;
     private int deckTrump;
 
+    public Deck() {
+        super(0, null, null, 0);
+        this.deckID = 0;
+        this.deckStatus = 0;
+        this.deckTrump = 0;
+    }
+
     public Deck(long deckID, long cardID, String cardSuit, String cardRank, int cardValue, int deckStatus, int deckTrump) {
         super(cardID, cardSuit, cardRank, cardValue);
         this.deckID = deckID;

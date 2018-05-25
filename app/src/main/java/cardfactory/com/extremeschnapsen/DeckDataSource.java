@@ -260,7 +260,11 @@ public class DeckDataSource {
         Deck deck = cursorToDeck(cursor);
         cursor.close();
 
+        // zum Ausgeben
+
+        getAllDeck();
         return deck;
+
     }
 
     //löscht alle Einträge im Decktabel

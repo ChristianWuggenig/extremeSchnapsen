@@ -136,6 +136,7 @@ public class Round {
     //playedCard Player 1
     public Deck getPlayedCardPlayer1() {
         Deck playedplayer1 = null;
+        this.currentDeck = getAllCards();
         for (Deck deck : this.currentDeck) {
             if (deck.getDeckStatus() == 5) {
                 playedplayer1 = deck;
@@ -147,6 +148,7 @@ public class Round {
     //playedCard Player 2
     public Deck getPlayedCardPlayer2() {
         Deck playedplayer2 = null;
+        this.currentDeck = getAllCards();
         for (Deck deck : this.currentDeck) {
             if (deck.getDeckStatus() == 6) {
                 playedplayer2 = deck;
@@ -207,9 +209,9 @@ public class Round {
 
         //ich bin dran und und schlussphase
         points = roundPointsDataSource.getCurrentRoundPointsObject();
+        Deck wanttoplaycard = new Deck();
 
         if (points.getMoves()<5) {
-
             if (myTurn) {
 
                 for (Deck deck : this.getAllCards()) {
@@ -226,47 +228,104 @@ public class Round {
 
                 networkManager.sendCard(cardID);
                 myTurn = false;
-                //this.increaseMoves();
-
                 return true;
             }
         }
-
         if (points.getMoves()>=5) {
             if (myTurn) {
-
-                List<Deck> playedCards = getPlayedCards();
-                if(playedCards.size() == 1) {
+                List<Deck> playedcards = getPlayedCards();
+                if (playedcards.size() !=1 ) {
 
                     for (Deck deck : this.getAllCards()) {
                         if (deck.getCardID() == cardID) {
 
+                            if (isGroupOwner) {
+                                deck.setDeckStatus(5); //wie bekomme ich das in die GUI?
+                                deckDataSource.updateDeckStatus(deck.getCardID(), 5);
+                            } else {
+                                deck.setDeckStatus(6);
+                                deckDataSource.updateDeckStatus(deck.getCardID(), 6);
+                            }
                         }
                     }
+
+                    networkManager.sendCard(cardID);
+                    myTurn = false;
+                    return true;
                 }
-                networkManager.sendCard(cardID);
-                myTurn = false;
-                //this.increaseMoves();
+                else {
+                    for (Deck deck : this.getAllCards()){
+                        if (deck.getCardID() == cardID){
+                            wanttoplaycard = deck;
+                            break;
+                        }
+                    }
+                    if (checkForFarbStuchzwang(playedcards.get(0), wanttoplaycard)) {
+                        for (Deck deck : this.getAllCards()) {
+                            if (deck.getCardID() == cardID) {
 
-                return true;
+                                if (isGroupOwner) {
+                                    deck.setDeckStatus(5); //wie bekomme ich das in die GUI?
+                                    deckDataSource.updateDeckStatus(deck.getCardID(), 5);
+                                } else {
+                                    deck.setDeckStatus(6);
+                                    deckDataSource.updateDeckStatus(deck.getCardID(), 6);
+                                }
+                            }
+                        }
+                        networkManager.sendCard(cardID);
+                        myTurn = false;
+
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+
+
+
+
             }
-
         }
         return false;
+
     }
 
     public boolean checkForFarbStuchzwang (Deck playedcard, Deck wanttoplay){
+
         boolean farbe = false;
+        boolean highercard = false;
         boolean trumpOnHand = false;
         List<Deck> cardsToPlay = new ArrayList<>();
 
-        //check ob Karte von gleicher Farbe, wenn ja wird es des List cardsToPlay hinzugefügt
+        //check ob Karte von gleicher Farbe, wenn ja wird es der List cardsToPlay hinzugefÃ¼gt
         for (Deck deck : this.getCardsOnHand()) {
             if (deck.getCardSuit().equals(playedcard.getCardSuit())) {
                 farbe = true;
                 cardsToPlay.add(deck);
             }
         }
+
+
+        //check wenn gleiche Farbe vorhanden auf hÃ¶here Karte
+        if (farbe){
+            for (Deck deck : cardsToPlay){
+                if (deck.getCardValue() > playedcard.getCardValue()){
+                    highercard = true;
+                    break;
+                }
+            }
+        }
+        //wenn gleiche Farbe und HÃ¶hre Karte vorhanden lÃ¶sche niedrigere Karten
+        if (highercard){
+            for (Deck deck : cardsToPlay){
+                if (deck.getCardValue() < playedcard.getCardValue()){
+                    cardsToPlay.remove(deck);
+                }
+            }
+        }
+
 
         //check wenn nicht die gleich Farbe, aber Trumpf
         if (!farbe) {
@@ -291,6 +350,7 @@ public class Round {
         else {
             return true;
         }
+
     }
 
 
