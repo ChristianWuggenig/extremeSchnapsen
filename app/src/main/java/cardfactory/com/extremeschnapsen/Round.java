@@ -359,7 +359,7 @@ public class Round {
             deckDataSource.getAllDeck();
 
             RoundPoints rp2 = roundPointsDataSource.getCurrentRoundPointsObject();
-
+    // wenn 20 und 40 geht hier weiter machen für Spielgewinn.   
             if (rp2.getPointsplayer1()>=66){
 
                 if (rp2.getPointsplayer2() >= 33){
