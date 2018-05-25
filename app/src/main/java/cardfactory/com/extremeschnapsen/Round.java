@@ -26,8 +26,8 @@ public class Round {
 
     private boolean myTurn;
     private boolean isGroupOwner;
-
-    private int moves;
+    //ist jetzt in RoundPointsDataSource
+    //private int moves;
 
     private String trump;
 
@@ -44,8 +44,6 @@ public class Round {
         currentDeck = new ArrayList<>();
 
         points = roundPointsDataSource.getCurrentRoundPointsObject();
-
-        moves = 1;
 
         deckDataSource.deleteDeckTable();
 
@@ -161,7 +159,8 @@ public class Round {
     public List<Deck> getPlayedCards() {
         List<Deck> playedcards = new ArrayList<>();
 
-        for (Deck deck : this.currentDeck) {
+        //nicht this.currentDeck sondern aktuelles Deck in der Datenbank
+        for (Deck deck : this.getAllCards()) {
             if (deck.getDeckStatus() == 6 && isGroupOwner) {
                 playedcards.add(deck);
             } else if (deck.getDeckStatus() == 5 && isGroupOwner) {
@@ -193,7 +192,7 @@ public class Round {
     }
 
     public void increaseMoves() {
-        moves++;
+        this.roundPointsDataSource.increaseMoves();
     }
 
     public void startServer() {
@@ -205,28 +204,95 @@ public class Round {
     }
 
     public boolean playCard(int cardID) {
-        if (myTurn && moves <= 100) {
-            for (Deck deck : currentDeck) {
-                if (deck.getCardID() == cardID) {
-                    if (isGroupOwner) {
-                        deck.setDeckStatus(5); //wie bekomme ich das in die GUI?
-                        deckDataSource.updateDeckStatus(deck.getCardID(), 5);
-                    } else {
-                        deck.setDeckStatus(6);
-                        deckDataSource.updateDeckStatus(deck.getCardID(), 6);
+
+        //ich bin dran und und schlussphase
+        points = roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if (points.getMoves()<5) {
+
+            if (myTurn) {
+
+                for (Deck deck : this.getAllCards()) {
+                    if (deck.getCardID() == cardID) {
+                        if (isGroupOwner) {
+                            deck.setDeckStatus(5); //wie bekomme ich das in die GUI?
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 5);
+                        } else {
+                            deck.setDeckStatus(6);
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 6);
+                        }
                     }
                 }
+
+                networkManager.sendCard(cardID);
+                myTurn = false;
+                //this.increaseMoves();
+
+                return true;
             }
-
-            networkManager.sendCard(cardID);
-            myTurn = false;
-            //this.increaseMoves();
-
-            return true;
         }
 
+        if (points.getMoves()>=5) {
+            if (myTurn) {
+
+                List<Deck> playedCards = getPlayedCards();
+                if(playedCards.size() == 1) {
+
+                    for (Deck deck : this.getAllCards()) {
+                        if (deck.getCardID() == cardID) {
+
+                        }
+                    }
+                }
+                networkManager.sendCard(cardID);
+                myTurn = false;
+                //this.increaseMoves();
+
+                return true;
+            }
+
+        }
         return false;
     }
+
+    public boolean checkForFarbStuchzwang (Deck playedcard, Deck wanttoplay){
+        boolean farbe = false;
+        boolean trumpOnHand = false;
+        List<Deck> cardsToPlay = new ArrayList<>();
+
+        //check ob Karte von gleicher Farbe, wenn ja wird es des List cardsToPlay hinzugefügt
+        for (Deck deck : this.getCardsOnHand()) {
+            if (deck.getCardSuit().equals(playedcard.getCardSuit())) {
+                farbe = true;
+                cardsToPlay.add(deck);
+            }
+        }
+
+        //check wenn nicht die gleich Farbe, aber Trumpf
+        if (!farbe) {
+
+            for (Deck deck : this.getCardsOnHand()) {
+                if (deck.getDeckTrump() == 1) {
+                    trumpOnHand = true;
+                    cardsToPlay.add(deck);
+                }
+            }
+        }
+        //schauen, ob wantToplay Karte in Liste vorkommt
+        if (farbe || trumpOnHand) {
+            for (Deck deck : cardsToPlay) {
+                if (deck.getCardID() == wanttoplay.getCardID()) {
+                    return true;
+                }
+
+            }
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
 
     public void updateCard(int cardID, int status) {
         deckDataSource.updateDeckStatus(cardID, status);
@@ -262,7 +328,6 @@ public class Round {
 
     public boolean compareCards() {
         //both cards of round are set, continue to compare those
-
 
         Deck cardPlayer1 = getPlayedCardPlayer1();
         Deck cardPlayer2 = getPlayedCardPlayer2();
@@ -561,7 +626,7 @@ public class Round {
         boolean result = false;
 
         //check only every second step
-        if(this.moves % 2 == 0) {
+        if(this.roundPointsDataSource.getCurrentRoundPointsObject().getMoves() % 2 == 0) {
             //check if player has more than one card of a color
             int countHerz = 0;
             int countPink = 0;

@@ -53,6 +53,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_POINTSPLAYER2 = "pointsplayer2";
     public static final String COLUMN_HIDDENPOINTSPLAYER1 = "hiddenpointsplayer1";
     public static final String COLUMN_HIDDENPOINTSPLAYER2 = "hiddenpointsplayer2";
+    public static final String COLUMN_ROUND_MOVES = "numbermoves";
     public static final String COLUMN_ROUND_PHASE = "roundphase";
     public static final String COLUMN_ROUND_TRUMPEXCHANGED = "trumpexchanged";
     public static final String COLUMN_ROUND_SIGHTJOKERPLAYER1 = "sightjokerplayer1";
@@ -101,6 +102,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     COLUMN_POINTSPLAYER2 + " INTEGER NOT NULL, " +
                     COLUMN_HIDDENPOINTSPLAYER1 + " INTEGER, " +
                     COLUMN_HIDDENPOINTSPLAYER2 + " INTEGER, " +
+                    COLUMN_ROUND_MOVES + " INTEGER, " +
                     COLUMN_ROUND_PHASE + " INTEGER, " +
                     COLUMN_ROUND_TRUMPEXCHANGED + " INTEGER, " +
                     COLUMN_ROUND_SIGHTJOKERPLAYER1 + " INTEGER, " +
