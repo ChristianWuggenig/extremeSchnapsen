@@ -917,4 +917,14 @@ public class Round {
 
         return result;
     }
+
+    public String getRoundPointsPlayer1() {
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+        return String.valueOf(roundPoints.getPointsplayer1());
+    }
+
+    public String getRoundPointsPlayer2() {
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+        return String.valueOf(roundPoints.getPointsplayer2());
+    }
 }

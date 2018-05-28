@@ -43,6 +43,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     private static TextView txvPlayer;
     private static TextView txvPlayer1;
     private static TextView txvPlayer2;
+    private static TextView txvPoints;
 
     private static Round round;
 
@@ -97,6 +98,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         txvPlayer = this.findViewById(R.id.txvPlayer);
         txvPlayer1 = this.findViewById(R.id.txv_user1);
         txvPlayer2 = this.findViewById(R.id.txv_user2);
+        txvPoints = this.findViewById(R.id.txv_mypoints);
 
         Intent intent = this.getIntent();
         isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
@@ -266,6 +268,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             if(round.compareCards()){
                 finish();
             }
+            showRoundPoints();
         }
     }
 
@@ -288,6 +291,8 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                 if(round.compareCards()){
                     finish();
                 }
+
+                showRoundPoints();
             }
         });
 
@@ -311,5 +316,13 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     @Override
     public void waitForCard() {
         round.waitForCard();
+    }
+
+    public void showRoundPoints() {
+        if (isGroupOwner) {
+            txvPoints.setText(round.getRoundPointsPlayer1() + " Punkte");
+        } else {
+            txvPoints.setText(round.getRoundPointsPlayer2() + " Punkte");
+        }
     }
 }
