@@ -27,8 +27,8 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        //getSupportActionBar().hide();
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_profil);
 
         playerDataSource = new PlayerDataSource(this);

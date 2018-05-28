@@ -465,7 +465,7 @@ public class Round {
 
     /**
      * compares the two played cards and decides which player gets the appropriate round points
-     * @return
+     * @return true if the round is finished, else false
      */
     public boolean compareCards() {
         //both cards of round are set, continue to compare those
@@ -550,11 +550,6 @@ public class Round {
             //die "versteckten Punkte" jetzt gutgeschrieben
             HiddenPointsToRealPoints();
 
-            cardPlayer1.setDeckStatus(7);
-            cardPlayer2.setDeckStatus(8);
-            deckDataSource.updateDeckStatus(cardPlayer1.getCardID(), 7); //updaten des status der karte
-            deckDataSource.updateDeckStatus(cardPlayer2.getCardID(), 8);
-
             if (player1Won && isGroupOwner) {
                 myTurn = true;
                 getNextFreeCard(1);
@@ -577,6 +572,13 @@ public class Round {
                 getNextFreeCard(1);
                 networkDisplay.displayStatus("lost");
             }
+
+            networkDisplay.updateDeck();
+
+            cardPlayer1.setDeckStatus(7);
+            cardPlayer2.setDeckStatus(8);
+            deckDataSource.updateDeckStatus(cardPlayer1.getCardID(), 7); //updaten des status der karte
+            deckDataSource.updateDeckStatus(cardPlayer2.getCardID(), 8);
 
             increaseMoves();
 

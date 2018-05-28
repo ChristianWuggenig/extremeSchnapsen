@@ -58,10 +58,11 @@
             android:name=".services.LightSensorService"
             android:label="LightSensorService" />-->
 
-        <activity android:name=".gui.StartGameActivity"></activity>
+        <activity
+            android:name=".gui.StartGameActivity" />
 
         <activity
-            android:name=".ProfilActivity"
+            android:name=".gui.ProfileActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
     </application>
