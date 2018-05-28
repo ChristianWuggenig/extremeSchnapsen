@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  * Created by NapeStar on 08.05.18.
  */
 
-public class GamePointsDataSource {
+public class GamePointsDataSource implements Serializable {
 
 
     //LOG_TAG for filtering in logcat
@@ -45,6 +46,21 @@ public class GamePointsDataSource {
     public void close() {
         dbHelper.close();
         Log.d(LOG_TAG, "Datenbank mit Hilfe des DbHelpers geschlossen.");
+    }
+
+    public GamePoints getCurrentGamePointsObject(){
+        List<GamePoints> gamePointsList = getAllGamePoints();
+        GamePoints gp =null;
+
+        for (GamePoints gpl : gamePointsList){
+            if (gpl.getGameID() == 1){
+                gp = gpl;
+                break;
+            }
+        }
+
+        return gp;
+
     }
 
     public GamePoints createGamePoints(long gameID, int pointsplayer1, int pointsplayer2) {
@@ -127,7 +143,7 @@ public class GamePointsDataSource {
     }
 
     //löscht alle Einträge im GamePointstable
-    public void deleteDeckTable() {
+    public void deleteGamePoinsTable() {
         int anzahl_gelöschte_einträge = database.delete(DbHelper.TABLE_GAME_POINTS_LIST,
                 null,
                 null);

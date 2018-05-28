@@ -23,6 +23,9 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
     List<Deck> playedCards;
     Deck playedCardPlayer1;
     Deck playedCardPlayer2;
+    //für Game Object -> serializable
+    //Intent i = getIntent();
+    //Game game_test = (Game)i.getSerializableExtra("game_s");
 
     List<ImageView> cardList;
     List<CardImageView> cardsToCheckFor20;
@@ -102,7 +105,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
             }
         };
 
-        for (int count = 0; count < 5; count++) {
+        for (int count = 0; count < 6; count++) {
             cardList.get(count).setOnClickListener(onClickListener);
         }
 
@@ -202,7 +205,16 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
             case R.id.iv_card_5:
                 playCard((int)cardsOnHand.get(4).getCardID());
                 break;
+
+            case R.id.iv_card_trump:
+                exchangeTrump();
+                break;
         }
+    }
+
+    public void exchangeTrump(){
+        this.round.exchangeTrump();
+        displayDeck();
     }
 
     public void playCard(int cardID) {

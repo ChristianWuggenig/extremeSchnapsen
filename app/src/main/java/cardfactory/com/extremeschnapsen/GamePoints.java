@@ -1,10 +1,12 @@
 package cardfactory.com.extremeschnapsen;
 
+import java.io.Serializable;
+
 /**
  * Created by NapeStar on 08.05.18.
  */
 
-public class GamePoints {
+public class GamePoints implements Serializable {
     private long gamePointsID;
     private int gameID;
     private int gamePointsPlayer1;
