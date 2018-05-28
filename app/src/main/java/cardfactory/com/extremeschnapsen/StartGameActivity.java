@@ -2,6 +2,7 @@ package cardfactory.com.extremeschnapsen;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -49,7 +50,9 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
 
         setContentView(R.layout.activity_start_game);
 
-        builder = new AlertDialog.Builder(StartGameActivity.this);
+        startService(new Intent(this, MySensorService.class));
+
+        builder = new AlertDialog.Builder(this);
 
         builder.setMessage(R.string.msgWaitingForOpposite)
         .setTitle(R.string.msgWaiting);
@@ -71,8 +74,6 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         cardList.add((ImageView) findViewById(R.id.iv_card_trump));
         cardList.add((ImageView) findViewById(R.id.iv_card_played));
         cardList.add((ImageView) findViewById(R.id.iv_card_played2));
-
-
 
         /*cardsToCheckFor20 = new ArrayList<>();
         cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_1));
@@ -119,11 +120,20 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
             @Override
             public void run() {
                 txvPlayer.setText(message);
+
             }
         });
 
-        dialog.dismiss();
+    }
 
+    @Override
+    public void dismissDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dialog.dismiss();
+            }
+        });
     }
 
     public void displayDeck() {
@@ -220,7 +230,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         if(round.playCard(cardID)) {
             txvPlayer.setText("card " + String.valueOf(cardID) + " played");
             if(round.compareCards()){
-               this.finish();
+               recreate();
             }
             displayDeck();
         }
@@ -233,7 +243,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                List<Deck> allDecks = round.getAllCards();
+                List<Deck> allDecks = round.getAllDecks();
 
                 for (Deck deck : allDecks) {
                     if (deck.getDeckStatus() == 1 && deck.getCardID() == cardPlayed)
@@ -247,7 +257,7 @@ public class StartGameActivity extends AppCompatActivity implements INetworkDisp
                 if(round.compareCards()){
                  //StartGameActivity.this.finish();
                  //StartGameActivity.super.onDestroy();
-                    finishGUI();
+                    recreate();
                 }
                 displayDeck();
 

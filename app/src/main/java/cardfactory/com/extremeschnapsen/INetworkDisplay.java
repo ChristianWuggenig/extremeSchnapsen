@@ -1,9 +1,23 @@
 package cardfactory.com.extremeschnapsen;
 
 public interface INetworkDisplay {
-    public void displayStatus(String message);
+    /**
+     * display a given message on the activity
+     * @param message the given message
+     */
+    void displayStatus(String message);
 
-    public void displayShuffledDeck(int[] shuffledDeckIDs);
+    /**
+     * update the deck with a given deck (client only!)
+     * @param shuffledDeckIDs
+     */
+    void displayShuffledDeck(int[] shuffledDeckIDs);
 
-    public void setMyTurn(int cardPlayed);
+    /**
+     * set my turn if necessary and provide the id of the played card used for the comparation algorithm to get the winner
+     * @param cardPlayed
+     */
+    void setMyTurn(int cardPlayed);
+
+    void dismissDialog();
 }
