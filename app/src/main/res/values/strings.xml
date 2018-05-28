@@ -9,7 +9,7 @@
     <string name="msgWifiP2pSearching">Suche läuft</string>
     <string name="msgWifiP2pNotWorking">Es gibt ein Problem mit der Netzwerkschnittstelle. Ist WLAN ausgeschaltet?</string>
     <string name="msgWaitingForOpposite">Warten auf Gegenspieler</string>
-    <string name="msgWaiting">Warten</string>
+    <string name="msgWaiting">Warten...</string>
 
     <string name="btnSearchForP2PDevices">Suchen...</string>
 
@@ -21,4 +21,10 @@
     <string name="btn_menu_profil">Benutzerprofil</string>
     <string name="btn_menu_settings">Spieleinstellungen</string>
     <string name="btn_menu_start_game">Spiel Starten</string>
+
+    <string name="msgPlayerWon">Der Stich gehört dir, du bist am Zug</string>
+    <string name="msgPlayerLost">Der Stich ging an den Gegner, er ist nun dran</string>
+    <string name="msgWaitingForOpppositeMove">Warten auf Zug des Gegners</string>
+    <string name="msgYourTurn">Du bist am Zug</string>
+    <string name="msgWaitingForConnection">Warten auf Verbindung</string>
 </resources>
