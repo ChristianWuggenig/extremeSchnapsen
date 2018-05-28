@@ -9,7 +9,7 @@
     tools:context="cardfactory.com.extremeschnapsen.MainMenuActivity">
 
     <TextView
-        android:id="@+id/tvMenuTitle"
+        android:id="@+id/tvPlayername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -33,7 +33,9 @@
         android:text="@string/btn_menu_profil"
         app:layout_constraintBottom_toTopOf="@+id/btnSettings"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:onClick="onClickBtnProfil"/>
+
 
     <Button
         android:id="@+id/btnSettings"
@@ -46,7 +48,7 @@
         android:text="@string/btn_menu_settings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvMenuTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/tvPlayername" />
 
     <Button
         android:id="@+id/btnStartGame"

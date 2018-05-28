@@ -21,4 +21,13 @@
     <string name="btn_menu_profil">Benutzerprofil</string>
     <string name="btn_menu_settings">Spieleinstellungen</string>
     <string name="btn_menu_start_game">Spiel Starten</string>
+
+    <string name="title_activity_profil">ProfilActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <!-- Spielerprofil strings -->
+
+    <string name="back_to_menu">Zurück zum Hauptmenu</string>
+
 </resources>
