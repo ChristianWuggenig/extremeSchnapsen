@@ -25,6 +25,15 @@ public class MainMenuActivity extends AppCompatActivity {
         this.startActivity(i);
     }
 
+    public void onClickBtnProfil(View view) {
+        Intent i = new Intent (this, ProfilActivity.class);
+        this.startActivity(i);
+
+    }
+
+
+
+
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK) {
             Intent i = new Intent(Intent.ACTION_MAIN);

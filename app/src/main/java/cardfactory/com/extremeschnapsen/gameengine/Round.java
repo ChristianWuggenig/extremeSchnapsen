@@ -112,24 +112,27 @@ public class Round {
     public void exchangeTrump(){
         RoundPoints rp = new RoundPoints(1,0,0,0);
         rp = roundPointsDataSource.getCurrentRoundPointsObject();
-        if (myTurn && rp.getTrumpExchanged() == 0) {
-            for (Deck deck : this.getCardsOnHand()) {
-                if (deck.getCardValue() == 2 && deck.getDeckTrump() == 1) {
-                    rp.setTrumpExchanged(1);
-                    if (isGroupOwner) {
-                        this.deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), 1);
-                        this.currentDeck = this.deckDataSource.getAllDeck();
-                        this.roundPointsDataSource.updtateTrumpExchanged(rp);
-                    } else {
-                        //this.getOpenCard().setDeckStatus(2);
-                        deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), 2);
-                        this.currentDeck = this.deckDataSource.getAllDeck();
-                        this.roundPointsDataSource.updtateTrumpExchanged(rp);
-                    }
 
-                    this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
-                    this.currentDeck = this.deckDataSource.getAllDeck();
-                    break;
+        if (this.points.getMoves() < 4){
+            if (myTurn && rp.getTrumpExchanged() == 0) {
+                for (Deck deck : this.getCardsOnHand()) {
+                    if (deck.getCardValue() == 2 && deck.getDeckTrump() == 1) {
+                        rp.setTrumpExchanged(1);
+                        if (isGroupOwner) {
+                            this.deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), 1);
+                            this.currentDeck = this.deckDataSource.getAllDeck();
+                            this.roundPointsDataSource.updtateTrumpExchanged(rp);
+                        } else {
+                            //this.getOpenCard().setDeckStatus(2);
+                            deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), 2);
+                            this.currentDeck = this.deckDataSource.getAllDeck();
+                            this.roundPointsDataSource.updtateTrumpExchanged(rp);
+                        }
+
+                        this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
+                        this.currentDeck = this.deckDataSource.getAllDeck();
+                        break;
+                    }
                 }
             }
         }
@@ -385,9 +388,6 @@ public class Round {
                 }
             }
         }
-
-        //networkManager.sendCard(cardID);
-        //myTurn = false;
 
         //check wenn nicht die gleich Farbe, aber Trumpf
         if (!farbe) {

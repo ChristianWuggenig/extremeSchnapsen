@@ -27,4 +27,13 @@
     <string name="msgWaitingForOpppositeMove">Warten auf Zug des Gegners</string>
     <string name="msgYourTurn">Du bist am Zug</string>
     <string name="msgWaitingForConnection">Warten auf Verbindung</string>
+
+    <string name="title_activity_profil">ProfilActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <!-- Spielerprofil strings -->
+
+    <string name="back_to_menu">Zurück zum Hauptmenu</string>
+
 </resources>
