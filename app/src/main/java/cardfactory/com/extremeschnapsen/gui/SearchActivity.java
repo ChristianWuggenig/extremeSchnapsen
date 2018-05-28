@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cardfactory.com.extremeschnapsen.R;
+import cardfactory.com.extremeschnapsen.models.Game;
 import cardfactory.com.extremeschnapsen.networking.WiFiP2PBroadcastReceiver;
 
 public class SearchActivity extends AppCompatActivity {

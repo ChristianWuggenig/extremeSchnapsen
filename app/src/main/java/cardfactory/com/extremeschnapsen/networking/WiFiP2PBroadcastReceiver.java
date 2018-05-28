@@ -10,6 +10,7 @@ import android.widget.Toast;
 import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.gui.SearchActivity;
 import cardfactory.com.extremeschnapsen.gui.StartGameActivity;
+import cardfactory.com.extremeschnapsen.models.Game;
 
 /**
  * Created by Christian on 03.04.2018.

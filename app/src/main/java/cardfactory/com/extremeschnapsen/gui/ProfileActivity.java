@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.gui;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +10,11 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
-public class ProfilActivity extends AppCompatActivity {
+import cardfactory.com.extremeschnapsen.R;
+import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
+import cardfactory.com.extremeschnapsen.models.Player;
+
+public class ProfileActivity extends AppCompatActivity {
 
     private PlayerDataSource playerDataSource;
     private Player currentplayer;
