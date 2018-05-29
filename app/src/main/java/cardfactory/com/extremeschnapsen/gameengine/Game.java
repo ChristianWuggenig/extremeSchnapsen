@@ -1,9 +1,11 @@
-package cardfactory.com.extremeschnapsen.models;
+package cardfactory.com.extremeschnapsen.gameengine;
 
 import android.content.Context;
 import java.io.Serializable;
 import cardfactory.com.extremeschnapsen.database.GamePointsDataSource;
 import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
+import cardfactory.com.extremeschnapsen.models.GamePoints;
+import cardfactory.com.extremeschnapsen.models.Player;
 
 /**
  * Created by NapeStar on 08.05.18.
@@ -66,9 +68,6 @@ public class Game implements Serializable {
 
         }
         return won;
-
-
-
 
     }
 

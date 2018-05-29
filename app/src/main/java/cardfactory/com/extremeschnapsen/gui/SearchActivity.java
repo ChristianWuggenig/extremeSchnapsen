@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.ListViewCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cardfactory.com.extremeschnapsen.R;
-import cardfactory.com.extremeschnapsen.models.Game;
+import cardfactory.com.extremeschnapsen.gameengine.Game;
 import cardfactory.com.extremeschnapsen.networking.WiFiP2PBroadcastReceiver;
 
 public class SearchActivity extends AppCompatActivity {

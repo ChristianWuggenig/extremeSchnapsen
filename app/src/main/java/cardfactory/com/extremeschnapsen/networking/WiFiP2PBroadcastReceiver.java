@@ -10,7 +10,7 @@ import android.widget.Toast;
 import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.gui.SearchActivity;
 import cardfactory.com.extremeschnapsen.gui.StartGameActivity;
-import cardfactory.com.extremeschnapsen.models.Game;
+import cardfactory.com.extremeschnapsen.gameengine.Game;
 
 /**
  * Created by Christian on 03.04.2018.
@@ -22,8 +22,6 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
     private WifiP2pManager p2pManager;
     private WifiP2pManager.Channel p2pChannel;
     WifiP2pManager.PeerListListener peerListListener;
-
-    public static Game game;
 
     //declare activity-context to show toast-messages on the search-activity
     private SearchActivity searchActivity;
@@ -73,10 +71,6 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
                     if(wifiP2pInfo.groupFormed){
                         Intent startGameActivityIntent = new Intent(context, StartGameActivity.class);
                         startGameActivityIntent.putExtra("IS_GROUP_OWNER", wifiP2pInfo.isGroupOwner);
-                        //Instanz eines neuen Spiel
-                        game = new Game(searchActivity.getApplicationContext());
-                        //startGameActivityIntent.putExtra("game_s", game);
-                        game.gpds.getAllGamePoints();
                         searchActivity.startActivity(startGameActivityIntent);
                     }
                 }

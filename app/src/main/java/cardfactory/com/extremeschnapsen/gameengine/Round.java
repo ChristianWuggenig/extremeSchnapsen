@@ -1,7 +1,6 @@
 package cardfactory.com.extremeschnapsen.gameengine;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -9,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.database.CardDataSource;
 import cardfactory.com.extremeschnapsen.database.DeckDataSource;
 import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
@@ -17,7 +15,6 @@ import cardfactory.com.extremeschnapsen.database.RoundPointsDataSource;
 import cardfactory.com.extremeschnapsen.models.Card;
 import cardfactory.com.extremeschnapsen.models.CardImageView;
 import cardfactory.com.extremeschnapsen.models.Deck;
-import cardfactory.com.extremeschnapsen.models.Game;
 import cardfactory.com.extremeschnapsen.models.Player;
 import cardfactory.com.extremeschnapsen.models.RoundPoints;
 import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
@@ -362,20 +359,21 @@ public class Round {
         boolean farbe = false;
         boolean highercard = false;
         boolean trumpOnHand = false;
+        List<Deck> tempcardsToPlay = new ArrayList<>();
         List<Deck> cardsToPlay = new ArrayList<>();
 
         //check ob Karte von gleicher Farbe, wenn ja wird es der List cardsToPlay hinzugefÃ¼gt
         for (Deck deck : this.getCardsOnHand()) {
             if (deck.getCardSuit().equals(playedcard.getCardSuit())) {
                 farbe = true;
-                cardsToPlay.add(deck);
+                tempcardsToPlay.add(deck);
             }
         }
 
 
         //check wenn gleiche Farbe vorhanden auf hÃ¶here Karte
         if (farbe){
-            for (Deck deck : cardsToPlay){
+            for (Deck deck : tempcardsToPlay){
                 if (deck.getCardValue() > playedcard.getCardValue()){
                     highercard = true;
                     break;
@@ -384,12 +382,20 @@ public class Round {
         }
         //wenn gleiche Farbe und HÃ¶hre Karte vorhanden lÃ¶sche niedrigere Karten
         if (highercard){
-            for (Deck deck : cardsToPlay){
-                if (deck.getCardValue() < playedcard.getCardValue()){
-                    cardsToPlay.remove(deck);
+            for (Deck deck : tempcardsToPlay){
+                if (deck.getCardValue() > playedcard.getCardValue()){
+                    cardsToPlay.add(deck);
                 }
             }
         }
+
+        if (farbe && !highercard){
+            for (Deck deck : tempcardsToPlay){
+                cardsToPlay.add(deck);
+            }
+
+        }
+
 
         //check wenn nicht die gleich Farbe, aber Trumpf
         if (!farbe) {
@@ -607,7 +613,7 @@ public class Round {
 
                 if (isGroupOwner) {
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                     }
                     catch (InterruptedException e){
 
@@ -616,7 +622,7 @@ public class Round {
                 }
                 else {
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(2000);
                     }
                     catch (InterruptedException e){
 
@@ -645,7 +651,7 @@ public class Round {
 
                 if (isGroupOwner) {
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     }
                     catch (InterruptedException e){
 
@@ -654,7 +660,7 @@ public class Round {
                 }
                 else {
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(2000);
                     }
                     catch (InterruptedException e){
 
@@ -664,6 +670,38 @@ public class Round {
 
                 return true;
             }
+            //letzter Stich
+            if (rp2.getMoves() == 10) {
+                if (player1Won){
+                    game_round.updateGamePoints(1,0);
+
+                }
+                else {
+                    game_round.updateGamePoints(0,1);
+                }
+
+                if (isGroupOwner) {
+                    try {
+                        Thread.sleep(1000);
+                    }
+                    catch (InterruptedException e){
+
+                    }
+                    networkManager.stopHttpServer();
+                }
+                else {
+                    try {
+                        Thread.sleep(2000);
+                    }
+                    catch (InterruptedException e){
+
+                    }
+
+                }
+                return true;
+            }
+
+
             return false;
         } else if (cardPlayer1 == null && cardPlayer2 != null && !isGroupOwner) {
             networkManager.waitForCard(false);
