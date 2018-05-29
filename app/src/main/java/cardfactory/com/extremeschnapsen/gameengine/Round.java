@@ -10,6 +10,7 @@ import java.util.List;
 
 import cardfactory.com.extremeschnapsen.database.CardDataSource;
 import cardfactory.com.extremeschnapsen.database.DeckDataSource;
+import cardfactory.com.extremeschnapsen.database.GamePointsDataSource;
 import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
 import cardfactory.com.extremeschnapsen.database.RoundPointsDataSource;
 import cardfactory.com.extremeschnapsen.models.Card;
@@ -74,6 +75,20 @@ public class Round {
 
         List<Player> players = playerDataSource.getAllPlayers();
         player = players.get(0);
+    }
+
+    public void openDatabases() {
+        deckDataSource.open();
+        cardDataSource.open();
+        roundPointsDataSource.open();
+        playerDataSource.open();
+    }
+
+    public void closeDatabases() {
+        deckDataSource.close();
+        cardDataSource.close();
+        roundPointsDataSource.close();
+        playerDataSource.close();
     }
 
     //die Karten auf der Hand zurückbekommen
@@ -861,7 +876,7 @@ public class Round {
             });
 
             for(CardImageView civ : cardImageViews){
-                Log.e("CARD_IMAGE_VIEW", civ.getCardId() + "");
+                //Log.e("CARD_IMAGE_VIEW", civ.getCardId() + "");
             }
 
             for (Deck d : cardsOnHand) {

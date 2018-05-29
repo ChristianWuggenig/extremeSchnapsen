@@ -15,9 +15,9 @@ public class StartGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start_game);
 
         //Instanz eines neuen Spiel
-        game = new Game(this.getApplicationContext());
+        game = new Game(this);
         //startGameActivityIntent.putExtra("game_s", game);
-        game.gpds.getAllGamePoints();
+        //game.gpds.getAllGamePoints();
 
     }
 

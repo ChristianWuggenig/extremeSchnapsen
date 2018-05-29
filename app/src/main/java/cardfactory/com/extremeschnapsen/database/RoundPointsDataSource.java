@@ -40,19 +40,19 @@ public class RoundPointsDataSource {
     };
 
     public RoundPointsDataSource(Context context) {
-        Log.d(LOG_TAG, "Unsere PointsRoundDataSource erzeugt jetzt den dbHelper.");
+        //Log.d(LOG_TAG, "Unsere PointsRoundDataSource erzeugt jetzt den dbHelper.");
         dbHelper = DbHelper.getInstance(context);
     }
 
     public void open() {
-        Log.d(LOG_TAG, "Eine Referenz auf die Datenbank wird jetzt angefragt.");
+        //Log.d(LOG_TAG, "Eine Referenz auf die Datenbank wird jetzt angefragt.");
         database = dbHelper.getWritableDatabase();
-        Log.d(LOG_TAG, "Datenbank-Referenz erhalten. Pfad zur Datenbank: " + database.getPath());
+        //Log.d(LOG_TAG, "Datenbank-Referenz erhalten. Pfad zur Datenbank: " + database.getPath());
     }
 
     public void close() {
         dbHelper.close();
-        Log.d(LOG_TAG, "Datenbank mit Hilfe des DbHelpers geschlossen.");
+        //Log.d(LOG_TAG, "Datenbank mit Hilfe des DbHelpers geschlossen.");
     }
 
     public RoundPoints createRoundPoints(int RoundPointsID, int CurrentRoundPointsID, int PointsPlayer1, int PointsPlayer2) {
@@ -143,7 +143,7 @@ public class RoundPointsDataSource {
         while(!cursor.isAfterLast()) {
             roundPoints = cursorToRoundpoints(cursor);
             roundPointsList.add(roundPoints);
-            Log.d(LOG_TAG, "ID: " + roundPoints.getRoundpointsID() + ", Inhalt: " + roundPoints.toString());
+            //Log.d(LOG_TAG, "ID: " + roundPoints.getRoundpointsID() + ", Inhalt: " + roundPoints.toString());
             cursor.moveToNext();
         }
 
@@ -285,7 +285,7 @@ public class RoundPointsDataSource {
                 null,
                 null);
 
-        Log.d(LOG_TAG, "Es wurden " + anzahl_gelöschte_einträge + " Einträg im RoundPointstable gelöscht");
+        //Log.d(LOG_TAG, "Es wurden " + anzahl_gelöschte_einträge + " Einträg im RoundPointstable gelöscht");
     }
 
 }

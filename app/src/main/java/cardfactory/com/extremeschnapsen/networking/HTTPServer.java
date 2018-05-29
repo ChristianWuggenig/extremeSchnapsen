@@ -168,10 +168,10 @@ public class HTTPServer {
         try {
             JSONObject jsonObject = new JSONObject(params.get("postData"));
 
-            if (jsonObject.get("ID") != null) {
+            if (jsonObject.has("ID")) {
                 int cardID = jsonObject.getInt("ID");
                 networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
-            } else if (jsonObject.get("Trump") != null) {
+            } else if (jsonObject.has("Trump")) {
                 networkDisplay.exchangeTrump();
             }
 

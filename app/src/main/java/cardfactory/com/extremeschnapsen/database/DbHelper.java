@@ -128,10 +128,10 @@ public class DbHelper extends SQLiteOpenHelper {
         // don't accidentally leak an Activity's context.
         // See this article for more information: http://bit.ly/6LRzfx
         if (sInstance == null) {
-            Log.d(LOG_TAG, "DbHelper erzeugt eine Instanz von DbHelper.");
+            //Log.d(LOG_TAG, "DbHelper erzeugt eine Instanz von DbHelper.");
             sInstance = new DbHelper(context.getApplicationContext());
         }
-        Log.d(LOG_TAG, "Eine Referenz auf die Instanz DbHelper wird übergeben.");
+        //Log.d(LOG_TAG, "Eine Referenz auf die Instanz DbHelper wird übergeben.");
         return sInstance;
     }
 
@@ -139,47 +139,47 @@ public class DbHelper extends SQLiteOpenHelper {
     private DbHelper(Context context) {
         //super(context, "PLATZHALTER_DATENBANKNAME", null, 1);
         super(context, DB_NAME, null, DB_VERSION);
-        Log.d(LOG_TAG, "DbHelper hat die Datenbank: " + getDatabaseName() + " erzeugt.");
+        //Log.d(LOG_TAG, "DbHelper hat die Datenbank: " + getDatabaseName() + " erzeugt.");
     }
 
     // onCreate method creates table player_list, if not already created
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
-            Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_PLAYER_TABLE + " angelegt.");
+            //Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_PLAYER_TABLE + " angelegt.");
             db.execSQL(SQL_CREATE_PLAYER_TABLE);
         }
         catch (Exception ex) {
-            Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
+            //Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
         }
         try {
-            Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_CARD_TABLE + " angelegt.");
+            //Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_CARD_TABLE + " angelegt.");
             db.execSQL(SQL_CREATE_CARD_TABLE);
         }
         catch (Exception ex) {
-            Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
+            //Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
         }
         try {
-            Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_DECK_TABLE + " angelegt.");
+            //Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_DECK_TABLE + " angelegt.");
             db.execSQL(SQL_CREATE_DECK_TABLE);
         }
         catch (Exception ex) {
-            Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
+            //Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
         }
         try {
-            Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_ROUNDPOINTS_TABLE + " angelegt.");
+            //Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_ROUNDPOINTS_TABLE + " angelegt.");
             db.execSQL(SQL_CREATE_ROUNDPOINTS_TABLE);
         }
         catch (Exception ex) {
-            Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
+            //Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
         }
 
         try {
-            Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_GAME_POINTS_TABLE + " angelegt.");
+            //Log.d(LOG_TAG, "Die Tabelle wird mit SQL-Befehl: " + SQL_CREATE_GAME_POINTS_TABLE + " angelegt.");
             db.execSQL(SQL_CREATE_GAME_POINTS_TABLE);
         }
         catch (Exception ex) {
-            Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
+            //Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
         }
     }
 

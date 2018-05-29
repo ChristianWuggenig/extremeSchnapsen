@@ -28,10 +28,10 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
     private static ConstraintLayout deckholder;
     private static List<Deck> cardsOnHand;
-    private static Deck open;
-    private static List<Deck> playedCards;
-    private static Deck playedCardPlayer1;
-    private static Deck playedCardPlayer2;
+    private Deck open;
+    private List<Deck> playedCards;
+    private Deck playedCardPlayer1;
+    private Deck playedCardPlayer2;
 
     //für Game Object -> serializable
     //Intent i = getIntent();
@@ -47,7 +47,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
     private static Round round;
 
-    private static boolean isGroupOwner;
+    private boolean isGroupOwner;
 
     private static View.OnClickListener onClickListener;
 
@@ -131,6 +131,18 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         for (int count = 0; count < 6; count++) { //warum 6 und nicht mehr 5?
             cardList.get(count).setOnClickListener(onClickListener);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        round.closeDatabases();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        round.openDatabases();
     }
 
     @Override
@@ -252,8 +264,14 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
     @Override
     public void exchangeTrump(){
-        round.receiveExchangeTrump();
-        displayDeck();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                round.receiveExchangeTrump();
+                displayDeck();
+            }
+        });
+
     }
 
     public void playCard(int cardID) {
