@@ -132,9 +132,25 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             }
         };
 
-        for (int count = 0; count < 6; count++) { //warum 6 und nicht mehr 5?
+        for (int count = 0; count < 6; count++) {
             cardList.get(count).setOnClickListener(onClickListener);
         }
+    }
+
+    public void onClickBtnHerz(View view) {
+        round.check2040("herz");
+    }
+
+    public void onClickBtnKaro(View view) {
+        round.check2040("karo");
+    }
+
+    public void onClickBtnPik(View view) {
+        round.check2040("pik");
+    }
+
+    public void onClickBtnKreuz(View view) {
+        round.check2040("kreuz");
     }
 
     @Override
