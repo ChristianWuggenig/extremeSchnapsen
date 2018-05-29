@@ -71,5 +71,15 @@ public class Game implements Serializable {
 
     }
 
+    public int getGamePointsPlayer1(){
+        gp = gpds.getCurrentGamePointsObject();
+        return gp.getGamePointsPlayer1();
+    }
+
+    public int getGamePointsPlayer2(){
+        gp = gpds.getCurrentGamePointsObject();
+        return gp.getGamePoinstsPlayer2();
+
+    }
 
 }

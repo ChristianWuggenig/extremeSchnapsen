@@ -44,6 +44,8 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     private static TextView txvPlayer1;
     private static TextView txvPlayer2;
     private static TextView txvPoints;
+    private static TextView txvGamePoints1;
+    private static TextView txvGamePoints2;
 
     private static Round round;
 
@@ -99,6 +101,8 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         txvPlayer1 = this.findViewById(R.id.txv_user1);
         txvPlayer2 = this.findViewById(R.id.txv_user2);
         txvPoints = this.findViewById(R.id.txv_mypoints);
+        txvGamePoints1 = this.findViewById(R.id.txv_points1);
+        txvGamePoints2 = this.findViewById(R.id.txv_points2);
 
         Intent intent = this.getIntent();
         isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
@@ -214,6 +218,9 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName());
             card.setImageResource(res_id);
         }
+
+        showGamePoints();
+        showRoundPoints();
         index = 0;
 
         /*for(CardImageView civ : cardsToCheckFor20){
@@ -288,7 +295,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             if(round.compareCards()){
                 finish();
             }
-            showRoundPoints();
         }
     }
 
@@ -311,8 +317,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                 if(round.compareCards()){
                     finish();
                 }
-
-                showRoundPoints();
             }
         });
 
@@ -345,4 +349,15 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             txvPoints.setText(round.getRoundPointsPlayer2() + " Punkte");
         }
     }
+
+    public void showGamePoints() {
+        if (isGroupOwner) {
+            txvGamePoints1.setText(round.getGamePointsPlayer1());
+            txvGamePoints2.setText(round.getGamePointsPlayer2());
+        } else {
+            txvGamePoints1.setText(round.getGamePointsPlayer2());
+            txvGamePoints2.setText(round.getGamePointsPlayer1());
+        }
+    }
+
 }
