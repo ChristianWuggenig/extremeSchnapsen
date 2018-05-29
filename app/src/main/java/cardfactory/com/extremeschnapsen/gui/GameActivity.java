@@ -244,13 +244,15 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                 playCard((int)cardsOnHand.get(4).getCardID());
                 break;
             case R.id.iv_card_trump:
-                exchangeTrump();
+                round.exchangeTrump();
+                displayDeck();
                 break;
         }
     }
 
+    @Override
     public void exchangeTrump(){
-        this.round.exchangeTrump();
+        round.receiveExchangeTrump();
         displayDeck();
     }
 

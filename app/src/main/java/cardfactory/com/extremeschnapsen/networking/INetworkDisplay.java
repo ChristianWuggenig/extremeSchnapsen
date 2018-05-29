@@ -26,4 +26,6 @@ public interface INetworkDisplay {
     void waitForCard();
 
     void updateDeck();
+
+    void exchangeTrump();
 }

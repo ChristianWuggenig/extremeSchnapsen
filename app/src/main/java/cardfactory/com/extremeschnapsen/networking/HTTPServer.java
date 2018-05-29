@@ -26,11 +26,14 @@ public class HTTPServer {
 
     private Player player; //contains the current player
 
+    private boolean trumpExchanged; //true, if trump was exchanged, else false
+
     public HTTPServer(List<Deck> currentDeck, INetworkDisplay networkDisplay, Player player) {
-        this.cardPlayed = 0;
+        cardPlayed = 0;
         this.currentDeck = currentDeck;
         this.networkDisplay = networkDisplay;
         this.player = player;
+        trumpExchanged = false;
     }
 
     /**
@@ -47,17 +50,13 @@ public class HTTPServer {
                     if (session.getMethod() == Method.GET) {
                         Map<String, List<String>> params = session.getParameters();
 
-                        //if the parameter list is empty, then the client wants to get the current deck
+                        //check what the client wants to have
                         if (params.size() != 0) {
                             if (params.get("Name") != null) {
                                 message = sendAllDeck(params);
                             } else if (params.get("ID") != null) {
-                                message = sendCurrentlyPlayedCard();
+                                message = sendClientInformation();
                             }
-                        }
-                        //if the parameter list is not 0, then the client wants to get the currently played card from the server
-                        else {
-
                         }
                     }
                     //check if the request-method is POST
@@ -69,7 +68,7 @@ public class HTTPServer {
                             Log.d("HTTPError", ex.getMessage());
                         }
 
-                        message = getCurrentlyPlayedCard(params);
+                        message = getClientInformation(params);
                     }
 
                     return newFixedLengthResponse(message); //return a string message with the appropriate response
@@ -96,6 +95,10 @@ public class HTTPServer {
      */
     public int getCardPlayed() {
         return cardPlayed;
+    }
+
+    public void setTrumpExchanged(boolean trumpExchanged) {
+        this.trumpExchanged = trumpExchanged;
     }
 
     /**
@@ -136,11 +139,18 @@ public class HTTPServer {
         return jsonArray.toString(); //convert the jsonArray of cardIDs to a string message for the response
     }
 
+    public String sendClientInformation() {
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(sendCurrentlyPlayedCard());
+        jsonArray.put(sendTrumpExchanged());
+        return jsonArray.toString();
+    }
+
     /**
      * sends the currently played card to the client (waits for the client to ask for it)
      * @return returns the response with the id of the played card in json format
      */
-    public String sendCurrentlyPlayedCard() {
+    public JSONObject sendCurrentlyPlayedCard() {
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -151,7 +161,25 @@ public class HTTPServer {
 
         cardPlayed = 0;
 
-        return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
+        return jsonObject; //convert the jsonArray of cardIDs to a string message for the response
+    }
+
+    public String getClientInformation(Map<String, String> params) {
+        try {
+            JSONObject jsonObject = new JSONObject(params.get("postData"));
+
+            if (jsonObject.get("ID") != null) {
+                int cardID = jsonObject.getInt("ID");
+                networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
+            } else if (jsonObject.get("Trump") != null) {
+                networkDisplay.exchangeTrump();
+            }
+
+            return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+        return null;
     }
 
     /**
@@ -162,19 +190,31 @@ public class HTTPServer {
     public String getCurrentlyPlayedCard(Map<String, String> params) {
         try {
             JSONObject jsonObject = new JSONObject(params.get("postData"));
-            /*String cardIDString = jsonObject.getString("ID"); //get the id from the played card
-
-            networkDisplay.displayStatus("opposite player played card " + cardIDString);*/
             int cardID = jsonObject.getInt("ID");
-            //networkDisplay.displayStatus("opposite player played card " + String.valueOf(cardID));
-            //networkDisplay.setMyTurn(Integer.parseInt(cardIDString));
+
             networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
-            //networkDisplay.displayStatus("yourTurn");
 
             return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
         } catch (JSONException ex) {
             Log.d("JSONError", ex.getMessage());
         }
         return null;
+    }
+
+    public JSONObject sendTrumpExchanged() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            if (trumpExchanged) {
+                jsonObject.put("Trump", "true");
+                trumpExchanged = false;
+            }
+            else
+                jsonObject.put("Trump", "false");
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+
+        return jsonObject; //convert the jsonArray of cardIDs to a string message for the response
     }
 }

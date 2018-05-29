@@ -129,6 +129,8 @@ public class Round {
                             this.roundPointsDataSource.updtateTrumpExchanged(rp);
                         }
 
+                        networkManager.sendTrumpExchanged();
+
                         this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
                         this.currentDeck = this.deckDataSource.getAllDeck();
                         break;

@@ -73,9 +73,9 @@ public class NetworkManager  {
         if (isServer) {
             httpServer.setCardPlayed(cardID);
         }
-        else
+        else {
             httpClient.sendCard(cardID);
-
+        }
     }
 
     /**
@@ -84,5 +84,13 @@ public class NetworkManager  {
     public void waitForCard(boolean alreadyReceived) {
         httpClient.setAlreadyReceived(alreadyReceived);
         httpClient.getPlayedCard();
+    }
+
+    public void sendTrumpExchanged() {
+        if (isServer) {
+            httpServer.setTrumpExchanged(true);
+        } else {
+            httpClient.sendTrumpExchanged();
+        }
     }
 }

@@ -25,10 +25,16 @@ public class HTTPClient {
 
     private Player player; //contains the current player
 
+    private boolean alreadyReceived = false; //true, if the client already received the played card from the server
+
     public HTTPClient(Context context, INetworkDisplay networkDisplay, Player player) {
         this.networkDisplay = networkDisplay;
         this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         this.player = player;
+    }
+
+    public void setAlreadyReceived(boolean alreadyReceived) {
+        this.alreadyReceived = alreadyReceived;
     }
 
     /**
@@ -107,10 +113,28 @@ public class HTTPClient {
         requestQueue.add(request);
     }
 
-    private boolean alreadyReceived = false;
+    public void sendTrumpExchanged() {
+        JSONObject jsonObject = new JSONObject();
 
-    public void setAlreadyReceived(boolean alreadyReceived) {
-        this.alreadyReceived = alreadyReceived;
+        try {
+            jsonObject.put("Trump", "true");
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, serverIP, jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                alreadyReceived = false;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VolleyError", error.getMessage());
+            }
+        });
+
+        requestQueue.add(request);
     }
 
     /**
@@ -119,14 +143,22 @@ public class HTTPClient {
     public void getPlayedCard() {
 
         if(!alreadyReceived) {
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, serverIP + "?ID=1", new JSONObject(), new Response.Listener<JSONObject>() {
+            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, serverIP + "?ID=1", new JSONArray(), new Response.Listener<JSONArray>() {
                 @Override
-                public void onResponse(JSONObject response) {
+                public void onResponse(JSONArray response) {
                     try {
                         //check if the returned id is 0, if yes, try again in 500ms, if no, display the played card
-                        if((int)response.get("ID") != 0) {
+                        JSONObject id = response.getJSONObject(0);
+                        JSONObject trump = response.getJSONObject(1);
+
+                        if (trump.getBoolean("Trump")) {
+                            networkDisplay.exchangeTrump();
+                        }
+
+                        if(id.getInt("ID") != 0) {
                             networkDisplay.displayStatus("yourTurn");
-                            networkDisplay.setMyTurn(response.getInt("ID"));
+                            networkDisplay.setMyTurn(id.getInt("ID"));
+
                             alreadyReceived = true;
                         } else {
                             try {
