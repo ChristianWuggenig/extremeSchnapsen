@@ -31,7 +31,8 @@ public class PlayerDataSource {
             DbHelper.COLUMN_PLAYER_ID,
             DbHelper.COLUMN_PLAYER_USERNAME,
             DbHelper.COLUMN_PLAYER_PLAYED_GAMES,
-            DbHelper.COLUMN_PLAYER_WON_GAMES
+            DbHelper.COLUMN_PLAYER_WON_GAMES,
+            DbHelper.COLUMN_PLAYER_GAME_MODE
     };
 
     public PlayerDataSource(Context context) {
@@ -55,6 +56,7 @@ public class PlayerDataSource {
         values.put(DbHelper.COLUMN_PLAYER_USERNAME, username);
         values.put(DbHelper.COLUMN_PLAYER_PLAYED_GAMES, 0);
         values.put(DbHelper.COLUMN_PLAYER_WON_GAMES, 0);
+        values.put(DbHelper.COLUMN_PLAYER_GAME_MODE, "normal");
 
         long insertId = database.insert(DbHelper.TABLE_PLAYER_LIST, null, values);
 
@@ -74,14 +76,15 @@ public class PlayerDataSource {
         int idUsername = cursor.getColumnIndex(DbHelper.COLUMN_PLAYER_USERNAME);
         int idPlayedGames = cursor.getColumnIndex(DbHelper.COLUMN_PLAYER_PLAYED_GAMES);
         int idWonGames = cursor.getColumnIndex(DbHelper.COLUMN_PLAYER_WON_GAMES);
+        int idGameMode = cursor.getColumnIndex(DbHelper.COLUMN_PLAYER_GAME_MODE);
 
         String username = cursor.getString(idUsername);
         int playedGames = cursor.getInt(idPlayedGames);
         int wonGames = cursor.getInt(idWonGames);
         long id = cursor.getLong(idIndex);
+        String gameMode = cursor.getString(idGameMode);
 
-
-        Player player = new Player(id, username, playedGames, wonGames);
+        Player player = new Player(id, username, playedGames, wonGames, gameMode);
 
         return player;
     }
@@ -98,7 +101,7 @@ public class PlayerDataSource {
         while(!cursor.isAfterLast()) {
             player = cursorToPlayer(cursor);
             playerList.add(player);
-            Log.d(LOG_TAG, "ID: " + player.getId() + ", Inhalt: " + player.toString());
+            //Log.d(LOG_TAG, "ID: " + player.getId() + ", Inhalt: " + player.toString());
             cursor.moveToNext();
         }
 
@@ -141,4 +144,17 @@ public class PlayerDataSource {
 
     }
 
+    public void updateGameMode(String mode) {
+        Player player = getCurrentPlayerObject();
+        player.setGame_mode(mode);
+
+        ContentValues values = new ContentValues();
+
+        values.put(DbHelper.COLUMN_PLAYER_GAME_MODE, player.getGame_mode());
+
+        database.update(DbHelper.TABLE_PLAYER_LIST,
+                values,
+                DbHelper.COLUMN_PLAYER_ID + ">=" + 1,
+                null);
+    }
 }

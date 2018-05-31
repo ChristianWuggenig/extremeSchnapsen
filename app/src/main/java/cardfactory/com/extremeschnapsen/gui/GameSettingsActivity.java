@@ -8,8 +8,12 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import cardfactory.com.extremeschnapsen.R;
+import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
 
 public class GameSettingsActivity extends AppCompatActivity {
+
+    PlayerDataSource playerDataSource;
+    RadioGroup radioGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,20 +22,36 @@ public class GameSettingsActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         setContentView(R.layout.activity_game_settings);
+
+        radioGroup = this.findViewById(R.id.rgGameSettings);
+
+        playerDataSource = new PlayerDataSource(this);
+        playerDataSource.open();
+
+        switch (playerDataSource.getCurrentPlayerObject().getGame_mode()) {
+            case "normal":
+                radioGroup.check(R.id.rbtnNormal);
+                break;
+            case "extreme":
+                radioGroup.check(R.id.rbtnExtreme);
+        }
     }
 
     public void onClickBtnBackToMenu(View view) {
-        RadioGroup radioGroup = this.findViewById(R.id.rgGameSettings);
 
         int selectedId = radioGroup.getCheckedRadioButtonId();
 
         switch (selectedId) {
             case R.id.rbtnNormal:
+                playerDataSource.updateGameMode("normal");
                 break;
             case R.id.rbtnExtreme:
-                break;
-            case R.id.rbtnDoesNotMatter:
+                playerDataSource.updateGameMode("extreme");
                 break;
         }
+
+        playerDataSource.close();
+
+        finish();
     }
 }

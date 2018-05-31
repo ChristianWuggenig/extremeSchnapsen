@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Window;
 
 import cardfactory.com.extremeschnapsen.R;
+import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
 import cardfactory.com.extremeschnapsen.gameengine.Game;
 import cardfactory.com.extremeschnapsen.networking.IStartGame;
 import cardfactory.com.extremeschnapsen.networking.NetworkManager;
@@ -30,6 +31,8 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
 
     private static NetworkManager networkManager;
 
+    private static PlayerDataSource playerDataSource;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,10 +49,13 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
         local = this.getIntent();
         isGroupOwner = local.getBooleanExtra("IS_GROUP_OWNER", false);
 
+        playerDataSource = new PlayerDataSource(this);
+        playerDataSource.open();
+
         if (isGroupOwner) {
-            networkManager.startHttpServer("normal");
+            networkManager.startHttpServer(playerDataSource.getCurrentPlayerObject().getGame_mode());
         } else {
-            networkManager.startHttpClient("normal");
+            networkManager.startHttpClient(playerDataSource.getCurrentPlayerObject().getGame_mode());
         }
 
         //Instanz eines neuen Spiel
@@ -113,6 +119,7 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
         super.onPause();
 
         game.closeDatabases();
+        playerDataSource.close();
     }
 
     public void btnStartGameClick(View view) {
