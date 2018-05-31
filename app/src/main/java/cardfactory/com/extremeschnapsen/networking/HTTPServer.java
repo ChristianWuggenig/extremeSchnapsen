@@ -21,6 +21,7 @@ public class HTTPServer {
     private List<Deck> currentDeck; //contains the current deck
 
     private INetworkDisplay networkDisplay; //contains the network display interface object
+    private IStartGame startGame;
 
     private NanoHTTPD nanoHTTPD; //contains the nanohttpd-server
 
@@ -28,12 +29,25 @@ public class HTTPServer {
 
     private boolean trumpExchanged; //true, if trump was exchanged, else false
 
-    public HTTPServer(List<Deck> currentDeck, INetworkDisplay networkDisplay, Player player) {
+    private String mode;
+
+    public HTTPServer(IStartGame startGame, String mode) {
         cardPlayed = 0;
-        this.currentDeck = currentDeck;
-        this.networkDisplay = networkDisplay;
-        this.player = player;
         trumpExchanged = false;
+        this.mode = mode;
+        this.startGame = startGame;
+    }
+
+    public void setCurrentDeck(List<Deck> currentDeck) {
+        this.currentDeck = currentDeck;
+    }
+
+    public void setNetworkDisplay(INetworkDisplay networkDisplay) {
+        this.networkDisplay = networkDisplay;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     /**
@@ -56,6 +70,8 @@ public class HTTPServer {
                                 message = sendAllDeck(params);
                             } else if (params.get("ID") != null) {
                                 message = sendClientInformation();
+                            } else if (params.get("Mode") != null) {
+                                message = sendClientMode(params);
                             }
                         }
                     }
@@ -182,6 +198,32 @@ public class HTTPServer {
         return null;
     }
 
+    public String sendClientMode(Map<String, List<String>> params) {
+        String mode = params.get("Mode").get(0);
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+
+            if (mode.equals("extreme")) {
+                jsonObject.put("Mode", "extreme");
+                startGame.setGameMode("extreme");
+            } else {
+                if (this.mode.equals("extreme")) {
+                    jsonObject.put("Mode", "extreme");
+                    startGame.setGameMode("extreme");
+                } else {
+                    jsonObject.put("Mode", "normal");
+                    startGame.setGameMode("normal");
+                }
+            }
+
+            return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+        return null;
+    }
+
     /**
      * get the currently played card from the client
      * @param params used to get the parameters from the http-headers
@@ -217,4 +259,6 @@ public class HTTPServer {
 
         return jsonObject; //convert the jsonArray of cardIDs to a string message for the response
     }
+
+
 }

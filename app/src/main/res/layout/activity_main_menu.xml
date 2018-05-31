@@ -46,6 +46,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="150dp"
         android:text="@string/btn_menu_settings"
+        android:onClick="onClickBtnSettings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPlayername" />

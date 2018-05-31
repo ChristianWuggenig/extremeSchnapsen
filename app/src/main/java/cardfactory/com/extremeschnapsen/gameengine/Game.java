@@ -13,10 +13,10 @@ import cardfactory.com.extremeschnapsen.models.Player;
 
 public class Game implements Serializable {
 
-    public Player player;
-    public PlayerDataSource playerDataSource;
-    public GamePointsDataSource gpds;
-    public GamePoints gp;
+    private Player player;
+    private PlayerDataSource playerDataSource;
+    private GamePointsDataSource gpds;
+    private GamePoints gp;
 
     public Game (Context context) {
         this.playerDataSource = new PlayerDataSource(context);
@@ -71,5 +71,13 @@ public class Game implements Serializable {
 
     }
 
+    public void openDatabases() {
+        gpds.open();
+        playerDataSource.open();
+    }
 
+    public void closeDatabases() {
+        gpds.close();
+        playerDataSource.close();
+    }
 }

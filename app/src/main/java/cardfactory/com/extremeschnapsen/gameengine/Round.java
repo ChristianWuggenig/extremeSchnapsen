@@ -68,7 +68,7 @@ public class Round {
 
         networkDisplay = (INetworkDisplay)context;
 
-        networkManager = NetworkManager.getInstance(context, networkDisplay); //get the singleton object from the network-manager
+        networkManager = NetworkManager.getInstance(context); //get the singleton object from the network-manager
 
         playerDataSource = new PlayerDataSource(context);
         playerDataSource.open();
@@ -271,14 +271,14 @@ public class Round {
      * start the http-server
      */
     public void startServer() {
-        networkManager.startHttpServer(currentDeck, player);
+        networkManager.startHttpServer(currentDeck, player, networkDisplay);
     }
 
     /**
      * start the http-client
      */
     public void startClient() {
-        networkManager.startHttpClient(player);
+        networkManager.startHttpClient(networkDisplay, player);
     }
 
     /**
@@ -624,8 +624,6 @@ public class Round {
                     game_round.updateGamePoints(3,0);
                 }
 
-                game_round.gpds.getAllGamePoints();
-
                 if (isGroupOwner) {
                     try {
                         Thread.sleep(1000);
@@ -636,12 +634,12 @@ public class Round {
                     networkManager.stopHttpServer();
                 }
                 else {
-                    try {
+                    /*try {
                         Thread.sleep(2000);
                     }
                     catch (InterruptedException e){
 
-                    }
+                    }*/
 
                 }
 
@@ -662,8 +660,6 @@ public class Round {
                     game_round.updateGamePoints(0,3);
                 }
 
-                game_round.gpds.getAllGamePoints();
-
                 if (isGroupOwner) {
                     try {
                         Thread.sleep(1000);
@@ -674,12 +670,12 @@ public class Round {
                     networkManager.stopHttpServer();
                 }
                 else {
-                    try {
+                    /*try {
                         Thread.sleep(2000);
                     }
                     catch (InterruptedException e){
 
-                    }
+                    }*/
 
                 }
 
@@ -705,12 +701,12 @@ public class Round {
                     networkManager.stopHttpServer();
                 }
                 else {
-                    try {
+                    /*try {
                         Thread.sleep(2000);
                     }
                     catch (InterruptedException e){
 
-                    }
+                    }*/
 
                 }
                 return true;

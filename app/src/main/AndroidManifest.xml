@@ -47,24 +47,36 @@
         <activity
             android:name=".gui.GameActivity"
             android:screenOrientation="landscape"
-            android:launchMode="singleTask"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
 
         <service
             android:name=".services.MySensorService"
             android:label="MySensorService" />
 
-        <!--<service
+        <!--
+            <service
             android:name=".services.LightSensorService"
-            android:label="LightSensorService" />-->
+            android:label="LightSensorService" />
+        -->
 
         <activity
-            android:name=".gui.StartGameActivity" />
-
+            android:name=".gui.StartGameActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
             android:name=".gui.ProfileActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+        <activity
+            android:name=".gui.GameSettingsActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+
+        <activity
+            android:name=".gui.ExtremeGameActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+
     </application>
 
 </manifest>

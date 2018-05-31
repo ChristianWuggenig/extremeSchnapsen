@@ -17,6 +17,8 @@ import cardfactory.com.extremeschnapsen.models.Player;
 public class HTTPClient {
 
     private INetworkDisplay networkDisplay; //the network display interface object
+    private IStartGame startGame;
+
     private RequestQueue requestQueue; //the volley request queue object
 
     private static final String serverIP = "http://192.168.49.1:8080/"; //is static, because WifiP2P always assigns this ip address;
@@ -25,16 +27,50 @@ public class HTTPClient {
 
     private Player player; //contains the current player
 
-    private boolean alreadyReceived = false; //true, if the client already received the played card from the server
+    private boolean alreadyReceived; //true, if the client already received the played card from the server
 
-    public HTTPClient(Context context, INetworkDisplay networkDisplay, Player player) {
+    /*public HTTPClient(Context context, INetworkDisplay networkDisplay, Player player) {
         this.networkDisplay = networkDisplay;
         this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         this.player = player;
+        alreadyReceived = false;
+    }*/
+
+    public HTTPClient(Context context) {
+        this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
+        this.startGame = (IStartGame)context;
     }
 
     public void setAlreadyReceived(boolean alreadyReceived) {
         this.alreadyReceived = alreadyReceived;
+    }
+
+    public void setNetworkDisplay(INetworkDisplay networkDisplay) {
+        this.networkDisplay = networkDisplay;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void getGameMode(String mode) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, serverIP + "?Mode=" + mode, new JSONObject(), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    startGame.setGameMode(response.getString("Mode"));
+                } catch (JSONException ex) {
+                    Log.d("JSONError", ex.getMessage());
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VolleyError", error.getMessage());
+            }
+        });
+
+        requestQueue.add(request);
     }
 
     /**
@@ -72,6 +108,7 @@ public class HTTPClient {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("HTTPError", error.getMessage());
+                getDeck();
             }
         });
 
