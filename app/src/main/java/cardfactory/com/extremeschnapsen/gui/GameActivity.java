@@ -9,6 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -309,7 +310,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
         if(round.playCard(cardID)) {
             if(round.compareCards()){
-                finish();
+                finishActivity();
             }
         }
     }
@@ -331,7 +332,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                 round.setMyTurn(true);
 
                 if(round.compareCards()){
-                    finish();
+                    finishActivity();
                 }
             }
         });
@@ -366,6 +367,11 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         }
     }
 
+    public void finishActivity() {
+        this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
+        this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
+    }
+
     public void showGamePoints() {
         if (isGroupOwner) {
             txvGamePoints1.setText(round.getGamePointsPlayer1());
@@ -375,5 +381,4 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             txvGamePoints2.setText(round.getGamePointsPlayer1());
         }
     }
-
 }

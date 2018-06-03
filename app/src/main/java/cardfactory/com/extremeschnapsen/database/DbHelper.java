@@ -32,6 +32,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PLAYER_USERNAME = "username";
     public static final String COLUMN_PLAYER_PLAYED_GAMES = "playedgames";
     public static final String COLUMN_PLAYER_WON_GAMES = "wongames";
+    public static final String COLUMN_PLAYER_GAME_MODE = "gamemode";
 
     public static final String COLUMN_CARD_ID = "_id";
     public static final String COLUMN_CARDSUIT = "cardSuit";
@@ -75,7 +76,8 @@ public class DbHelper extends SQLiteOpenHelper {
                     "(" + COLUMN_PLAYER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_PLAYER_PLAYED_GAMES + " INTEGER, " +
                     COLUMN_PLAYER_USERNAME + " TEXT NOT NULL, " +
-                    COLUMN_PLAYER_WON_GAMES + " INTEGER);";
+                    COLUMN_PLAYER_WON_GAMES + " INTEGER, " +
+                    COLUMN_PLAYER_GAME_MODE + " TEXT);";
 
     public static final String SQL_CREATE_CARD_TABLE =
             "CREATE TABLE " + TABLE_CARD_LIST +

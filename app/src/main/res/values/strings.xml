@@ -16,6 +16,9 @@
     <string name="editText_errorMessage">Das Feld darf nicht leer sein.</string>
 
     <string name="btnSearch">Spieler suchen</string>
+    <string name="btnStartGame">Spiel starten</string>
+    <string name="btnFinishGame">Spiel beenden</string>
+    <string name="btnStartNextRound">Nächste Runde starten</string>
 
     <!-- menu button strings -->
     <string name="btn_menu_profil">Benutzerprofil</string>
@@ -35,5 +38,15 @@
     <!-- Spielerprofil strings -->
 
     <string name="back_to_menu">Zurück zum Hauptmenu</string>
+
+    <string name="txvSettings">Spieleinstellungen</string>
+    <string name="txvGameMode">Spielmodus</string>
+
+    <string name="rbtnNormal">Normales Schnapsen</string>
+    <string name="rbtnExtreme">ExtremeSchnapsen</string>
+    <string name="rbtnDoesNotMatter">Egal</string>
+
+    <string name="btnStartGameNormal">Spiel starten (normal)</string>
+    <string name="btnStartGameExtreme">Spiel starten (extreme)</string>
 
 </resources>

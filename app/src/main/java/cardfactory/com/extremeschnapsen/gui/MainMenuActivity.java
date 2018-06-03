@@ -31,7 +31,10 @@ public class MainMenuActivity extends AppCompatActivity {
 
     }
 
-
+    public void onClickBtnSettings(View view) {
+        Intent i = new Intent (this, GameSettingsActivity.class);
+        this.startActivity(i);
+    }
 
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {

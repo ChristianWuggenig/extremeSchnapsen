@@ -1,16 +1,17 @@
 package cardfactory.com.extremeschnapsen.networking;
 
 import android.content.Context;
+
+import java.io.Serializable;
 import java.util.List;
 
 import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.models.Player;
 
-public class NetworkManager  {
+public class NetworkManager {
 
     private static NetworkManager networkManager; //create a static network manager
 
-    private INetworkDisplay networkDisplay; //contains the network display interface object
     private Context context; //contains the GameActivity-Context
 
     private boolean isServer; //shows if the current phone is the server or the client
@@ -18,20 +19,18 @@ public class NetworkManager  {
     private HTTPClient httpClient; //used for the http-client
     private HTTPServer httpServer; //used for the http-server
 
-    private NetworkManager (Context context, INetworkDisplay networkDisplay) {
-        this.networkDisplay = networkDisplay;
+    private NetworkManager (Context context) {
         this.context = context;
     }
 
     /**
      * implements a singleton, which returns a networkmanager-object
      * @param context contains the GameActivity-Context
-     * @param networkDisplay contains the network display interface object
      * @return
      */
-    public static NetworkManager getInstance(Context context, INetworkDisplay networkDisplay) {
+    public static NetworkManager getInstance(Context context) {
         if (networkManager == null) {
-            networkManager = new NetworkManager(context, networkDisplay);
+            networkManager = new NetworkManager(context);
         }
         return networkManager;
     }
@@ -40,10 +39,21 @@ public class NetworkManager  {
      * starts the http-server and holds the current deck for the client
      * @param currentDeck the current, shuffled deck
      */
-    public void startHttpServer(List<Deck> currentDeck, Player player) {
+    public void startHttpServer(List<Deck> currentDeck, Player player, INetworkDisplay networkDisplay) {
         isServer = true;
 
-        httpServer = new HTTPServer(currentDeck, networkDisplay, player);
+        httpServer.setCurrentDeck(currentDeck);
+        httpServer.setPlayer(player);
+        httpServer.setNetworkDisplay(networkDisplay);
+    }
+
+    /**
+     * starts the http-server and holds the current deck for the client
+     */
+    public void startHttpServer(String mode) {
+        isServer = true;
+
+        httpServer = new HTTPServer((IStartGame)context, mode);
         httpServer.startServer();
     }
 
@@ -57,11 +67,23 @@ public class NetworkManager  {
     /**
      * start the http-client
      */
-    public void startHttpClient(Player player) {
+    public void startHttpClient(INetworkDisplay networkDisplay, Player player) {
         isServer = false;
 
-        httpClient = new HTTPClient(context, networkDisplay, player);
+        httpClient.setNetworkDisplay(networkDisplay);
+        httpClient.setPlayer(player);
+        httpClient.setAlreadyReceived(false);
         httpClient.getDeck(); //get the current deck from server
+    }
+
+    /**
+     * start the http-client
+     */
+    public void startHttpClient(String mode) {
+        isServer = false;
+
+        httpClient = new HTTPClient(context);
+        httpClient.getGameMode(mode);
     }
 
     /**
