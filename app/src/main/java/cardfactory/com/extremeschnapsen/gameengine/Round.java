@@ -62,7 +62,9 @@ public class Round {
 
         points = roundPointsDataSource.getCurrentRoundPointsObject();
 
+
         game_round = new Game (context, true);
+
 
         deckDataSource.deleteDeckTable(); //delete the deck from the database before creating a new one
 
@@ -712,7 +714,6 @@ public class Round {
                 return true;
             }
 
-
             return false;
         } else if (cardPlayer1 == null && cardPlayer2 != null && !isGroupOwner) {
             networkManager.waitForCard(false);
@@ -978,4 +979,13 @@ public class Round {
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
         return String.valueOf(roundPoints.getPointsplayer2());
     }
+
+    public String getGamePointsPlayer1(){
+       return String.valueOf(game_round.getGamePointsPlayer1());
+    }
+
+    public String getGamePointsPlayer2(){
+        return String.valueOf(game_round.getGamePointsPlayer2());
+    }
+
 }
