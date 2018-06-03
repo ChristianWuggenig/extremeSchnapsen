@@ -1,7 +1,6 @@
 package cardfactory.com.extremeschnapsen.gameengine;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +9,6 @@ import java.util.List;
 
 import cardfactory.com.extremeschnapsen.database.CardDataSource;
 import cardfactory.com.extremeschnapsen.database.DeckDataSource;
-import cardfactory.com.extremeschnapsen.database.GamePointsDataSource;
 import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
 import cardfactory.com.extremeschnapsen.database.RoundPointsDataSource;
 import cardfactory.com.extremeschnapsen.models.Card;
@@ -579,23 +577,23 @@ public class Round {
                 myTurn = true;
                 getNextFreeCard(1);
                 getNextFreeCard(2);
-                networkDisplay.displayStatus("won");
+                networkDisplay.displayUserInformation("won");
             } else if (player2Won && !isGroupOwner) {
                 myTurn = true;
                 getNextFreeCard(2);
                 getNextFreeCard(1);
-                networkDisplay.displayStatus("won");
+                networkDisplay.displayUserInformation("won");
             } else if (player1Won && !isGroupOwner) {
                 myTurn = false;
                 networkManager.waitForCard(false);
                 getNextFreeCard(1);
                 getNextFreeCard(2);
-                networkDisplay.displayStatus("lost");
+                networkDisplay.displayUserInformation("lost");
             } else if (player2Won && isGroupOwner) {
                 myTurn = false;
                 getNextFreeCard(2);
                 getNextFreeCard(1);
-                networkDisplay.displayStatus("lost");
+                networkDisplay.displayUserInformation("lost");
             }
 
             networkDisplay.updateDeck();
@@ -717,19 +715,19 @@ public class Round {
             return false;
         } else if (cardPlayer1 == null && cardPlayer2 != null && !isGroupOwner) {
             networkManager.waitForCard(false);
-            networkDisplay.displayStatus("waiting");
+            networkDisplay.displayUserInformation("waiting");
             networkDisplay.updateDeck();
         } else if (cardPlayer1 != null && cardPlayer2 == null && !isGroupOwner) {
-            networkDisplay.displayStatus("yourTurn");
+            networkDisplay.displayUserInformation("yourTurn");
             networkDisplay.updateDeck();
         } else if (cardPlayer1 == null && cardPlayer2 != null && isGroupOwner) {
-            networkDisplay.displayStatus("yourTurn");
+            networkDisplay.displayUserInformation("yourTurn");
             networkDisplay.updateDeck();
         } else if (cardPlayer1 != null && cardPlayer2 == null && isGroupOwner) {
-            networkDisplay.displayStatus("waiting");
+            networkDisplay.displayUserInformation("waiting");
             networkDisplay.updateDeck();
         } else {
-            networkDisplay.displayStatus("waiting");
+            networkDisplay.displayUserInformation("waiting");
             networkDisplay.updateDeck();
         }
         return false;

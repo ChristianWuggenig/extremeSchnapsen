@@ -101,7 +101,7 @@ public class HTTPClient {
                 }
 
                 networkDisplay.displayShuffledDeck(shuffledDeckIDs, playerName); //display the updated deck and the opposite players name
-                networkDisplay.displayStatus("yourTurn");
+                networkDisplay.displayUserInformation("yourTurn");
                 networkDisplay.dismissDialog();
             }
         }, new Response.ErrorListener() {
@@ -136,7 +136,7 @@ public class HTTPClient {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, serverIP, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                //networkDisplay.displayStatus("Card " + cardID + " successfully sent");
+                //networkDisplay.displayUserInformation("Card " + cardID + " successfully sent");
                 alreadyReceived = false;
                 //networkDisplay.waitForCard(); //start the listener for a played card
             }
@@ -150,11 +150,11 @@ public class HTTPClient {
         requestQueue.add(request);
     }
 
-    public void sendTrumpExchanged() {
+    public void sendAction(String name, String value) {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            jsonObject.put("Trump", "true");
+            jsonObject.put(name, value);
         } catch (JSONException ex) {
             Log.d("JSONError", ex.getMessage());
         }
@@ -175,9 +175,9 @@ public class HTTPClient {
     }
 
     /**
-     * get the played card from the server. if the cardID is not 0, then the server has played a card
+     * get information from server (played card, trump exchanged, turned (zugedreht)
      */
-    public void getPlayedCard() {
+    public void getServerInformation() {
 
         if(!alreadyReceived) {
             JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, serverIP + "?ID=1", new JSONArray(), new Response.Listener<JSONArray>() {
@@ -187,13 +187,23 @@ public class HTTPClient {
                         //check if the returned id is 0, if yes, try again in 500ms, if no, display the played card
                         JSONObject id = response.getJSONObject(0);
                         JSONObject trump = response.getJSONObject(1);
+                        JSONObject turn = response.getJSONObject(2);
+                        JSONObject twentyForty = response.getJSONObject(3);
 
                         if (trump.getBoolean("Trump")) {
-                            networkDisplay.exchangeTrump();
+                            networkDisplay.receiveAction("Trump", "true");
+                        }
+
+                        if (turn.getBoolean("Turn")) {
+                            networkDisplay.receiveAction("Turn", "true");
+                        }
+
+                        if (twentyForty.getString("2040") != "") {
+                            networkDisplay.receiveAction("2040", twentyForty.getString("2040"));
                         }
 
                         if(id.getInt("ID") != 0) {
-                            networkDisplay.displayStatus("yourTurn");
+                            networkDisplay.displayUserInformation("yourTurn");
                             networkDisplay.setMyTurn(id.getInt("ID"));
 
                             alreadyReceived = true;
@@ -203,8 +213,6 @@ public class HTTPClient {
                             } catch (InterruptedException ex) {
                                 Log.d("ThreadError", ex.getMessage());
                             }
-
-                            //getPlayedCard(); //call the same method again to send a new request
 
                             networkDisplay.waitForCard();
                             Log.d("Waiting", "waiting for card");

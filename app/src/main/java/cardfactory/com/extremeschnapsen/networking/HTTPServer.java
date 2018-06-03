@@ -28,12 +28,16 @@ public class HTTPServer {
     private Player player; //contains the current player
 
     private boolean trumpExchanged; //true, if trump was exchanged, else false
+    private boolean turn; //true, if the server turned (zudrehen)
+    private String twentyForty; //true, if the server played 20 or 40
 
     private String mode;
 
     public HTTPServer(IStartGame startGame, String mode) {
         cardPlayed = 0;
         trumpExchanged = false;
+        twentyForty = "";
+        turn = false;
         this.mode = mode;
         this.startGame = startGame;
     }
@@ -48,6 +52,14 @@ public class HTTPServer {
 
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    public void setTurn(boolean turn) {
+        this.turn = turn;
+    }
+
+    public void setTwentyForty(String twentyForty) {
+        this.twentyForty = twentyForty;
     }
 
     /**
@@ -147,8 +159,8 @@ public class HTTPServer {
             Log.d("JSONError", ex.getMessage());
         }
 
-        //networkDisplay.displayStatus(currentDeck.get(0).toString());
-        networkDisplay.displayStatus("waiting");
+        //networkDisplay.displayUserInformation(currentDeck.get(0).toString());
+        networkDisplay.displayUserInformation("waiting");
         networkDisplay.displayPlayer(params.get("Name").get(0));
         networkDisplay.dismissDialog();
 
@@ -159,6 +171,8 @@ public class HTTPServer {
         JSONArray jsonArray = new JSONArray();
         jsonArray.put(sendCurrentlyPlayedCard());
         jsonArray.put(sendTrumpExchanged());
+        jsonArray.put(sendTurn());
+        jsonArray.put(send2040());
         return jsonArray.toString();
     }
 
@@ -188,7 +202,11 @@ public class HTTPServer {
                 int cardID = jsonObject.getInt("ID");
                 networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
             } else if (jsonObject.has("Trump")) {
-                networkDisplay.exchangeTrump();
+                networkDisplay.receiveAction("Trump", "true");
+            } else if (jsonObject.has("Turn")) {
+                networkDisplay.receiveAction("Turn", "true");
+            } else if (jsonObject.has("2040")) {
+                networkDisplay.receiveAction("2040", jsonObject.getString("2040"));
             }
 
             return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
@@ -257,8 +275,40 @@ public class HTTPServer {
             Log.d("JSONError", ex.getMessage());
         }
 
-        return jsonObject; //convert the jsonArray of cardIDs to a string message for the response
+        return jsonObject;
     }
 
+    public JSONObject sendTurn() {
+        JSONObject jsonObject = new JSONObject();
 
+        try {
+            if (turn) {
+                jsonObject.put("Turn", "true");
+                turn = false;
+            }
+            else
+                jsonObject.put("Turn", "false");
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject send2040() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            if (twentyForty != "") {
+                jsonObject.put("2040", twentyForty);
+                twentyForty = "";
+            }
+            else
+                jsonObject.put("2040", twentyForty);
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+
+        return jsonObject;
+    }
 }

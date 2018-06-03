@@ -5,7 +5,7 @@ public interface INetworkDisplay {
      * display a given message on the activity
      * @param message the given message
      */
-    void displayStatus(String message);
+    void displayUserInformation(String message);
 
     /**
      * update the deck with a given deck (client only!)
@@ -27,5 +27,5 @@ public interface INetworkDisplay {
 
     void updateDeck();
 
-    void exchangeTrump();
+    void receiveAction(String action, String value);
 }

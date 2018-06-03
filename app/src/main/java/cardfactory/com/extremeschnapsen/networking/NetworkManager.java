@@ -2,7 +2,6 @@ package cardfactory.com.extremeschnapsen.networking;
 
 import android.content.Context;
 
-import java.io.Serializable;
 import java.util.List;
 
 import cardfactory.com.extremeschnapsen.models.Deck;
@@ -105,14 +104,30 @@ public class NetworkManager {
      */
     public void waitForCard(boolean alreadyReceived) {
         httpClient.setAlreadyReceived(alreadyReceived);
-        httpClient.getPlayedCard();
+        httpClient.getServerInformation();
     }
 
     public void sendTrumpExchanged() {
         if (isServer) {
             httpServer.setTrumpExchanged(true);
         } else {
-            httpClient.sendTrumpExchanged();
+            httpClient.sendAction("Trump", "true");
+        }
+    }
+
+    public void sendTurn() {
+        if (isServer) {
+            httpServer.setTurn(true);
+        } else {
+            httpClient.sendAction("Turn", "true");
+        }
+    }
+
+    public void send2040(String suit) {
+        if (isServer) {
+            httpServer.setTwentyForty(suit);
+        } else {
+            httpClient.sendAction("2040", suit);
         }
     }
 }

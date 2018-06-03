@@ -10,6 +10,7 @@
     <string name="msgWifiP2pNotWorking">Es gibt ein Problem mit der Netzwerkschnittstelle. Ist WLAN ausgeschaltet?</string>
     <string name="msgWaitingForOpposite">Warten auf Gegenspieler</string>
     <string name="msgWaiting">Warten...</string>
+    <string name="msgWaitingForConnection">Warten auf Verbindung</string>
 
     <string name="btnSearchForP2PDevices">Suchen...</string>
 
@@ -29,7 +30,10 @@
     <string name="msgPlayerLost">Der Stich ging an den Gegner, er ist nun dran</string>
     <string name="msgWaitingForOpppositeMove">Warten auf Zug des Gegners</string>
     <string name="msgYourTurn">Du bist am Zug</string>
-    <string name="msgWaitingForConnection">Warten auf Verbindung</string>
+    <string name="msg20Played">Du hast 20 angesagt</string>
+    <string name="msg20Received">Der Gegner hat 20 angesagt</string>
+    <string name="msg40Played">Du hast 40 angesagt</string>
+    <string name="msg40Received">Der Gegner hat 40 angesagt</string>
 
     <string name="title_activity_profil">ProfilActivity</string>
     <string name="dummy_button">Dummy Button</string>

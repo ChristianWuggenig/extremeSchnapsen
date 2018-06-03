@@ -1,11 +1,7 @@
 package cardfactory.com.extremeschnapsen.gui;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,7 +10,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +36,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     private static List<ImageView> cardList;
     private static List<CardImageView> cardsToCheckFor20;
 
-    private static TextView txvPlayer;
+    private static TextView txvUserInformation;
     private static TextView txvPlayer1;
     private static TextView txvPlayer2;
     private static TextView txvPoints;
@@ -98,7 +93,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_4));
         cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_5));*/
 
-        txvPlayer = this.findViewById(R.id.txvPlayer);
+        txvUserInformation = this.findViewById(R.id.txvUserInformation);
         txvPlayer1 = this.findViewById(R.id.txv_user1);
         txvPlayer2 = this.findViewById(R.id.txv_user2);
         txvPoints = this.findViewById(R.id.txv_mypoints);
@@ -116,7 +111,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             round.setMyTurn(false);
             txvPlayer1.setText(round.getUsername());
             txvPlayer2.setText(R.string.msgWaiting);
-            txvPlayer.setText(R.string.msgWaitingForConnection);
+            txvUserInformation.setText(R.string.msgWaitingForConnection);
             displayDeck();
         }
         else {
@@ -138,6 +133,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         }
     }
 
+    //msg20Received, msg40Received noch verwenden bitte
     public void onClickBtnHerz(View view) {
         round.check2040("herz");
     }
@@ -177,24 +173,29 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     }
 
     @Override
-    public void displayStatus(final String message) {
+    public void displayUserInformation(final String message) {
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 switch (message) {
                     case "won":
-                        txvPlayer.setText(R.string.msgPlayerWon);
+                        txvUserInformation.setText(R.string.msgPlayerWon);
                         break;
                     case "lost":
-                        txvPlayer.setText(R.string.msgPlayerLost);
+                        txvUserInformation.setText(R.string.msgPlayerLost);
                         break;
                     case "waiting":
-                        txvPlayer.setText(R.string.msgWaitingForOpppositeMove);
+                        txvUserInformation.setText(R.string.msgWaitingForOpppositeMove);
                         break;
                     case "yourTurn":
-                        txvPlayer.setText(R.string.msgYourTurn);
+                        txvUserInformation.setText(R.string.msgYourTurn);
                         break;
+                    case "20received":
+                        txvUserInformation.setText(R.string.msg20Received);
+                        break;
+                    case "40received":
+                        txvUserInformation.setText(R.string.msg40Received);
                 }
             }
         });
@@ -286,18 +287,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         }
     }
 
-    @Override
-    public void exchangeTrump(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                round.receiveExchangeTrump();
-                displayDeck();
-            }
-        });
-
-    }
-
     public void playCard(int cardID) {
         /*for(CardImageView civ : cardsToCheckFor20){
             if((int) civ.getCardId() == cardID){
@@ -380,5 +369,26 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             txvGamePoints1.setText(round.getGamePointsPlayer2());
             txvGamePoints2.setText(round.getGamePointsPlayer1());
         }
+    }
+
+    @Override
+    public void receiveAction(final String action, final String value) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (action) {
+                    case "Trump":
+                        round.receiveExchangeTrump();
+                        displayDeck();
+                        break;
+                    case "Turn":
+                        //was soll geschehen wenn der gegenüberliegende spieler zugedreht hat
+                        break;
+                    case "2040":
+                        round.receiveCheck2040(value);
+                        break;
+                }
+            }
+        });
     }
 }
