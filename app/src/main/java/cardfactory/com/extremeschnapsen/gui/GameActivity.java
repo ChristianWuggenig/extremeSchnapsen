@@ -1,13 +1,21 @@
 package cardfactory.com.extremeschnapsen.gui;
 
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +27,8 @@ import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
 import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.gameengine.Round;
+import cardfactory.com.extremeschnapsen.services.LightSensorService;
+import cardfactory.com.extremeschnapsen.networking.NetworkHelper;
 
 public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
@@ -35,19 +45,20 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
     private static List<ImageView> cardList;
     private static List<CardImageView> cardsToCheckFor20;
+    protected static List<ImageView> showCardList;
 
-    private static TextView txvUserInformation;
+    protected static TextView txvUserInformation;
     private static TextView txvPlayer1;
     private static TextView txvPlayer2;
     private static TextView txvPoints;
     private static TextView txvGamePoints1;
     private static TextView txvGamePoints2;
 
-    private static Round round;
+    protected Round round;
 
-    private boolean isGroupOwner;
+    protected boolean isGroupOwner;
 
-    private static View.OnClickListener onClickListener;
+    private static View.OnClickListener ivOnClickListener;
 
     private static AlertDialog.Builder builder;
 
@@ -101,7 +112,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         txvGamePoints2 = this.findViewById(R.id.txv_points2);
 
         Intent intent = this.getIntent();
-        isGroupOwner = intent.getBooleanExtra("IS_GROUP_OWNER", true);
+        isGroupOwner = intent.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, true);
 
         round = new Round(this);
 
@@ -121,7 +132,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             txvPlayer1.setText(R.string.msgWaiting);
         }
 
-        onClickListener = new View.OnClickListener() {
+        ivOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ivCardClicked(view);
@@ -129,8 +140,10 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         };
 
         for (int count = 0; count < 6; count++) {
-            cardList.get(count).setOnClickListener(onClickListener);
+            cardList.get(count).setOnClickListener(ivOnClickListener);
         }
+
+        showCardList = new ArrayList<>();
     }
 
     //msg20Received, msg40Received noch verwenden bitte
@@ -179,23 +192,30 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             @Override
             public void run() {
                 switch (message) {
-                    case "won":
+                    case MessageHelper.WON:
                         txvUserInformation.setText(R.string.msgPlayerWon);
                         break;
-                    case "lost":
+                    case MessageHelper.LOST:
                         txvUserInformation.setText(R.string.msgPlayerLost);
                         break;
-                    case "waiting":
+                    case MessageHelper.WAITING:
                         txvUserInformation.setText(R.string.msgWaitingForOpppositeMove);
                         break;
-                    case "yourTurn":
+                    case MessageHelper.YOURTURN:
                         txvUserInformation.setText(R.string.msgYourTurn);
                         break;
-                    case "20received":
+                    case MessageHelper.TWENTYRECEIVED:
                         txvUserInformation.setText(R.string.msg20Received);
                         break;
-                    case "40received":
+                    case MessageHelper.FORTYRECEIVED:
                         txvUserInformation.setText(R.string.msg40Received);
+                        break;
+                    case MessageHelper.TWENTYPLAYED:
+                        txvUserInformation.setText(R.string.msg20Played);
+                        break;
+                    case MessageHelper.FORTYPLAYED:
+                        txvUserInformation.setText(R.string.msg40Played);
+                        break;
                 }
             }
         });
@@ -377,18 +397,90 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             @Override
             public void run() {
                 switch (action) {
-                    case "Trump":
+                    case NetworkHelper.TRUMP:
                         round.receiveExchangeTrump();
                         displayDeck();
                         break;
-                    case "Turn":
+                    case NetworkHelper.TURN:
                         //was soll geschehen wenn der gegenüberliegende spieler zugedreht hat
                         break;
-                    case "2040":
+                    case NetworkHelper.TWENTYFORTY:
                         round.receiveCheck2040(value);
                         break;
+                    case NetworkHelper.SIGHTJOKER:
+                        round.sightJokerReceived();
+                        break;
+                    case NetworkHelper.PARRYSIGHTJOKER:
+                        round.sightJokerParryReceived();
                 }
             }
         });
+    }
+
+    public void onClickBtnCards(View view) {
+        showCardDialog(false);
+    }
+
+    protected void showCardDialog(boolean sightJoker) {
+        AlertDialog.Builder showCardsBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.cards, null);
+
+        if (showCardList.size() == 0) {
+            initializeShowCardList(dialogView);
+        } else {
+            showCardList = new ArrayList<>();
+            initializeShowCardList(dialogView);
+        }
+
+
+        showCardsBuilder.setView(dialogView);
+
+        showCardsBuilder.setPositiveButton(R.string.btnClose, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dismissDialog();
+            }
+        });
+
+        List<Deck> cards;
+
+        if (sightJoker && isGroupOwner) {
+            cards = round.getCardsOnHand(2);
+            txvUserInformation.setText(R.string.msgSightJoker);
+        } else if (sightJoker && !isGroupOwner) {
+            cards = round.getCardsOnHand(1);
+            txvUserInformation.setText(R.string.msgSightJoker);
+        } else {
+            cards = round.getAlreadyPlayedCards();
+        }
+
+        for (int index = 0; index < cards.size(); index++) {
+            int res_id = getResources().getIdentifier(cards.get(index).getCardSuit() + cards.get(index).getCardRank(), "drawable", this.getPackageName());
+            showCardList.get(index).setImageResource(res_id);
+        }
+
+        AlertDialog dialog = showCardsBuilder.create();
+        dialog.show();
+        dialog.getWindow().setLayout(getWindow().getDecorView().getWidth() - 100, getWindow().getDecorView().getHeight());
+        //showCardsBuilder.create().show();
+    }
+
+    protected void initializeShowCardList(View dialogView) {
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard1));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard2));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard3));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard4));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard5));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard6));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard7));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard8));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard9));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard10));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard11));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard12));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard13));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard14));
+        showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard15));
     }
 }

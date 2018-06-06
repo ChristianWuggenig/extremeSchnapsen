@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import cardfactory.com.extremeschnapsen.R;
+import cardfactory.com.extremeschnapsen.gui.IntentHelper;
 import cardfactory.com.extremeschnapsen.gui.SearchActivity;
 import cardfactory.com.extremeschnapsen.gui.StartGameActivity;
 import cardfactory.com.extremeschnapsen.gameengine.Game;
@@ -70,7 +71,7 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
                 public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
                     if(wifiP2pInfo.groupFormed){
                         Intent startGameActivityIntent = new Intent(context, StartGameActivity.class);
-                        startGameActivityIntent.putExtra("IS_GROUP_OWNER", wifiP2pInfo.isGroupOwner);
+                        startGameActivityIntent.putExtra(IntentHelper.IS_GROUP_OWNER, wifiP2pInfo.isGroupOwner);
                         searchActivity.startActivity(startGameActivityIntent);
                     }
                 }

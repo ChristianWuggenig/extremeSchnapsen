@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cardfactory.com.extremeschnapsen.gui.MessageHelper;
 import cardfactory.com.extremeschnapsen.models.Player;
 
 public class HTTPClient {
@@ -54,11 +55,11 @@ public class HTTPClient {
     }
 
     public void getGameMode(String mode) {
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, serverIP + "?Mode=" + mode, new JSONObject(), new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, serverIP + "?" + NetworkHelper.MODE + "=" + mode, new JSONObject(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    startGame.setGameMode(response.getString("Mode"));
+                    startGame.setGameMode(response.getString(NetworkHelper.MODE));
                 } catch (JSONException ex) {
                     Log.d("JSONError", ex.getMessage());
                 }
@@ -70,6 +71,10 @@ public class HTTPClient {
             }
         });
 
+        //set initial timeout and retry policy for volley
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 10, 1.0f));
+
+        request.setTag(queueTag);
         requestQueue.add(request);
     }
 
@@ -79,7 +84,7 @@ public class HTTPClient {
      */
     public void getDeck() {
 
-        final JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, serverIP + "?Name=" + player.getUsername(), new JSONArray(), new Response.Listener<JSONArray>() {
+        final JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, serverIP + "?" + NetworkHelper.NAME + "=" + player.getUsername(), new JSONArray(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
 
@@ -90,18 +95,18 @@ public class HTTPClient {
                     //converts the ID-String into an int-array
                     for (int count = 0; count < 20; count++) {
                         JSONObject jsonObject = response.getJSONObject(count);
-                        shuffledDeckIDs[count] = jsonObject.getInt("ID");
+                        shuffledDeckIDs[count] = jsonObject.getInt(NetworkHelper.ID);
                     }
 
                     JSONObject jsonObject = response.getJSONObject(20);
-                    playerName = jsonObject.getString("Name");
+                    playerName = jsonObject.getString(NetworkHelper.NAME);
 
                 } catch (Exception ex) {
                     Log.d("JSONError", ex.getMessage());
                 }
 
                 networkDisplay.displayShuffledDeck(shuffledDeckIDs, playerName); //display the updated deck and the opposite players name
-                networkDisplay.displayUserInformation("yourTurn");
+                networkDisplay.displayUserInformation(MessageHelper.YOURTURN);
                 networkDisplay.dismissDialog();
             }
         }, new Response.ErrorListener() {
@@ -112,10 +117,6 @@ public class HTTPClient {
             }
         });
 
-        //set initial timeout and retry policy for volley
-        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 10, 1.0f));
-
-        request.setTag(queueTag);
         requestQueue.add(request);
     }
 
@@ -128,7 +129,7 @@ public class HTTPClient {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            jsonObject.put("ID", cardID);
+            jsonObject.put(NetworkHelper.ID, cardID);
         } catch (JSONException ex) {
             Log.d("JSONError", ex.getMessage());
         }
@@ -180,7 +181,7 @@ public class HTTPClient {
     public void getServerInformation() {
 
         if(!alreadyReceived) {
-            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, serverIP + "?ID=1", new JSONArray(), new Response.Listener<JSONArray>() {
+            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, serverIP + "?" + NetworkHelper.ID + "=1", new JSONArray(), new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
                     try {
@@ -189,27 +190,37 @@ public class HTTPClient {
                         JSONObject trump = response.getJSONObject(1);
                         JSONObject turn = response.getJSONObject(2);
                         JSONObject twentyForty = response.getJSONObject(3);
+                        JSONObject sightJoker = response.getJSONObject(4);
+                        JSONObject parrySightJoker = response.getJSONObject(5);
 
-                        if (trump.getBoolean("Trump")) {
-                            networkDisplay.receiveAction("Trump", "true");
+                        if (trump.getBoolean(NetworkHelper.TRUMP)) {
+                            networkDisplay.receiveAction(NetworkHelper.TRUMP, "true");
                         }
 
-                        if (turn.getBoolean("Turn")) {
-                            networkDisplay.receiveAction("Turn", "true");
+                        if (turn.getBoolean(NetworkHelper.TURN)) {
+                            networkDisplay.receiveAction(NetworkHelper.TURN, "true");
                         }
 
-                        if (twentyForty.getString("2040") != "") {
-                            networkDisplay.receiveAction("2040", twentyForty.getString("2040"));
+                        if (twentyForty.getString(NetworkHelper.TWENTYFORTY) != "") {
+                            networkDisplay.receiveAction(NetworkHelper.TWENTYFORTY, twentyForty.getString(NetworkHelper.TWENTYFORTY));
                         }
 
-                        if(id.getInt("ID") != 0) {
-                            networkDisplay.displayUserInformation("yourTurn");
-                            networkDisplay.setMyTurn(id.getInt("ID"));
+                        if (sightJoker.getBoolean(NetworkHelper.SIGHTJOKER)) {
+                            networkDisplay.receiveAction(NetworkHelper.SIGHTJOKER, "true");
+                        }
+
+                        if (parrySightJoker.getBoolean(NetworkHelper.PARRYSIGHTJOKER)) {
+                            networkDisplay.receiveAction(NetworkHelper.PARRYSIGHTJOKER, "true");
+                        }
+
+                        if(id.getInt(NetworkHelper.ID) != 0) {
+                            networkDisplay.displayUserInformation(MessageHelper.YOURTURN);
+                            networkDisplay.setMyTurn(id.getInt(NetworkHelper.ID));
 
                             alreadyReceived = true;
                         } else {
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(700);
                             } catch (InterruptedException ex) {
                                 Log.d("ThreadError", ex.getMessage());
                             }

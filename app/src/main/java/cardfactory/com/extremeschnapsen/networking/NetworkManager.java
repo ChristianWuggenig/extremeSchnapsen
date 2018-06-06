@@ -111,7 +111,7 @@ public class NetworkManager {
         if (isServer) {
             httpServer.setTrumpExchanged(true);
         } else {
-            httpClient.sendAction("Trump", "true");
+            httpClient.sendAction(NetworkHelper.TRUMP, "true");
         }
     }
 
@@ -119,7 +119,7 @@ public class NetworkManager {
         if (isServer) {
             httpServer.setTurn(true);
         } else {
-            httpClient.sendAction("Turn", "true");
+            httpClient.sendAction(NetworkHelper.TURN, "true");
         }
     }
 
@@ -127,7 +127,23 @@ public class NetworkManager {
         if (isServer) {
             httpServer.setTwentyForty(suit);
         } else {
-            httpClient.sendAction("2040", suit);
+            httpClient.sendAction(NetworkHelper.TWENTYFORTY, suit);
+        }
+    }
+
+    public void sendSightJoker() {
+        if (isServer) {
+            httpServer.setSightJoker(true);
+        } else {
+            httpClient.sendAction(NetworkHelper.SIGHTJOKER, "true");
+        }
+    }
+
+    public void sendParrySightJoker() {
+        if (isServer) {
+            httpServer.setParrySightJoker(true);
+        } else {
+            httpClient.sendAction(NetworkHelper.PARRYSIGHTJOKER, "true");
         }
     }
 }

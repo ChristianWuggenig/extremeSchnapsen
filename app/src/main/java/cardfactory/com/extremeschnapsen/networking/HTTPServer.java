@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cardfactory.com.extremeschnapsen.gui.MessageHelper;
 import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.models.Player;
 import fi.iki.elonen.NanoHTTPD;
@@ -30,6 +31,8 @@ public class HTTPServer {
     private boolean trumpExchanged; //true, if trump was exchanged, else false
     private boolean turn; //true, if the server turned (zudrehen)
     private String twentyForty; //true, if the server played 20 or 40
+    private boolean sightJoker; //true, if the sight joker was used
+    private boolean parrySightJoker; //true, if the parry sight joker was used
 
     private String mode;
 
@@ -40,6 +43,8 @@ public class HTTPServer {
         turn = false;
         this.mode = mode;
         this.startGame = startGame;
+        sightJoker = false;
+        parrySightJoker = false;
     }
 
     public void setCurrentDeck(List<Deck> currentDeck) {
@@ -62,6 +67,14 @@ public class HTTPServer {
         this.twentyForty = twentyForty;
     }
 
+    public void setSightJoker(boolean sightJoker) {
+        this.sightJoker = sightJoker;
+    }
+
+    public void setParrySightJoker(boolean parrySightJoker) {
+        this.parrySightJoker = parrySightJoker;
+    }
+
     /**
      * start the http-server and also implement the response-methods
      */
@@ -78,11 +91,11 @@ public class HTTPServer {
 
                         //check what the client wants to have
                         if (params.size() != 0) {
-                            if (params.get("Name") != null) {
+                            if (params.get(NetworkHelper.NAME) != null) {
                                 message = sendAllDeck(params);
-                            } else if (params.get("ID") != null) {
+                            } else if (params.get(NetworkHelper.ID) != null) {
                                 message = sendClientInformation();
-                            } else if (params.get("Mode") != null) {
+                            } else if (params.get(NetworkHelper.MODE) != null) {
                                 message = sendClientMode(params);
                             }
                         }
@@ -147,12 +160,12 @@ public class HTTPServer {
         try {
             for (Deck deck : currentDeck) {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("ID", deck.getCardID());
+                jsonObject.put(NetworkHelper.ID, deck.getCardID());
                 jsonArray.put(jsonObject);
             }
 
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("Name", player.getUsername());
+            jsonObject.put(NetworkHelper.NAME, player.getUsername());
             jsonArray.put(jsonObject);
 
         } catch (JSONException ex) {
@@ -160,8 +173,8 @@ public class HTTPServer {
         }
 
         //networkDisplay.displayUserInformation(currentDeck.get(0).toString());
-        networkDisplay.displayUserInformation("waiting");
-        networkDisplay.displayPlayer(params.get("Name").get(0));
+        networkDisplay.displayUserInformation(MessageHelper.WAITING);
+        networkDisplay.displayPlayer(params.get(NetworkHelper.NAME).get(0));
         networkDisplay.dismissDialog();
 
         return jsonArray.toString(); //convert the jsonArray of cardIDs to a string message for the response
@@ -173,6 +186,8 @@ public class HTTPServer {
         jsonArray.put(sendTrumpExchanged());
         jsonArray.put(sendTurn());
         jsonArray.put(send2040());
+        jsonArray.put(sendSightJoker());
+        jsonArray.put(sendParrySightJoker());
         return jsonArray.toString();
     }
 
@@ -184,7 +199,7 @@ public class HTTPServer {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            jsonObject.put("ID", cardPlayed);
+            jsonObject.put(NetworkHelper.ID, cardPlayed);
         } catch (JSONException ex) {
             Log.d("JSONError", ex.getMessage());
         }
@@ -198,15 +213,19 @@ public class HTTPServer {
         try {
             JSONObject jsonObject = new JSONObject(params.get("postData"));
 
-            if (jsonObject.has("ID")) {
-                int cardID = jsonObject.getInt("ID");
+            if (jsonObject.has(NetworkHelper.ID)) {
+                int cardID = jsonObject.getInt(NetworkHelper.ID);
                 networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
-            } else if (jsonObject.has("Trump")) {
-                networkDisplay.receiveAction("Trump", "true");
-            } else if (jsonObject.has("Turn")) {
-                networkDisplay.receiveAction("Turn", "true");
-            } else if (jsonObject.has("2040")) {
-                networkDisplay.receiveAction("2040", jsonObject.getString("2040"));
+            } else if (jsonObject.has(NetworkHelper.TRUMP)) {
+                networkDisplay.receiveAction(NetworkHelper.TRUMP, "true");
+            } else if (jsonObject.has(NetworkHelper.TURN)) {
+                networkDisplay.receiveAction(NetworkHelper.TURN, "true");
+            } else if (jsonObject.has(NetworkHelper.TWENTYFORTY)) {
+                networkDisplay.receiveAction(NetworkHelper.TWENTYFORTY, jsonObject.getString(NetworkHelper.TWENTYFORTY));
+            } else if (jsonObject.has(NetworkHelper.SIGHTJOKER)) {
+                networkDisplay.receiveAction(NetworkHelper.SIGHTJOKER, "true");
+            } else if (jsonObject.has(NetworkHelper.PARRYSIGHTJOKER)) {
+                networkDisplay.receiveAction(NetworkHelper.PARRYSIGHTJOKER, "true");
             }
 
             return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
@@ -217,21 +236,21 @@ public class HTTPServer {
     }
 
     public String sendClientMode(Map<String, List<String>> params) {
-        String mode = params.get("Mode").get(0);
+        String mode = params.get(NetworkHelper.MODE).get(0);
 
         try {
             JSONObject jsonObject = new JSONObject();
 
-            if (mode.equals("extreme")) {
-                jsonObject.put("Mode", "extreme");
-                startGame.setGameMode("extreme");
+            if (mode.equals(NetworkHelper.MODE_EXTREME)) {
+                jsonObject.put(NetworkHelper.MODE, NetworkHelper.MODE_EXTREME);
+                startGame.setGameMode(NetworkHelper.MODE_EXTREME);
             } else {
-                if (this.mode.equals("extreme")) {
-                    jsonObject.put("Mode", "extreme");
-                    startGame.setGameMode("extreme");
+                if (this.mode.equals(NetworkHelper.MODE_EXTREME)) {
+                    jsonObject.put(NetworkHelper.MODE, NetworkHelper.MODE_EXTREME);
+                    startGame.setGameMode(NetworkHelper.MODE_EXTREME);
                 } else {
-                    jsonObject.put("Mode", "normal");
-                    startGame.setGameMode("normal");
+                    jsonObject.put(NetworkHelper.MODE, NetworkHelper.MODE_NORMAL);
+                    startGame.setGameMode(NetworkHelper.MODE_NORMAL);
                 }
             }
 
@@ -250,7 +269,7 @@ public class HTTPServer {
     public String getCurrentlyPlayedCard(Map<String, String> params) {
         try {
             JSONObject jsonObject = new JSONObject(params.get("postData"));
-            int cardID = jsonObject.getInt("ID");
+            int cardID = jsonObject.getInt(NetworkHelper.ID);
 
             networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
 
@@ -266,11 +285,11 @@ public class HTTPServer {
 
         try {
             if (trumpExchanged) {
-                jsonObject.put("Trump", "true");
+                jsonObject.put(NetworkHelper.TRUMP, "true");
                 trumpExchanged = false;
             }
             else
-                jsonObject.put("Trump", "false");
+                jsonObject.put(NetworkHelper.TRUMP, "false");
         } catch (JSONException ex) {
             Log.d("JSONError", ex.getMessage());
         }
@@ -283,11 +302,11 @@ public class HTTPServer {
 
         try {
             if (turn) {
-                jsonObject.put("Turn", "true");
+                jsonObject.put(NetworkHelper.TURN, "true");
                 turn = false;
             }
             else
-                jsonObject.put("Turn", "false");
+                jsonObject.put(NetworkHelper.TURN, "false");
         } catch (JSONException ex) {
             Log.d("JSONError", ex.getMessage());
         }
@@ -300,11 +319,45 @@ public class HTTPServer {
 
         try {
             if (twentyForty != "") {
-                jsonObject.put("2040", twentyForty);
+                jsonObject.put(NetworkHelper.TWENTYFORTY, twentyForty);
                 twentyForty = "";
             }
             else
-                jsonObject.put("2040", twentyForty);
+                jsonObject.put(NetworkHelper.TWENTYFORTY, twentyForty);
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject sendSightJoker() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            if (sightJoker) {
+                jsonObject.put(NetworkHelper.SIGHTJOKER, "true");
+                sightJoker = false;
+            }
+            else
+                jsonObject.put(NetworkHelper.SIGHTJOKER, "false");
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+
+        return jsonObject;
+    }
+
+    public JSONObject sendParrySightJoker() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            if (parrySightJoker) {
+                jsonObject.put(NetworkHelper.PARRYSIGHTJOKER, "true");
+                parrySightJoker = false;
+            }
+            else
+                jsonObject.put(NetworkHelper.PARRYSIGHTJOKER, "false");
         } catch (JSONException ex) {
             Log.d("JSONError", ex.getMessage());
         }

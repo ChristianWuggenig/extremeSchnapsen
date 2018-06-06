@@ -11,6 +11,7 @@ import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
 import cardfactory.com.extremeschnapsen.gameengine.Game;
 import cardfactory.com.extremeschnapsen.networking.IStartGame;
+import cardfactory.com.extremeschnapsen.networking.NetworkHelper;
 import cardfactory.com.extremeschnapsen.networking.NetworkManager;
 
 public class StartGameActivity extends AppCompatActivity implements IStartGame {
@@ -47,7 +48,7 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
         networkManager = NetworkManager.getInstance(this);
 
         local = this.getIntent();
-        isGroupOwner = local.getBooleanExtra("IS_GROUP_OWNER", false);
+        isGroupOwner = local.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, false);
 
         playerDataSource = new PlayerDataSource(this);
         playerDataSource.open();
@@ -101,16 +102,17 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
 
         alreadyStarted = true;
 
-        /*game.openDatabases();
+        game.openDatabases();
+        
+        boolean isGroupOwner = local.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, false);
 
-        if (!game.gameWon(local.getBooleanExtra("IS_GROUP_OWNER", true))){
-            Intent startGameActivityIntent = new Intent(this, GameActivity.class);
-            startGameActivityIntent.putExtra("IS_GROUP_OWNER", local.getBooleanExtra("IS_GROUP_OWNER", true));
-            this.startActivity(startGameActivityIntent);
+        if (game.gameOver(isGroupOwner)) {
+            if (game.gameWon(isGroupOwner)) {
+                btnStartGame.setText(R.string.btnGameWon);
+            } else {
+                btnStartGame.setText(R.string.btnGameLost);
+            }
         }
-        else if(game.gameWon(local.getBooleanExtra("IS_GROUP_OWNER", true))){
-            finish();
-        }*/
 
     }
 
@@ -130,7 +132,7 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
             startGameIntent = new Intent(this, GameActivity.class);
         }
 
-        startGameIntent.putExtra("IS_GROUP_OWNER", local.getBooleanExtra("IS_GROUP_OWNER", true));
+        startGameIntent.putExtra(IntentHelper.IS_GROUP_OWNER, local.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, true));
         this.startActivity(startGameIntent);
     }
 
@@ -145,7 +147,7 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
 
     public void btnStartNextRoundClick(View view) {
         Intent startGameActivityIntent = new Intent(this, GameActivity.class);
-        startGameActivityIntent.putExtra("IS_GROUP_OWNER", local.getBooleanExtra("IS_GROUP_OWNER", true));
+        startGameActivityIntent.putExtra(IntentHelper.IS_GROUP_OWNER, local.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, true));
         this.startActivity(startGameActivityIntent);
     }
 
@@ -154,7 +156,7 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (mode.equals("extreme")) {
+                if (mode.equals(NetworkHelper.MODE_EXTREME)) {
                     gameModeExtreme = true;
                     btnStartGame.setText(R.string.btnStartGameExtreme);
                 } else {

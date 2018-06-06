@@ -41,34 +41,57 @@ public class Game implements Serializable {
     public void updateGamePoints(int won_pointsplayer1, int won_pointsplayer2){
         gp = gpds.getCurrentGamePointsObject();
         gp.setGamePointsPlayer1(gp.getGamePointsPlayer1()+ won_pointsplayer1);
-        gp.setGamePoinstsPlayer2(gp.getGamePoinstsPlayer2()+ won_pointsplayer2);
-        gpds.updateGamePoints(1,gp.getGamePointsPlayer1(),gp.getGamePoinstsPlayer2());
+        gp.setGamePoinstsPlayer2(gp.getGamePointsPlayer2()+ won_pointsplayer2);
+        gpds.updateGamePoints(1,gp.getGamePointsPlayer1(),gp.getGamePointsPlayer2());
     }
 
     public boolean gameWon(boolean isGroupOwner){
-        boolean won = false;
+        if (gp.getGamePointsPlayer1() >= 7 && isGroupOwner) {
+            return true;
+        } else if (gp.getGamePointsPlayer1() >= 7 && !isGroupOwner) {
+            return false;
+        } else if (gp.getGamePointsPlayer2() >= 7 && isGroupOwner) {
+            return false;
+        } else if (gp.getGamePointsPlayer2() >= 7 && !isGroupOwner) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean gameOver(boolean isGroupOwner) {
         gp = gpds.getCurrentGamePointsObject();
 
         if (gp.getGamePointsPlayer1() >=7){
-            if (isGroupOwner){
-                playerDataSource.updtatePlayerStatistics(1,1);
-            }
-            else {
-                playerDataSource.updtatePlayerStatistics(1,0);
-            }
-        }
-        else if (gp.getGamePoinstsPlayer2() >=7){
-            if (isGroupOwner){
-                playerDataSource.updtatePlayerStatistics(1,0);
-            }
-            else {
-                playerDataSource.updtatePlayerStatistics(1,1);
 
+            gpds.updateGamePoints(1, 0, 0);
+
+            if (isGroupOwner){
+                playerDataSource.updatePlayerStatistics(1,1);
+                return true;
+            }
+            else {
+                playerDataSource.updatePlayerStatistics(1,0);
+                return true;
             }
 
         }
-        return won;
+        else if (gp.getGamePointsPlayer2() >=7){
 
+            gpds.updateGamePoints(1, 0, 0);
+
+            if (isGroupOwner){
+                playerDataSource.updatePlayerStatistics(1,0);
+                return true;
+            }
+            else {
+                playerDataSource.updatePlayerStatistics(1,1);
+                return true;
+
+            }
+
+        }
+
+        return false;
     }
   
     public int getGamePointsPlayer1() {
@@ -78,7 +101,7 @@ public class Game implements Serializable {
 
     public int getGamePointsPlayer2() {
         gp = gpds.getCurrentGamePointsObject();
-        return gp.getGamePoinstsPlayer2();
+        return gp.getGamePointsPlayer2();
     }
   
     public void openDatabases() {
