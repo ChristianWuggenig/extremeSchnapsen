@@ -43,7 +43,7 @@ public class GamePoints implements Serializable {
         this.gamePointsPlayer1 = gamePointsPlayer1;
     }
 
-    public int getGamePoinstsPlayer2() {
+    public int getGamePointsPlayer2() {
         return gamePoinstsPlayer2;
     }
 

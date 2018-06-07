@@ -125,7 +125,7 @@ public class PlayerDataSource {
 
     }
 
-    public void updtatePlayerStatistics(int played_games, int won_games){
+    public void updatePlayerStatistics(int played_games, int won_games){
         Player player = getCurrentPlayerObject();
         player.setPlayed_games(player.getPlayed_games() + played_games);
         player.setWon_games(player.getWon_games() + won_games);

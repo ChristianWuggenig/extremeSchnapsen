@@ -11,6 +11,7 @@ import cardfactory.com.extremeschnapsen.database.CardDataSource;
 import cardfactory.com.extremeschnapsen.database.DeckDataSource;
 import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
 import cardfactory.com.extremeschnapsen.database.RoundPointsDataSource;
+import cardfactory.com.extremeschnapsen.gui.MessageHelper;
 import cardfactory.com.extremeschnapsen.models.Card;
 import cardfactory.com.extremeschnapsen.models.CardImageView;
 import cardfactory.com.extremeschnapsen.models.Deck;
@@ -91,7 +92,6 @@ public class Round {
         playerDataSource.close();
     }
 
-    //die Karten auf der Hand zurückbekommen
     public List<Deck> getCardsOnHand() {
         List<Deck> deckonhands = new ArrayList<>();
 
@@ -111,6 +111,19 @@ public class Round {
         }
         return deckonhands;
 
+    }
+
+    //die Karten auf der Hand zurückbekommen
+    public List<Deck> getCardsOnHand(int player) {
+        List<Deck> onHand = new ArrayList<>();
+
+        for (Deck deck : this.currentDeck) {
+            if (deck.getDeckStatus() == player) {
+                onHand.add(deck);
+            }
+        }
+
+        return onHand;
     }
 
     /**
@@ -497,6 +510,8 @@ public class Round {
         Deck cardPlayer2 = getPlayedCardPlayer2();
         boolean player1Won = false;
         boolean player2Won = false;
+        int player1 = 0;
+        int player2 = 0;
         trump = deckDataSource.getTrump();
 
         networkDisplay.updateDeck();
@@ -509,13 +524,15 @@ public class Round {
             if (cardPlayer1.getCardSuit().equals(trump) && !cardPlayer2.getCardSuit().equals(trump)) {
                 rp.setPointsplayer1(sum_draw_points);
                 player1Won = true;
-
+                player1 = 7;
+                player2 = 7;
             }
             //spieler 2 hat trumpf, spieler 1 nicht
             else if (!cardPlayer1.getCardSuit().equals(trump) && cardPlayer2.getCardSuit().equals(trump)) {
                 rp.setPointsplayer2(sum_draw_points);
                 player2Won = true;
-
+                player1 = 8;
+                player2 = 8;
             }
             //beide haben einen trumpf
             else if (cardPlayer1.getCardSuit().equals(trump) && cardPlayer2.getCardSuit().equals(trump)) {
@@ -523,11 +540,14 @@ public class Round {
                 if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
                     rp.setPointsplayer1(sum_draw_points);
                     player1Won = true;
+                    player1 = 7;
+                    player2 = 7;
 
                 } else {
                     rp.setPointsplayer2(sum_draw_points);
                     player2Won = true;
-
+                    player1 = 8;
+                    player2 = 8;
                 }
 
             }
@@ -538,18 +558,26 @@ public class Round {
                     if (myTurn && isGroupOwner) {
                         rp.setPointsplayer1(sum_draw_points);
                         player1Won = true;
+                        player1 = 7;
+                        player2 = 7;
                     }
                     else if (!myTurn && isGroupOwner){
                         rp.setPointsplayer2(sum_draw_points);
                         player2Won = true;
+                        player1 = 8;
+                        player2 = 8;
                     }
                     else if (myTurn && !isGroupOwner){
                         rp.setPointsplayer2(sum_draw_points);
                         player2Won = true;
+                        player1 = 8;
+                        player2 = 8;
                     }
                     else if (!myTurn && !isGroupOwner){
                         rp.setPointsplayer1(sum_draw_points);
                         player1Won = true;
+                        player1 = 7;
+                        player2 = 7;
                     }
 
                 }
@@ -558,11 +586,14 @@ public class Round {
                     if (cardPlayer1.getCardValue() > cardPlayer2.getCardValue()) {
                         rp.setPointsplayer1(sum_draw_points);
                         player1Won = true;
+                        player1 = 7;
+                        player2 = 7;
 
                     } else if (cardPlayer2.getCardValue() > cardPlayer1.getCardValue()) {
                         rp.setPointsplayer2(sum_draw_points);
                         player2Won = true;
-
+                        player1 = 8;
+                        player2 = 8;
                     }
                 }
             }
@@ -577,31 +608,31 @@ public class Round {
                 myTurn = true;
                 getNextFreeCard(1);
                 getNextFreeCard(2);
-                networkDisplay.displayUserInformation("won");
+                networkDisplay.displayUserInformation(MessageHelper.WON);
             } else if (player2Won && !isGroupOwner) {
                 myTurn = true;
                 getNextFreeCard(2);
                 getNextFreeCard(1);
-                networkDisplay.displayUserInformation("won");
+                networkDisplay.displayUserInformation(MessageHelper.WON);
             } else if (player1Won && !isGroupOwner) {
                 myTurn = false;
                 networkManager.waitForCard(false);
                 getNextFreeCard(1);
                 getNextFreeCard(2);
-                networkDisplay.displayUserInformation("lost");
+                networkDisplay.displayUserInformation(MessageHelper.LOST);
             } else if (player2Won && isGroupOwner) {
                 myTurn = false;
                 getNextFreeCard(2);
                 getNextFreeCard(1);
-                networkDisplay.displayUserInformation("lost");
+                networkDisplay.displayUserInformation(MessageHelper.LOST);
             }
 
             networkDisplay.updateDeck();
 
-            cardPlayer1.setDeckStatus(7);
-            cardPlayer2.setDeckStatus(8);
-            deckDataSource.updateDeckStatus(cardPlayer1.getCardID(), 7); //updaten des status der karte
-            deckDataSource.updateDeckStatus(cardPlayer2.getCardID(), 8);
+            cardPlayer1.setDeckStatus(player1);
+            cardPlayer2.setDeckStatus(player2);
+            deckDataSource.updateDeckStatus(cardPlayer1.getCardID(), player1); //updaten des status der karte
+            deckDataSource.updateDeckStatus(cardPlayer2.getCardID(), player2);
 
             increaseMoves();
 
@@ -624,25 +655,6 @@ public class Round {
                     game_round.updateGamePoints(3,0);
                 }
 
-                if (isGroupOwner) {
-                    try {
-                        Thread.sleep(1000);
-                    }
-                    catch (InterruptedException e){
-
-                    }
-                    networkManager.stopHttpServer();
-                }
-                else {
-                    /*try {
-                        Thread.sleep(2000);
-                    }
-                    catch (InterruptedException e){
-
-                    }*/
-
-                }
-
                 return true;
 
             }
@@ -660,25 +672,6 @@ public class Round {
                     game_round.updateGamePoints(0,3);
                 }
 
-                if (isGroupOwner) {
-                    try {
-                        Thread.sleep(1000);
-                    }
-                    catch (InterruptedException e){
-
-                    }
-                    networkManager.stopHttpServer();
-                }
-                else {
-                    /*try {
-                        Thread.sleep(2000);
-                    }
-                    catch (InterruptedException e){
-
-                    }*/
-
-                }
-
                 return true;
             }
             //letzter Stich
@@ -691,43 +684,25 @@ public class Round {
                     game_round.updateGamePoints(0,1);
                 }
 
-                if (isGroupOwner) {
-                    try {
-                        Thread.sleep(1000);
-                    }
-                    catch (InterruptedException e){
-
-                    }
-                    networkManager.stopHttpServer();
-                }
-                else {
-                    /*try {
-                        Thread.sleep(2000);
-                    }
-                    catch (InterruptedException e){
-
-                    }*/
-
-                }
                 return true;
             }
 
             return false;
         } else if (cardPlayer1 == null && cardPlayer2 != null && !isGroupOwner) {
             networkManager.waitForCard(false);
-            networkDisplay.displayUserInformation("waiting");
+            networkDisplay.displayUserInformation(MessageHelper.WAITING);
             networkDisplay.updateDeck();
         } else if (cardPlayer1 != null && cardPlayer2 == null && !isGroupOwner) {
-            networkDisplay.displayUserInformation("yourTurn");
+            networkDisplay.displayUserInformation(MessageHelper.YOURTURN);
             networkDisplay.updateDeck();
         } else if (cardPlayer1 == null && cardPlayer2 != null && isGroupOwner) {
-            networkDisplay.displayUserInformation("yourTurn");
+            networkDisplay.displayUserInformation(MessageHelper.YOURTURN);
             networkDisplay.updateDeck();
         } else if (cardPlayer1 != null && cardPlayer2 == null && isGroupOwner) {
-            networkDisplay.displayUserInformation("waiting");
+            networkDisplay.displayUserInformation(MessageHelper.WAITING);
             networkDisplay.updateDeck();
         } else {
-            networkDisplay.displayUserInformation("waiting");
+            networkDisplay.displayUserInformation(MessageHelper.WAITING);
             networkDisplay.updateDeck();
         }
         return false;
@@ -756,69 +731,80 @@ public class Round {
 
         if (trump == farbe)
             i=4;
-        else
+        else if (!farbe.equals(""))
             i=2;
 
         //20er 40er
         if (i == 2 || i ==4) {
-            if (checkForStuch()){
-                if (isGroupOwner) {
-                    rp.setPointsplayer1(10 * i);
-                }
-                else{
-                    rp.setPointsplayer2(10 * i);
-                }
+            if (isGroupOwner) {
+                rp.setPointsplayer2(10 * i);
             }
             else{
-                if (isGroupOwner){
-                    rp.setHiddenpointsplayer1(10*i);
-                }
-                else{
-                    rp.setHiddenpointsplayer2(10*i);
-                }
+                rp.setPointsplayer1(10 * i);
             }
+
             this.roundPointsDataSource.saveRoundPoints(rp);
+        }
+
+        if (i == 2) {
+            networkDisplay.displayUserInformation(MessageHelper.TWENTYRECEIVED);
+        } else if (i == 4) {
+            networkDisplay.displayUserInformation(MessageHelper.FORTYRECEIVED);
         }
     }
 
     //Der Button Herz, Pik, Karo oder Kreuz wird gedrückt um 20/40 anzusagen
-    public String check2040(String farbe){
-        int i = 0;
-        String check2040 = "";
-        RoundPoints rp = new RoundPoints(1,1,0,0);
+    public String check2040(String farbe) {
+        if (myTurn) {
+            int i = 0;
+            String check2040 = "";
+            RoundPoints rp = new RoundPoints(1,1,0,0);
 
-        for (Deck deck : this.getCardsOnHand()){
-            if (farbe.equals(deck.getCardSuit()) && deck.getCardValue() <=4 && deck.getCardValue() >2){
-                if(deck.getDeckTrump() == 1)
-                i = 2 + i;
-                else
-                i++;
+            for (Deck deck : this.getCardsOnHand()){
+                if (farbe.equals(deck.getCardSuit()) && deck.getCardValue() <=4 && deck.getCardValue() >2){
+                    if(deck.getDeckTrump() == 1)
+                        i = 2 + i;
+                    else
+                        i++;
+                }
             }
-        }
-        //20er 40er
-        if (i == 2 || i ==4) {
-            check2040 = farbe;
-            if (checkForStuch()){
-               if (isGroupOwner) {
-                   rp.setPointsplayer1(10 * i);
-               }
-               else{
-                   rp.setPointsplayer2(10 * i);
-               }
-            }
-            else{
-               if (isGroupOwner){
-                   rp.setHiddenpointsplayer1(10*i);
-               }
-               else{
-                   rp.setHiddenpointsplayer2(10*i);
+            //20er 40er
+            if (i == 2 || i ==4) {
+                check2040 = farbe;
+                if (checkForStuch()){
+                    if (isGroupOwner) {
+                        rp.setPointsplayer1(10 * i);
+                    }
+                    else{
+                        rp.setPointsplayer2(10 * i);
+                    }
+                }
+                else{
+                    if (isGroupOwner){
+                        rp.setHiddenpointsplayer1(10*i);
+                    }
+                    else{
+                        rp.setHiddenpointsplayer2(10*i);
 
-               }
+                    }
+                }
+                this.roundPointsDataSource.saveRoundPoints(rp);
             }
-            this.roundPointsDataSource.saveRoundPoints(rp);
+
+            if (i == 2) {
+                networkDisplay.displayUserInformation(MessageHelper.TWENTYPLAYED);
+                networkManager.send2040(farbe);
+            } else if (i == 4) {
+                networkDisplay.displayUserInformation(MessageHelper.FORTYPLAYED);
+                networkManager.send2040(farbe);
+            }
+
+            //als Rückgabeparameter für Message an anderen Spieler
+            return check2040;
+        } else {
+            return "";
         }
-        //als Rückgabeparameter für Message an anderen Spieler
-        return check2040;
+
     }
 
     //Checkt, ob jetzt Stuch verhanden ist, um Punkte gutzuschreiben
@@ -986,4 +972,79 @@ public class Round {
         return String.valueOf(game_round.getGamePointsPlayer2());
     }
 
+    public List<Deck> getAlreadyPlayedCards() {
+        List<Deck> deckPlayed = new ArrayList<>();
+
+
+        if (isGroupOwner) {
+            for (Deck deck : deckDataSource.getAllDeck()) {
+                if (deck.getDeckStatus() == 7) {
+                    deckPlayed.add(deck);
+                }
+            }
+        } else {
+            for (Deck deck : deckDataSource.getAllDeck()) {
+                if (deck.getDeckStatus() == 8) {
+                    deckPlayed.add(deck);
+                }
+            }
+        }
+        return deckPlayed;
+    }
+
+    public void sightJokerUsed() {
+        roundPointsDataSource.open();
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if (isGroupOwner) {
+            roundPoints.setSightJokerPlayer1(1);
+        } else {
+            roundPoints.setSightJokerPlayer2(1);
+        }
+
+        roundPointsDataSource.saveRoundPoints(roundPoints);
+
+        networkManager.sendSightJoker();
+    }
+
+    public void sightJokerReceived() {
+        roundPointsDataSource.open();
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if (isGroupOwner) {
+            roundPoints.setSightJokerPlayer2(1);
+        } else {
+            roundPoints.setSightJokerPlayer1(1);
+        }
+
+        roundPointsDataSource.saveRoundPoints(roundPoints);
+    }
+
+    public void sightJokerParryUsed() {
+        roundPointsDataSource.open();
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if (isGroupOwner) {
+            roundPoints.setParrySightJokerPlayer1(1);
+        } else {
+            roundPoints.setParrySightJokerPlayer2(1);
+        }
+
+        roundPointsDataSource.saveRoundPoints(roundPoints);
+
+        networkManager.sendParrySightJoker();
+    }
+
+    public void sightJokerParryReceived() {
+        roundPointsDataSource.open();
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if (isGroupOwner) {
+            roundPoints.setParrySightJokerPlayer2(1);
+        } else {
+            roundPoints.setParrySightJokerPlayer1(1);
+        }
+
+        roundPointsDataSource.saveRoundPoints(roundPoints);
+    }
 }
