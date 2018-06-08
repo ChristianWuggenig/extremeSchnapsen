@@ -47,6 +47,13 @@ public class Round {
 
     private RoundPoints points; //contains the round points
 
+    //falls Button öfters gedrückt wird
+    private boolean [] twentyfortyalreadyplayed = new boolean[4];
+
+    //dass nur König oder Dame gespielt werden können, nach 20/40
+
+    private String justplayed2040;
+
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
         cardDataSource = new CardDataSource(context);
@@ -76,6 +83,14 @@ public class Round {
 
         List<Player> players = playerDataSource.getAllPlayers();
         player = players.get(0);
+
+        for (boolean played20 : twentyfortyalreadyplayed){
+            played20 = false;
+        }
+
+        justplayed2040 = "";
+
+
     }
 
     public void openDatabases() {
@@ -305,6 +320,39 @@ public class Round {
         points = roundPointsDataSource.getCurrentRoundPointsObject();
         Deck wanttoplaycard = new Deck();
 
+        if (!justplayed2040.equals("")){
+            for (Deck deck : this.getAllDecks()){
+                if (deck.getCardID() == cardID){
+                    wanttoplaycard = deck;
+                    break;
+                }
+            }
+
+            if (checkFor2040DameKoenig(wanttoplaycard, justplayed2040)) {
+                //zurücksetzen
+                justplayed2040 = "";
+                for (Deck deck : this.getAllDecks()) {
+                    if (deck.getCardID() == cardID) {
+
+                        if (isGroupOwner) {
+                            deck.setDeckStatus(5); //wie bekomme ich das in die GUI?
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 5);
+                        } else {
+                            deck.setDeckStatus(6);
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 6);
+                        }
+                    }
+                }
+                networkManager.sendCard(cardID);
+                myTurn = false;
+
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
         if (points.getMoves()<5) {
             if (myTurn) {
 
@@ -380,6 +428,15 @@ public class Round {
         }
         return false;
 
+    }
+
+    public boolean checkFor2040DameKoenig (Deck wanttoplay, String farbe2040er){
+
+        if (wanttoplay.getCardSuit().equals(farbe2040er)){
+            if (wanttoplay.getCardValue() == 4 || wanttoplay.getCardValue() == 3)
+                return true;
+        }
+        return false;
     }
 
     public boolean checkForFarbStuchzwang (Deck playedcard, Deck wanttoplay){
@@ -708,6 +765,49 @@ public class Round {
         return false;
     }
 
+    public boolean checkFor66() {
+
+        RoundPoints rp2 = roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if (rp2.getPointsplayer1()>=66){
+
+            if (rp2.getPointsplayer2() >= 33){
+                // 1 Punkt
+                game_round.updateGamePoints(1,0);
+            }
+            else if (rp2.getPointsplayer2() >0 && rp2.getPointsplayer2() <33){
+                // 2 Punkte
+                game_round.updateGamePoints(2,0);
+            }
+            else {
+                // 3 Punkte
+                game_round.updateGamePoints(3,0);
+            }
+
+            return true;
+
+        }
+        else if (rp2.getPointsplayer2()>=66){
+            if (rp2.getPointsplayer1() >= 33){
+                // 1 Punkt
+                game_round.updateGamePoints(0,1);
+            }
+            else if (rp2.getPointsplayer1() >0 && rp2.getPointsplayer1() <33){
+                // 2 Punkte
+                game_round.updateGamePoints(0,2);
+            }
+            else {
+                // 3 Punkte
+                game_round.updateGamePoints(0,3);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+
     //ob Stuch bereits vorhanden
     public boolean checkForStuch(){
         boolean checkStuch = false;
@@ -729,7 +829,7 @@ public class Round {
 
         this.trump = deckDataSource.getTrump();
 
-        if (trump == farbe)
+        if (trump.equals(farbe))
             i=4;
         else if (!farbe.equals(""))
             i=2;
@@ -753,9 +853,41 @@ public class Round {
         }
     }
 
+    public int numberPlayedCards(){
+        int number = 0;
+        if (getPlayedCards().size() == 1)
+            number = 1;
+        else if (getPlayedCards().size()==2){
+            number = 2;
+        }
+
+        return number;
+
+    }
+
     //Der Button Herz, Pik, Karo oder Kreuz wird gedrückt um 20/40 anzusagen
     public String check2040(String farbe) {
-        if (myTurn) {
+
+        //temporäre Variable, falls spieler öfters auf button 2040 drückt
+        //muss nicht synchron gehalten werden, weil ja nur ein Spieler den jeweiligen 20er haben kann
+        boolean alreadyplayed = false;
+
+        switch (farbe){
+            case "herz":
+                alreadyplayed = twentyfortyalreadyplayed[0];
+                break;
+            case "karo":
+                alreadyplayed = twentyfortyalreadyplayed[1];
+                break;
+            case "pik":
+                alreadyplayed = twentyfortyalreadyplayed[2];
+                break;
+            case "kreuz":
+                alreadyplayed = twentyfortyalreadyplayed[3];
+                break;
+        }
+
+        if (myTurn && numberPlayedCards() == 0 && !alreadyplayed && justplayed2040.equals("")) {
             int i = 0;
             String check2040 = "";
             RoundPoints rp = new RoundPoints(1,1,0,0);
@@ -770,6 +902,27 @@ public class Round {
             }
             //20er 40er
             if (i == 2 || i ==4) {
+
+                switch (farbe){
+                    case "herz":
+                        twentyfortyalreadyplayed[0] = true;
+                        justplayed2040 = "herz";
+                        break;
+                    case "karo":
+                        twentyfortyalreadyplayed[1] = true;
+                        justplayed2040 = "karo";
+                        break;
+                    case "pik":
+                        twentyfortyalreadyplayed[2] = true;
+                        justplayed2040 = "pik";
+                        break;
+                    case "kreuz":
+                        twentyfortyalreadyplayed[3] = true;
+                        justplayed2040 = "kreuz";
+                        break;
+                }
+
+
                 check2040 = farbe;
                 if (checkForStuch()){
                     if (isGroupOwner) {
