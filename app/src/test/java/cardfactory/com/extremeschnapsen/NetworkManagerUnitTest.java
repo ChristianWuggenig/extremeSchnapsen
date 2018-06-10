@@ -119,7 +119,7 @@ public class NetworkManagerUnitTest {
     }
 
     //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
-    @Test (expected = AssertionError.class)
+    @Test (expected = Exception.class)
     public void testSendTrumpExchangedWithClient() {
         networkManager.sendTrumpExchanged();
 
