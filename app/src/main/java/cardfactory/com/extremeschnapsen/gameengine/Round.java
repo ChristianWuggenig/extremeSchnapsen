@@ -47,6 +47,9 @@ public class Round {
 
     private RoundPoints points; //contains the round points
 
+    private boolean sightJokerUsed; //true, if the sight joker was used in the current move
+    private boolean sightJokerReceived; //true, if the opposite player used the sight joker, so the current player can use the parry sight joker
+
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
         cardDataSource = new CardDataSource(context);
@@ -76,6 +79,17 @@ public class Round {
 
         List<Player> players = playerDataSource.getAllPlayers();
         player = players.get(0);
+
+        sightJokerReceived = false;
+        sightJokerUsed = false;
+    }
+
+    /**
+     * returns the status of the variable sightJokerReceived
+     * @return true, if the sight joker was received, else false
+     */
+    public boolean getSightJokerReceived() {
+        return sightJokerReceived;
     }
 
     public void openDatabases() {
@@ -186,6 +200,7 @@ public class Round {
      * @return list of deck items
      */
     public List<Deck> getAllDecks() {
+        deckDataSource.open();
         return deckDataSource.getAllDeck();
     }
 
@@ -266,11 +281,19 @@ public class Round {
     }
 
     /**
-     * get or set if it is my turn or not
+     * set if it is my turn or not
      * @param myTurn is it my turn or not
      */
     public void setMyTurn(boolean myTurn) {
         this.myTurn = myTurn;
+    }
+
+    /**
+     * get the information if it is currently my turn
+     * @return true, if my turn
+     */
+    public boolean getMyTurn() {
+        return myTurn;
     }
 
     /**
@@ -604,6 +627,9 @@ public class Round {
             //die "versteckten Punkte" jetzt gutgeschrieben
             HiddenPointsToRealPoints();
 
+            sightJokerReceived = false; //if both cards are set, the parry sight joker cannot be used any more
+            sightJokerUsed = false; //if both cards are set, the sight joker usage vanishes
+
             if (player1Won && isGroupOwner) {
                 myTurn = true;
                 getNextFreeCard(1);
@@ -727,6 +753,7 @@ public class Round {
         int i = 0;
         RoundPoints rp = new RoundPoints(1,1,0,0);
 
+        deckDataSource.open();
         this.trump = deckDataSource.getTrump();
 
         if (trump == farbe)
@@ -1002,6 +1029,7 @@ public class Round {
             roundPoints.setSightJokerPlayer2(1);
         }
 
+        sightJokerUsed = true;
         roundPointsDataSource.saveRoundPoints(roundPoints);
 
         networkManager.sendSightJoker();
@@ -1010,6 +1038,7 @@ public class Round {
     public void sightJokerReceived() {
         roundPointsDataSource.open();
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+        sightJokerReceived = true;
 
         if (isGroupOwner) {
             roundPoints.setSightJokerPlayer2(1);
@@ -1020,29 +1049,57 @@ public class Round {
         roundPointsDataSource.saveRoundPoints(roundPoints);
     }
 
-    public void sightJokerParryUsed() {
+    public boolean getMyTurnInCurrentMove() {
+        if (isGroupOwner && getPlayedCardPlayer2() != null) {
+            return true;
+        } else if (!isGroupOwner && getPlayedCardPlayer1() != null) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void parrySightJokerUsed(boolean success) {
         roundPointsDataSource.open();
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
 
-        if (isGroupOwner) {
+        if (isGroupOwner && success) {
             roundPoints.setParrySightJokerPlayer1(1);
-        } else {
+            roundPoints.setPointsplayer1(10);
+        } else if (!isGroupOwner && success) {
             roundPoints.setParrySightJokerPlayer2(1);
+            roundPoints.setPointsplayer2(10);
+        } else if (isGroupOwner && !success) {
+            roundPoints.setPointsplayer1(-10);
+        } else if (!isGroupOwner && !success) {
+            roundPoints.setPointsplayer2(-10);
         }
 
         roundPointsDataSource.saveRoundPoints(roundPoints);
 
         networkManager.sendParrySightJoker();
+        sightJokerReceived = false;
     }
 
-    public void sightJokerParryReceived() {
+    public void parrySightJokerReceived() {
         roundPointsDataSource.open();
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
 
-        if (isGroupOwner) {
-            roundPoints.setParrySightJokerPlayer2(1);
+        if ((isGroupOwner && getPlayedCardPlayer1() != null && sightJokerUsed) || (!isGroupOwner && getPlayedCardPlayer2() != null && sightJokerUsed)) {
+            if (isGroupOwner) {
+                roundPoints.setParrySightJokerPlayer2(1);
+                roundPoints.setPointsplayer2(10);
+            } else {
+                roundPoints.setParrySightJokerPlayer1(1);
+                roundPoints.setPointsplayer1(10);
+            }
+
         } else {
-            roundPoints.setParrySightJokerPlayer1(1);
+            if (isGroupOwner) {
+                roundPoints.setPointsplayer2(-10);
+            } else {
+                roundPoints.setPointsplayer1(-10);
+            }
         }
 
         roundPointsDataSource.saveRoundPoints(roundPoints);

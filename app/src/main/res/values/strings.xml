@@ -37,7 +37,10 @@
     <string name="msg40Played">Du hast 40 angesagt</string>
     <string name="msg40Received">Der Gegner hat 40 angesagt</string>
     <string name="msgSightJoker">Du hast den Sichtjoker eingesetzt</string>
-    <string name="msgParrySightJoker">Du hast den Parrier-Sichtjoker eingesetzt</string>
+    <string name="msgParrySightJokerSuccess">Du hast den Parrier-Sichtjoker eingesetzt und Recht gehabt! Du bekommst 10 Punkte</string>
+    <string name="msgParrySightJokerFail">Der Gegner hat den Sichtjoker nicht verwendet, das gibt 10 Minuspunkte</string>
+    <string name="msgParrySightJokerNotPossible">Du kannst den Parrier-Sichtjoker jetzt nicht einsetzen</string>
+    <string name="msgSightJokerNotPossible">Du kannst den Sichtjoker erst einsetzen, wenn du am Zug bist!</string>
 
     <string name="title_activity_profil">ProfilActivity</string>
     <string name="dummy_button">Dummy Button</string>
