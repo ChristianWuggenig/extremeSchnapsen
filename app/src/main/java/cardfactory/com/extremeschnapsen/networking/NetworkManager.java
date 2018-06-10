@@ -35,6 +35,13 @@ public class NetworkManager {
     }
 
     /**
+     * used ONLY for the unit test in order to create a "clean" environment for every method test
+     */
+    public void setNull() {
+        networkManager = null;
+    }
+
+    /**
      * starts the http-server and holds the current deck for the client
      * @param currentDeck the current, shuffled deck
      */
@@ -83,6 +90,10 @@ public class NetworkManager {
 
         httpClient = new HTTPClient(context);
         httpClient.getGameMode(mode);
+    }
+
+    public void startHttpClient() {
+        httpClient = new HTTPClient();
     }
 
     /**
