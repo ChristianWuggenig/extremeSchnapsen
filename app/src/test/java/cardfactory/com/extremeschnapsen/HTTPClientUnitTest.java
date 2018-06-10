@@ -59,6 +59,8 @@ public class HTTPClientUnitTest {
         }
 
         httpClient.receiveShuffledDeck(jsonArray);
+
+        assertTrue(true); //if the statement above does not fail, the test is successful
     }
 
     @Test
@@ -94,5 +96,7 @@ public class HTTPClientUnitTest {
         }
 
         httpClient.processServerInformation(jsonArray);
+
+        assertTrue(true); //if the statement above does not fail, the test is successful
     }
 }
