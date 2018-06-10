@@ -21,8 +21,8 @@ public class HTTPServer {
 
     private List<Deck> currentDeck; //contains the current deck
 
-    private INetworkDisplay networkDisplay; //contains the network display interface object
-    private IStartGame startGame;
+    private INetworkDisplay networkDisplay; //contains the network display interface object used for displaying information on the gui
+    private IStartGame startGame; //contains the start game interface object used for displaying information on the gui
 
     private NanoHTTPD nanoHTTPD; //contains the nanohttpd-server
 
@@ -34,7 +34,7 @@ public class HTTPServer {
     private boolean sightJoker; //true, if the sight joker was used
     private boolean parrySightJoker; //true, if the parry sight joker was used
 
-    private String mode;
+    private String mode; //contains the game mode (extreme or normal)
 
     public HTTPServer(IStartGame startGame, String mode) {
         cardPlayed = 0;
@@ -47,32 +47,84 @@ public class HTTPServer {
         parrySightJoker = false;
     }
 
+    /**
+     * set the current deck
+     * @param currentDeck contains the current deck
+     */
     public void setCurrentDeck(List<Deck> currentDeck) {
         this.currentDeck = currentDeck;
     }
 
+    /**
+     * set the network display
+     * @param networkDisplay contains the current network display for showing information in the gui
+     */
     public void setNetworkDisplay(INetworkDisplay networkDisplay) {
         this.networkDisplay = networkDisplay;
     }
 
+    /**
+     * set the current player
+     * @param player contains the current player
+     */
     public void setPlayer(Player player) {
         this.player = player;
     }
 
+    /**
+     * set if the round was turned (zugedreht)
+     * @param turn true, if turned
+     */
     public void setTurn(boolean turn) {
         this.turn = turn;
     }
 
+    /**
+     * set if 20 or 40 was played
+     * @param twentyForty contains the suit of the 20/40 played
+     */
     public void setTwentyForty(String twentyForty) {
         this.twentyForty = twentyForty;
     }
 
+    /**
+     * set if the sight joker was used
+     * @param sightJoker true, if used
+     */
     public void setSightJoker(boolean sightJoker) {
         this.sightJoker = sightJoker;
     }
 
+    /**
+     * set if the parry sight joker was used
+     * @param parrySightJoker true, if used
+     */
     public void setParrySightJoker(boolean parrySightJoker) {
         this.parrySightJoker = parrySightJoker;
+    }
+
+    /**
+     * set the currently played card
+     * @param cardPlayed contains the cardID of the played card
+     */
+    public void setCardPlayed(int cardPlayed) {
+        this.cardPlayed = cardPlayed;
+    }
+
+    /**
+     * get the currently played Card
+     * @return returns the played card
+     */
+    public int getCardPlayed() {
+        return cardPlayed;
+    }
+
+    /**
+     * set if trump was exchanged
+     * @param trumpExchanged true, if exchanged
+     */
+    public void setTrumpExchanged(boolean trumpExchanged) {
+        this.trumpExchanged = trumpExchanged;
     }
 
     /**
@@ -123,26 +175,6 @@ public class HTTPServer {
     }
 
     /**
-     * set the currently played card
-     * @param cardPlayed contains the cardID of the played card
-     */
-    public void setCardPlayed(int cardPlayed) {
-        this.cardPlayed = cardPlayed;
-    }
-
-    /**
-     * get the currently played Card
-     * @return returns the played card
-     */
-    public int getCardPlayed() {
-        return cardPlayed;
-    }
-
-    public void setTrumpExchanged(boolean trumpExchanged) {
-        this.trumpExchanged = trumpExchanged;
-    }
-
-    /**
      * stop the http-server
      */
     public void stopHTTPServer() {
@@ -150,7 +182,7 @@ public class HTTPServer {
     }
 
     /**
-     * send the shuffled deck ids to the client
+     * send the shuffled deck ids to the client including the name of the player (server)
      * @return returns the response string with the ids in json format
      */
     public String sendAllDeck(Map<String, List<String>> params) {
@@ -180,6 +212,10 @@ public class HTTPServer {
         return jsonArray.toString(); //convert the jsonArray of cardIDs to a string message for the response
     }
 
+    /**
+     * call the necessary methods to send information to the client
+     * @return jsonarray converted to a string for the response
+     */
     public String sendClientInformation() {
         JSONArray jsonArray = new JSONArray();
         jsonArray.put(sendCurrentlyPlayedCard());
@@ -192,49 +228,10 @@ public class HTTPServer {
     }
 
     /**
-     * sends the currently played card to the client (waits for the client to ask for it)
-     * @return returns the response with the id of the played card in json format
+     * sends the game mode to the client (also decides, which mode is chosen in comparison with the own mode)
+     * @param params the mode the client has chosen
+     * @return the mode that will actually be used then in json format converted to string
      */
-    public JSONObject sendCurrentlyPlayedCard() {
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            jsonObject.put(NetworkHelper.ID, cardPlayed);
-        } catch (JSONException ex) {
-            Log.d("JSONError", ex.getMessage());
-        }
-
-        cardPlayed = 0;
-
-        return jsonObject; //convert the jsonArray of cardIDs to a string message for the response
-    }
-
-    public String getClientInformation(Map<String, String> params) {
-        try {
-            JSONObject jsonObject = new JSONObject(params.get("postData"));
-
-            if (jsonObject.has(NetworkHelper.ID)) {
-                int cardID = jsonObject.getInt(NetworkHelper.ID);
-                networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
-            } else if (jsonObject.has(NetworkHelper.TRUMP)) {
-                networkDisplay.receiveAction(NetworkHelper.TRUMP, "true");
-            } else if (jsonObject.has(NetworkHelper.TURN)) {
-                networkDisplay.receiveAction(NetworkHelper.TURN, "true");
-            } else if (jsonObject.has(NetworkHelper.TWENTYFORTY)) {
-                networkDisplay.receiveAction(NetworkHelper.TWENTYFORTY, jsonObject.getString(NetworkHelper.TWENTYFORTY));
-            } else if (jsonObject.has(NetworkHelper.SIGHTJOKER)) {
-                networkDisplay.receiveAction(NetworkHelper.SIGHTJOKER, "true");
-            } else if (jsonObject.has(NetworkHelper.PARRYSIGHTJOKER)) {
-                networkDisplay.receiveAction(NetworkHelper.PARRYSIGHTJOKER, "true");
-            }
-
-            return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
-        } catch (JSONException ex) {
-            Log.d("JSONError", ex.getMessage());
-        }
-        return null;
-    }
-
     public String sendClientMode(Map<String, List<String>> params) {
         String mode = params.get(NetworkHelper.MODE).get(0);
 
@@ -262,24 +259,27 @@ public class HTTPServer {
     }
 
     /**
-     * get the currently played card from the client
-     * @param params used to get the parameters from the http-headers
-     * @return returns a response with the same id (not needed, but a response message is necessary)
+     * sends the currently played card to the client (waits for the client to ask for it)
+     * @return returns the response with the id of the played card in json format
      */
-    public String getCurrentlyPlayedCard(Map<String, String> params) {
+    public JSONObject sendCurrentlyPlayedCard() {
+        JSONObject jsonObject = new JSONObject();
+
         try {
-            JSONObject jsonObject = new JSONObject(params.get("postData"));
-            int cardID = jsonObject.getInt(NetworkHelper.ID);
-
-            networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
-
-            return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
+            jsonObject.put(NetworkHelper.ID, cardPlayed);
         } catch (JSONException ex) {
             Log.d("JSONError", ex.getMessage());
         }
-        return null;
+
+        cardPlayed = 0;
+
+        return jsonObject; //convert the jsonArray of cardIDs to a string message for the response
     }
 
+    /**
+     * sends the information of trump exchanged or not to the client
+     * @return returns a jsonobject with the required information
+     */
     public JSONObject sendTrumpExchanged() {
         JSONObject jsonObject = new JSONObject();
 
@@ -297,6 +297,10 @@ public class HTTPServer {
         return jsonObject;
     }
 
+    /**
+     * sends the information of turned (zugedreht) or not to the client
+     * @return returns a jsonobject with the required information
+     */
     public JSONObject sendTurn() {
         JSONObject jsonObject = new JSONObject();
 
@@ -314,6 +318,10 @@ public class HTTPServer {
         return jsonObject;
     }
 
+    /**
+     * sends the information of 20 or 40 with the chosen suit to the client
+     * @return returns a jsonobject with the required information
+     */
     public JSONObject send2040() {
         JSONObject jsonObject = new JSONObject();
 
@@ -331,6 +339,10 @@ public class HTTPServer {
         return jsonObject;
     }
 
+    /**
+     * sends the information of sight joker used or not to the client
+     * @return returns a jsonobject with the required information
+     */
     public JSONObject sendSightJoker() {
         JSONObject jsonObject = new JSONObject();
 
@@ -348,6 +360,10 @@ public class HTTPServer {
         return jsonObject;
     }
 
+    /**
+     * sends the information of parry sight joker used or not to the client
+     * @return returns a jsonobject with the required information
+     */
     public JSONObject sendParrySightJoker() {
         JSONObject jsonObject = new JSONObject();
 
@@ -363,5 +379,55 @@ public class HTTPServer {
         }
 
         return jsonObject;
+    }
+
+    /**
+     * get all information from the client, if send (called when a post-request was detected)
+     * @param params contains all params, depending on what the client sent
+     * @return returns the same information as receives, in order to check at the client if the information was transmitted successfully
+     */
+    public String getClientInformation(Map<String, String> params) {
+        try {
+            JSONObject jsonObject = new JSONObject(params.get("postData"));
+
+            if (jsonObject.has(NetworkHelper.ID)) {
+                int cardID = jsonObject.getInt(NetworkHelper.ID);
+                networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
+            } else if (jsonObject.has(NetworkHelper.TRUMP)) {
+                networkDisplay.receiveAction(NetworkHelper.TRUMP, "true");
+            } else if (jsonObject.has(NetworkHelper.TURN)) {
+                networkDisplay.receiveAction(NetworkHelper.TURN, "true");
+            } else if (jsonObject.has(NetworkHelper.TWENTYFORTY)) {
+                networkDisplay.receiveAction(NetworkHelper.TWENTYFORTY, jsonObject.getString(NetworkHelper.TWENTYFORTY));
+            } else if (jsonObject.has(NetworkHelper.SIGHTJOKER)) {
+                networkDisplay.receiveAction(NetworkHelper.SIGHTJOKER, "true");
+            } else if (jsonObject.has(NetworkHelper.PARRYSIGHTJOKER)) {
+                networkDisplay.receiveAction(NetworkHelper.PARRYSIGHTJOKER, "true");
+            }
+
+            return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * get the currently played card from the client
+     * @param params used to get the parameters from the http-headers
+     * @return returns a response with the same id (not needed, but a response message is necessary)
+     */
+    public String getCurrentlyPlayedCard(Map<String, String> params) {
+        try {
+            JSONObject jsonObject = new JSONObject(params.get("postData"));
+            int cardID = jsonObject.getInt(NetworkHelper.ID);
+
+            networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
+
+            return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+        return null;
     }
 }

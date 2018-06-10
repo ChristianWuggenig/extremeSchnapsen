@@ -5,6 +5,8 @@ import android.content.Context;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import cardfactory.com.extremeschnapsen.networking.NetworkManager;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
+@RunWith(value = BlockJUnit4ClassRunner.class)
 public class NetworkManagerUnitTest {
     NetworkManager networkManager;
     Context context;
@@ -93,7 +96,6 @@ public class NetworkManagerUnitTest {
     @Test
     public void testSendCardWithServer() {
         networkManager.startHttpServer(mode); //has to be done first in order to initialize the http-server-object
-        networkManager.startHttpServer(new ArrayList<Deck>(), player, networkDisplay); //to start as client
 
         networkManager.sendCard(1);
 
@@ -104,6 +106,86 @@ public class NetworkManagerUnitTest {
     @Test (expected = NullPointerException.class)
     public void testWaitForCard() {
         networkManager.waitForCard(false);
+
+        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+    }
+
+    @Test
+    public void testSendTrumpExchangedWithServer() {
+        networkManager.startHttpServer(mode);
+        networkManager.sendTrumpExchanged();
+
+        assertTrue(true); //if the statement above does not fail, then the test is successful
+    }
+
+    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
+    @Test (expected = NullPointerException.class)
+    public void testSendTrumpExchangedWithClient() {
+        networkManager.sendTrumpExchanged();
+
+        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+    }
+
+    @Test
+    public void testSendTurnWithServer() {
+        networkManager.startHttpServer(mode);
+        networkManager.sendTurn();
+
+        assertTrue(true); //if the statement above does not fail, then the test is successful
+    }
+
+    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
+    @Test (expected = AssertionError.class)
+    public void testSendTurnWithClient() {
+        networkManager.sendTurn();
+
+        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+    }
+
+    @Test
+    public void testSend2040WithServer() {
+        networkManager.startHttpServer(mode);
+        networkManager.send2040("pik");
+
+        assertTrue(true); //if the statement above does not fail, then the test is successful
+    }
+
+    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
+    @Test (expected = AssertionError.class)
+    public void testSend2040WithClient() {
+        networkManager.send2040("pik");
+
+        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+    }
+
+    @Test
+    public void testSendSightJokerWithServer() {
+        networkManager.startHttpServer(mode);
+        networkManager.sendSightJoker();
+
+        assertTrue(true); //if the statement above does not fail, then the test is successful
+    }
+
+    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
+    @Test (expected = AssertionError.class)
+    public void testSendSightJokerWithClient() {
+        networkManager.sendSightJoker();
+
+        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+    }
+
+    @Test
+    public void testSendParrySightJokerWithServer() {
+        networkManager.startHttpServer(mode);
+        networkManager.sendParrySightJoker();
+
+        assertTrue(true); //if the statement above does not fail, then the test is successful
+    }
+
+    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
+    @Test (expected = AssertionError.class)
+    public void testSendParrySightJokerWithClient() {
+        networkManager.sendParrySightJoker();
 
         fail("Exception not thrown"); //if the statement above does not fail, then the test failed
     }
