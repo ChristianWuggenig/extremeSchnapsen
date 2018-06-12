@@ -35,6 +35,13 @@ public class NetworkManager {
     }
 
     /**
+     * used ONLY for the unit test in order to create a "clean" environment for every method test
+     */
+    public void setNull() {
+        networkManager = null;
+    }
+
+    /**
      * starts the http-server and holds the current deck for the client
      * @param currentDeck the current, shuffled deck
      */
@@ -85,6 +92,10 @@ public class NetworkManager {
         httpClient.getGameMode(mode);
     }
 
+    public void startHttpClient() {
+        httpClient = new HTTPClient();
+    }
+
     /**
      * send a card to the opposite phone
      * @param cardID contains the id of the played card
@@ -107,6 +118,9 @@ public class NetworkManager {
         httpClient.getServerInformation();
     }
 
+    /**
+     * called when the client or the server wants to send the information that the trump was exchanged
+     */
     public void sendTrumpExchanged() {
         if (isServer) {
             httpServer.setTrumpExchanged(true);
@@ -115,6 +129,9 @@ public class NetworkManager {
         }
     }
 
+    /**
+     * called when the client or the server wants to send the information that the round was turned (zugedreht)
+     */
     public void sendTurn() {
         if (isServer) {
             httpServer.setTurn(true);
@@ -123,6 +140,10 @@ public class NetworkManager {
         }
     }
 
+    /**
+     * called when the client or the server wants to send the information that 20 or 40 was played
+     * @param suit the suit of the 20/40 played
+     */
     public void send2040(String suit) {
         if (isServer) {
             httpServer.setTwentyForty(suit);
@@ -131,6 +152,9 @@ public class NetworkManager {
         }
     }
 
+    /**
+     * called when the client or the server wants to send the information that the sight joker was used
+     */
     public void sendSightJoker() {
         if (isServer) {
             httpServer.setSightJoker(true);
@@ -139,6 +163,9 @@ public class NetworkManager {
         }
     }
 
+    /**
+     * called when the client or the server wants to send the information that the parry sight joker was used
+     */
     public void sendParrySightJoker() {
         if (isServer) {
             httpServer.setParrySightJoker(true);

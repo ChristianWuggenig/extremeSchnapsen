@@ -9,6 +9,7 @@ import android.widget.RadioGroup;
 
 import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
+import cardfactory.com.extremeschnapsen.networking.NetworkHelper;
 
 public class GameSettingsActivity extends AppCompatActivity {
 
@@ -29,11 +30,12 @@ public class GameSettingsActivity extends AppCompatActivity {
         playerDataSource.open();
 
         switch (playerDataSource.getCurrentPlayerObject().getGame_mode()) {
-            case "normal":
+            case NetworkHelper.MODE_NORMAL:
                 radioGroup.check(R.id.rbtnNormal);
                 break;
-            case "extreme":
+            case NetworkHelper.MODE_EXTREME:
                 radioGroup.check(R.id.rbtnExtreme);
+                break;
         }
     }
 
@@ -43,10 +45,10 @@ public class GameSettingsActivity extends AppCompatActivity {
 
         switch (selectedId) {
             case R.id.rbtnNormal:
-                playerDataSource.updateGameMode("normal");
+                playerDataSource.updateGameMode(NetworkHelper.MODE_NORMAL);
                 break;
             case R.id.rbtnExtreme:
-                playerDataSource.updateGameMode("extreme");
+                playerDataSource.updateGameMode(NetworkHelper.MODE_EXTREME);
                 break;
         }
 

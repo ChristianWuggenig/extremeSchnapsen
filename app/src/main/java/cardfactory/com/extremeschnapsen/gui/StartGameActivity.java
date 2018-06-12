@@ -97,7 +97,7 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
 
         if (alreadyStarted) {
             btnStartGame.setText(R.string.btnStartNextRound);
-            btnStartGame.setOnClickListener(onClickListenerStartNextRound);
+            //btnStartGame.setOnClickListener(onClickListenerStartNextRound);
         }
 
         alreadyStarted = true;
@@ -146,7 +146,13 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
     }
 
     public void btnStartNextRoundClick(View view) {
-        Intent startGameActivityIntent = new Intent(this, GameActivity.class);
+        Intent startGameActivityIntent;
+        if (gameModeExtreme) {
+            startGameActivityIntent = new Intent(this, ExtremeGameActivity.class);
+        } else {
+            startGameActivityIntent = new Intent(this, GameActivity.class);
+        }
+
         startGameActivityIntent.putExtra(IntentHelper.IS_GROUP_OWNER, local.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, true));
         this.startActivity(startGameActivityIntent);
     }

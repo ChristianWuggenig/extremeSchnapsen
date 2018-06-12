@@ -5,15 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-
-import java.util.List;
 
 import cardfactory.com.extremeschnapsen.R;
-import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.services.LightSensorService;
 
 public class ExtremeGameActivity extends GameActivity {
@@ -38,7 +33,6 @@ public class ExtremeGameActivity extends GameActivity {
                 boolean sensorCovered = intent.getBooleanExtra(IntentHelper.LIGHTSENSOR_COVERED, false);
                 if (!lightSensorUsed && sensorCovered) {
                     lightSensorCovered();
-                    lightSensorUsed = true;
                 }
             }
         };
@@ -48,29 +42,33 @@ public class ExtremeGameActivity extends GameActivity {
     }
 
     private void lightSensorCovered() {
-        showCardDialog(true);
-        round.sightJokerUsed();
+        if (round.getPlayedCardPlayer1() == null && round.getPlayedCardPlayer2() == null && round.getMyTurn()) {
+            showCardDialog(true);
+            round.sightJokerUsed();
+            lightSensorUsed = true;
+        } else
+            txvUserInformation.setText(R.string.msgSightJokerNotPossible);
 
-        /*List<Deck> oppositeCards;
-
-        if (isGroupOwner) {
-            oppositeCards = round.getCardsOnHand(1);
-        } else {
-            oppositeCards = round.getCardsOnHand(2);
-        }
-
-        round.sightJokerUsed();
-
-        for (int index = 0; index < oppositeCards.size(); index++) {
-            int res_id = getResources().getIdentifier(oppositeCards.get(index).getCardSuit() + oppositeCards.get(index).getCardRank(), "drawable", this.getPackageName());
-            showCardList.get(index).setImageResource(res_id);
-        }
-
-        showCardDialog();*/
     }
 
+    @Override
     public void onClickBtnParrySightJoker(View view) {
-        round.sightJokerParryUsed();
-        txvUserInformation.setText(R.string.msgParrySightJoker);
+        if (round.getMyTurn() && round.getMyTurnInCurrentMove()) {
+            if (round.getSightJokerReceived()) {
+                round.parrySightJokerUsed(true);
+                txvUserInformation.setText(R.string.msgParrySightJokerSuccess);
+            } else {
+                round.parrySightJokerUsed(false);
+                txvUserInformation.setText(R.string.msgParrySightJokerFail);
+            }
+        } else {
+            txvUserInformation.setText(R.string.msgParrySightJokerNotPossible);
+        }
+    }
+
+    @Override
+    protected void finishActivity() {
+        lightSensorUsed = false;
+        super.finishActivity();
     }
 }

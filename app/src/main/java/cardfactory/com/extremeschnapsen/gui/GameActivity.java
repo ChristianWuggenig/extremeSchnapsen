@@ -1,13 +1,8 @@
 package cardfactory.com.extremeschnapsen.gui;
 
-import android.app.Dialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +10,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,7 +21,6 @@ import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
 import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.gameengine.Round;
-import cardfactory.com.extremeschnapsen.services.LightSensorService;
 import cardfactory.com.extremeschnapsen.networking.NetworkHelper;
 
 public class GameActivity extends AppCompatActivity implements INetworkDisplay {
@@ -54,15 +47,17 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     private static TextView txvGamePoints1;
     private static TextView txvGamePoints2;
 
-    protected Round round;
+    protected static Round round;
 
     protected boolean isGroupOwner;
 
     private static View.OnClickListener ivOnClickListener;
 
-    private static AlertDialog.Builder builder;
+    private static AlertDialog.Builder connectionBuilder;
+    private static AlertDialog.Builder showCardsBuilder;
 
-    private static AlertDialog dialog;
+    private static AlertDialog connectionDialog;
+    private static AlertDialog showCardsDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,17 +69,19 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
         //startService(new Intent(this, MySensorService.class));
 
-        builder = new AlertDialog.Builder(this);
+        connectionBuilder = new AlertDialog.Builder(this);
 
-        builder.setMessage(R.string.msgWaitingForOpposite)
+        connectionBuilder.setMessage(R.string.msgWaitingForOpposite)
                 .setTitle(R.string.msgWaiting);
 
-        dialog = builder.create();
+        connectionDialog = connectionBuilder.create();
 
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
+        connectionDialog.setCancelable(false);
+        connectionDialog.setCanceledOnTouchOutside(false);
 
-        dialog.show();
+        connectionDialog.show();
+
+        showCardsBuilder = new AlertDialog.Builder(this);
 
         deckholder = (ConstraintLayout) findViewById(R.id.layoutPlaceholder);
         cardList = new ArrayList<>();
@@ -208,7 +205,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                dialog.dismiss();
+                connectionDialog.dismiss();
             }
         });
     }
@@ -440,12 +437,12 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         }
     }
 
-    public void finishActivity() {
+    protected void finishActivity() {
         this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
         this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
     }
 
-    public void showGamePoints() {
+    protected void showGamePoints() {
         if (isGroupOwner) {
             txvGamePoints1.setText(round.getGamePointsPlayer1());
             txvGamePoints2.setText(round.getGamePointsPlayer2());
@@ -475,7 +472,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                         round.sightJokerReceived();
                         break;
                     case NetworkHelper.PARRYSIGHTJOKER:
-                        round.sightJokerParryReceived();
+                        round.parrySightJokerReceived();
                         break;
                     case NetworkHelper.CARD_EXCHANGE:
                         String[] splitted = value.split(";");
@@ -494,7 +491,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     }
 
     protected void showCardDialog(boolean sightJoker) {
-        AlertDialog.Builder showCardsBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.cards, null);
 
@@ -532,10 +528,9 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             showCardList.get(index).setImageResource(res_id);
         }
 
-        AlertDialog dialog = showCardsBuilder.create();
-        dialog.show();
-        dialog.getWindow().setLayout(getWindow().getDecorView().getWidth() - 100, getWindow().getDecorView().getHeight());
-        //showCardsBuilder.create().show();
+        showCardsDialog = showCardsBuilder.create();
+        showCardsDialog.show();
+        showCardsDialog.getWindow().setLayout(getWindow().getDecorView().getWidth() - 100, getWindow().getDecorView().getHeight());
     }
 
     protected void initializeShowCardList(View dialogView) {
@@ -554,5 +549,9 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard13));
         showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard14));
         showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard15));
+    }
+
+    public void onClickBtnParrySightJoker(View view) {
+
     }
 }
