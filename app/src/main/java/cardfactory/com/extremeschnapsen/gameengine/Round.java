@@ -1200,4 +1200,14 @@ public class Round {
 
         roundPointsDataSource.saveRoundPoints(roundPoints);
     }
+
+    public void kartenTausch(){
+
+
+    }
+
+    public void receiveKartenTausch(){
+
+
+    }
 }
