@@ -33,6 +33,7 @@ public class HTTPServer {
     private String twentyForty; //true, if the server played 20 or 40
     private boolean sightJoker; //true, if the sight joker was used
     private boolean parrySightJoker; //true, if the parry sight joker was used
+    private String cardExchange; //contains the two cards to be exchanged
 
     private String mode; //contains the game mode (extreme or normal)
 
@@ -45,6 +46,7 @@ public class HTTPServer {
         this.startGame = startGame;
         sightJoker = false;
         parrySightJoker = false;
+        cardExchange = "";
     }
 
     /**
@@ -101,6 +103,10 @@ public class HTTPServer {
      */
     public void setParrySightJoker(boolean parrySightJoker) {
         this.parrySightJoker = parrySightJoker;
+    }
+
+    public void setCardExchange(String cardExchange) {
+        this.cardExchange = cardExchange;
     }
 
     /**
@@ -224,6 +230,7 @@ public class HTTPServer {
         jsonArray.put(send2040());
         jsonArray.put(sendSightJoker());
         jsonArray.put(sendParrySightJoker());
+        jsonArray.put(sendCardExchange());
         return jsonArray.toString();
     }
 
@@ -380,6 +387,23 @@ public class HTTPServer {
 
         return jsonObject;
     }
+  
+     public JSONObject sendCardExchange() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            if (cardExchange != "") {
+                jsonObject.put(NetworkHelper.CARD_EXCHANGE, cardExchange);
+                cardExchange = "";
+            }
+            else
+                jsonObject.put(NetworkHelper.CARD_EXCHANGE, cardExchange);
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+
+        return jsonObject;
+    }
 
     /**
      * get all information from the client, if send (called when a post-request was detected)
@@ -403,6 +427,8 @@ public class HTTPServer {
                 networkDisplay.receiveAction(NetworkHelper.SIGHTJOKER, "true");
             } else if (jsonObject.has(NetworkHelper.PARRYSIGHTJOKER)) {
                 networkDisplay.receiveAction(NetworkHelper.PARRYSIGHTJOKER, "true");
+            } else if (jsonObject.has(NetworkHelper.CARD_EXCHANGE)) {
+                networkDisplay.receiveAction(NetworkHelper.CARD_EXCHANGE, jsonObject.getString(NetworkHelper.CARD_EXCHANGE));
             }
 
             return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
@@ -430,4 +456,6 @@ public class HTTPServer {
         }
         return null;
     }
+  
+   
 }

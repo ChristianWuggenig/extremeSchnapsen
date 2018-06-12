@@ -259,6 +259,10 @@ public class HTTPClient {
             if (parrySightJoker.getBoolean(NetworkHelper.PARRYSIGHTJOKER)) {
                 networkDisplay.receiveAction(NetworkHelper.PARRYSIGHTJOKER, "true");
             }
+          
+            if (cardExchange.getString(NetworkHelper.CARD_EXCHANGE) != "") {
+                networkDisplay.receiveAction(NetworkHelper.CARD_EXCHANGE, cardExchange.getString(NetworkHelper.CARD_EXCHANGE));
+            }
 
             if(id.getInt(NetworkHelper.ID) != 0) {
                 networkDisplay.displayUserInformation(MessageHelper.YOURTURN);
