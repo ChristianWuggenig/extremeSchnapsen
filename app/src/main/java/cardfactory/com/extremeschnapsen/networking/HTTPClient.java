@@ -239,6 +239,7 @@ public class HTTPClient {
             JSONObject twentyForty = response.getJSONObject(3);
             JSONObject sightJoker = response.getJSONObject(4);
             JSONObject parrySightJoker = response.getJSONObject(5);
+            JSONObject cardExchange = response.getJSONObject(6);
 
             if (trump.getBoolean(NetworkHelper.TRUMP)) {
                 networkDisplay.receiveAction(NetworkHelper.TRUMP, "true");
