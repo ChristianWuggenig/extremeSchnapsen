@@ -37,8 +37,10 @@
     <string name="msg40Played">Du hast 40 angesagt</string>
     <string name="msg40Received">Der Gegner hat 40 angesagt</string>
     <string name="msgSightJoker">Du hast den Sichtjoker eingesetzt</string>
-    <string name="msgParrySightJokerSuccess">Du hast den Parrier-Sichtjoker eingesetzt und Recht gehabt! Du bekommst 10 Punkte</string>
-    <string name="msgParrySightJokerFail">Der Gegner hat den Sichtjoker nicht verwendet, das gibt 10 Minuspunkte</string>
+    <string name="msgParrySightJokerSuccessWon">Du hast den Parrier-Sichtjoker eingesetzt und Recht gehabt! Du bekommst 10 Punkte</string>
+    <string name="msgParrySightJokerSuccessLost">Der Gegner hat den Parrier-Sichtjoker eingesetzt und Recht gehabt! Er bekommt 10 Punkte</string>
+    <string name="msgParrySightJokerFailWon">Der Gegner hat den Parrier-Sichtjoker eingesetzt und nicht Recht gehabt! Du bekommst 10 Punkte</string>
+    <string name="msgParrySightJokerFailLost">Du hast den Parrier-Sichtjoker eingesetzt und nicht Recht gehabt! Der Gegner bekommt 10 Punkte</string>
     <string name="msgParrySightJokerNotPossible">Du kannst den Parrier-Sichtjoker jetzt nicht einsetzen</string>
     <string name="msgSightJokerNotPossible">Du kannst den Sichtjoker erst einsetzen, wenn du am Zug bist!</string>
     <string name="msgCardExchanged">Du hast den Kartentausch Joker eingesetzt. Du bist am Zug</string>

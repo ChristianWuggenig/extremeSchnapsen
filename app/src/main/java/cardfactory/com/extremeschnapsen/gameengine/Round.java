@@ -3,8 +3,6 @@ package cardfactory.com.extremeschnapsen.gameengine;
 import android.content.Context;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -14,7 +12,6 @@ import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
 import cardfactory.com.extremeschnapsen.database.RoundPointsDataSource;
 import cardfactory.com.extremeschnapsen.gui.MessageHelper;
 import cardfactory.com.extremeschnapsen.models.Card;
-import cardfactory.com.extremeschnapsen.models.CardImageView;
 import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.models.Player;
 import cardfactory.com.extremeschnapsen.models.RoundPoints;
@@ -23,7 +20,7 @@ import cardfactory.com.extremeschnapsen.networking.NetworkManager;
 
 public class Round {
 
-    private Game game_round; //Game Deklaration -> Instanz unten
+    private Game game; //Game Deklaration -> Instanz unten
 
     private List<Card> allCards; //contains a list of all cards
     private List<Deck> currentDeck; //contains the current deck
@@ -73,7 +70,7 @@ public class Round {
         points = roundPointsDataSource.getCurrentRoundPointsObject();
 
 
-        game_round = new Game (context, true);
+        game = new Game (context, true);
 
 
         deckDataSource.deleteDeckTable(); //delete the deck from the database before creating a new one
@@ -603,9 +600,8 @@ public class Round {
 
     /**
      * compares the two played cards and decides which player gets the appropriate round points
-     * @return true if the round is finished, else false
      */
-    public boolean compareCards() {
+    public void compareCards() {
         //both cards of round are set, continue to compare those
 
         Deck cardPlayer1 = getPlayedCardPlayer1();
@@ -741,58 +737,6 @@ public class Round {
 
             increaseMoves();
 
-            deckDataSource.getAllDeck();
-
-            RoundPoints rp2 = roundPointsDataSource.getCurrentRoundPointsObject();
-
-            if (rp2.getPointsplayer1()>=66){
-
-                if (rp2.getPointsplayer2() >= 33){
-                    // 1 Punkt
-                    game_round.updateGamePoints(1,0);
-                }
-                else if (rp2.getPointsplayer2() >0 && rp2.getPointsplayer2() <33){
-                    // 2 Punkte
-                    game_round.updateGamePoints(2,0);
-                }
-                else {
-                    // 3 Punkte
-                    game_round.updateGamePoints(3,0);
-                }
-
-                return true;
-
-            }
-            else if (rp2.getPointsplayer2()>=66){
-                if (rp2.getPointsplayer1() >= 33){
-                    // 1 Punkt
-                    game_round.updateGamePoints(0,1);
-                }
-                else if (rp2.getPointsplayer1() >0 && rp2.getPointsplayer1() <33){
-                    // 2 Punkte
-                    game_round.updateGamePoints(0,2);
-                }
-                else {
-                    // 3 Punkte
-                    game_round.updateGamePoints(0,3);
-                }
-
-                return true;
-            }
-            //letzter Stich
-            if (rp2.getMoves() == 10) {
-                if (player1Won){
-                    game_round.updateGamePoints(1,0);
-
-                }
-                else {
-                    game_round.updateGamePoints(0,1);
-                }
-
-                return true;
-            }
-
-            return false;
         } else if (cardPlayer1 == null && cardPlayer2 != null && !isGroupOwner) {
             networkManager.waitForCard(false);
             networkDisplay.displayUserInformation(MessageHelper.WAITING);
@@ -810,26 +754,25 @@ public class Round {
             networkDisplay.displayUserInformation(MessageHelper.WAITING);
             networkDisplay.updateDeck();
         }
-        return false;
     }
 
     public boolean checkFor66() {
-
+        openDatabases();
         RoundPoints rp2 = roundPointsDataSource.getCurrentRoundPointsObject();
 
         if (rp2.getPointsplayer1()>=66){
 
             if (rp2.getPointsplayer2() >= 33){
                 // 1 Punkt
-                game_round.updateGamePoints(1,0);
+                game.updateGamePoints(1,0);
             }
             else if (rp2.getPointsplayer2() >0 && rp2.getPointsplayer2() <33){
                 // 2 Punkte
-                game_round.updateGamePoints(2,0);
+                game.updateGamePoints(2,0);
             }
             else {
                 // 3 Punkte
-                game_round.updateGamePoints(3,0);
+                game.updateGamePoints(3,0);
             }
 
             return true;
@@ -838,15 +781,15 @@ public class Round {
         else if (rp2.getPointsplayer2()>=66){
             if (rp2.getPointsplayer1() >= 33){
                 // 1 Punkt
-                game_round.updateGamePoints(0,1);
+                game.updateGamePoints(0,1);
             }
             else if (rp2.getPointsplayer1() >0 && rp2.getPointsplayer1() <33){
                 // 2 Punkte
-                game_round.updateGamePoints(0,2);
+                game.updateGamePoints(0,2);
             }
             else {
                 // 3 Punkte
-                game_round.updateGamePoints(0,3);
+                game.updateGamePoints(0,3);
             }
 
             return true;
@@ -1026,136 +969,6 @@ public class Round {
 
     }
 
-
-    public boolean checkFor20(List<Deck> cardsOnHand, List<CardImageView> cardImageViews){
-
-        boolean result = false;
-
-        //check only every second step
-        if(this.roundPointsDataSource.getCurrentRoundPointsObject().getMoves() % 2 == 0) {
-            //check if player has more than one card of a color
-            int countHerz = 0;
-            int countPink = 0;
-            int countKaro = 0;
-            int countKreuz = 0;
-
-            long hasHerzKoenig = 0;
-            long hasHerzDame = 0;
-
-            long hasKaroKoenig = 0;
-            long hasKaroDame = 0;
-
-            long hasKreuzKoenig = 0;
-            long hasKreuzDame = 0;
-
-            long hasPikKoenig = 0;
-            long hasPikDame = 0;
-
-            Collections.sort(cardsOnHand, new Comparator<Deck>() {
-                @Override
-                public int compare(Deck d1, Deck d2) {
-                    return d1.getCardSuit().compareToIgnoreCase(d2.getCardSuit());
-                }
-            });
-
-            for(CardImageView civ : cardImageViews){
-                //Log.e("CARD_IMAGE_VIEW", civ.getCardId() + "");
-            }
-
-            for (Deck d : cardsOnHand) {
-                switch (d.getCardSuit()){
-                    case "karo":
-                        countKaro++;
-                        break;
-                    case "kreuz":
-                        countKreuz++;
-                        break;
-                    case "pik":
-                        countPink++;
-                        break;
-                    case "herz":
-                        countHerz++;
-                        break;
-                }
-
-                if(countHerz > 1 ){
-                    if(d.getCardValue() == 3){
-                        hasHerzDame = d.getCardID();
-                    }else if(d.getCardValue() == 4){
-                        hasHerzKoenig = d.getCardID();
-                    }
-                }else if(countKaro > 1){
-                    if(d.getCardValue() == 3){
-                        hasKaroDame = d.getCardID();
-                    }else if(d.getCardValue() == 4){
-                        hasKaroKoenig = d.getCardID();
-                    }
-                }else if(countKreuz > 1){
-                    if(d.getCardValue() == 3){
-                        hasKreuzDame = d.getCardID();
-                    }else if(d.getCardValue() == 4){
-                        hasKreuzKoenig = d.getCardID();
-                    }
-                }else if(countPink > 1){
-                    if(d.getCardValue() == 3){
-                        hasPikDame = d.getCardID();
-                    }else if(d.getCardValue() == 4){
-                        hasPikKoenig = d.getCardID();
-                    }
-                }
-
-                if(hasHerzDame != 0 && hasHerzKoenig != 0){
-                    //find cards in image view and enable more points
-                    for(CardImageView civ : cardImageViews){
-                        if(civ.getCardId() == hasHerzDame){
-                            //update style and updated enable 20 strike
-                            civ.setImageAlpha(25);
-                            civ.setEnable_20_strike(true);
-                        }else if(civ.getCardId() == hasHerzKoenig){
-                            civ.setImageAlpha(25);
-                            civ.setEnable_20_strike(true);
-                        }
-                    }
-                }
-                if(hasKaroDame != 0 && hasKaroKoenig != 0){
-                    for(CardImageView civ : cardImageViews){
-                        if(civ.getCardId() == hasKaroDame){
-                            civ.setImageAlpha(25);
-                            civ.setEnable_20_strike(true);
-                        }else if(civ.getCardId() == hasKaroKoenig){
-                            civ.setImageAlpha(25);
-                            civ.setEnable_20_strike(true);
-                        }
-                    }
-                }
-                if(hasKreuzDame != 0 && hasKreuzKoenig != 0){
-                    for(CardImageView civ : cardImageViews){
-                        if(civ.getCardId() == hasKreuzDame){
-                            civ.setImageAlpha(25);
-                            civ.setEnable_20_strike(true);
-                        }else if(civ.getCardId() == hasKreuzDame){
-                            civ.setImageAlpha(25);
-                            civ.setEnable_20_strike(true);
-                        }
-                    }
-                }
-                if(hasPikDame != 0 && hasPikKoenig != 0){
-                    for(CardImageView civ : cardImageViews){
-                        if(civ.getCardId() == hasPikDame){
-                            civ.setImageAlpha(25);
-                            civ.setEnable_20_strike(true);
-                        }else if(civ.getCardId() == hasPikKoenig){
-                            civ.setImageAlpha(25);
-                            civ.setEnable_20_strike(true);
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
     public String getRoundPointsPlayer1() {
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
         return String.valueOf(roundPoints.getPointsplayer1());
@@ -1167,11 +980,11 @@ public class Round {
     }
 
     public String getGamePointsPlayer1(){
-        return String.valueOf(game_round.getGamePointsPlayer1());
+        return String.valueOf(game.getGamePointsPlayer1());
     }
 
     public String getGamePointsPlayer2(){
-        return String.valueOf(game_round.getGamePointsPlayer2());
+        return String.valueOf(game.getGamePointsPlayer2());
     }
 
     public List<Deck> getAlreadyPlayedCards() {
@@ -1205,7 +1018,7 @@ public class Round {
         }
 
         sightJokerUsed = true;
-        roundPointsDataSource.saveRoundPoints(roundPoints);
+        roundPointsDataSource.updateJoker(roundPoints);
 
         networkManager.sendSightJoker();
     }
@@ -1220,8 +1033,7 @@ public class Round {
         } else {
             roundPoints.setSightJokerPlayer1(1);
         }
-
-        roundPointsDataSource.saveRoundPoints(roundPoints);
+        roundPointsDataSource.updateJoker(roundPoints);
     }
 
     public boolean getMyTurnInCurrentMove() {
@@ -1237,28 +1049,37 @@ public class Round {
     public void parrySightJokerUsed(boolean success) {
         roundPointsDataSource.open();
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+        String message = "";
 
         if (isGroupOwner && success) {
             roundPoints.setParrySightJokerPlayer1(1);
             roundPoints.setPointsplayer1(10);
+            message = MessageHelper.PARRYSIGHTJOKER_SUCCESS_WON;
         } else if (!isGroupOwner && success) {
             roundPoints.setParrySightJokerPlayer2(1);
             roundPoints.setPointsplayer2(10);
+            message = MessageHelper.PARRYSIGHTJOKER_SUCCESS_WON;
         } else if (isGroupOwner && !success) {
-            roundPoints.setPointsplayer1(-10);
+            roundPoints.setPointsplayer2(10);
+            message = MessageHelper.PARRYSIGHTJOKER_FAIL_lOST;
         } else if (!isGroupOwner && !success) {
-            roundPoints.setPointsplayer2(-10);
+            roundPoints.setPointsplayer1(10);
+            message = MessageHelper.PARRYSIGHTJOKER_FAIL_lOST;
         }
 
         roundPointsDataSource.saveRoundPoints(roundPoints);
+        roundPointsDataSource.updateJoker(roundPoints);
 
         networkManager.sendParrySightJoker();
         sightJokerReceived = false;
+
+        networkDisplay.displayUserInformation(message);
     }
 
     public void parrySightJokerReceived() {
         roundPointsDataSource.open();
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+        String message = "";
 
         if ((isGroupOwner && getPlayedCardPlayer1() != null && sightJokerUsed) || (!isGroupOwner && getPlayedCardPlayer2() != null && sightJokerUsed)) {
             if (isGroupOwner) {
@@ -1269,15 +1090,22 @@ public class Round {
                 roundPoints.setPointsplayer1(10);
             }
 
+            message = MessageHelper.PARRYSIGHTJOKER_SUCCESS_lOST;
+
         } else {
             if (isGroupOwner) {
-                roundPoints.setPointsplayer2(-10);
+                roundPoints.setPointsplayer1(10);
             } else {
-                roundPoints.setPointsplayer1(-10);
+                roundPoints.setPointsplayer2(10);
             }
+
+            message = MessageHelper.PARRYSIGHTJOKER_FAIL_WON;
         }
 
         roundPointsDataSource.saveRoundPoints(roundPoints);
+        roundPointsDataSource.updateJoker(roundPoints);
+
+        networkDisplay.displayUserInformation(message);
     }
 
     public boolean cardExchange(int cardID_A){

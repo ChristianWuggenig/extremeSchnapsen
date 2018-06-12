@@ -56,10 +56,13 @@ public class ExtremeGameActivity extends GameActivity {
         if (round.getMyTurn() && round.getMyTurnInCurrentMove()) {
             if (round.getSightJokerReceived()) {
                 round.parrySightJokerUsed(true);
-                txvUserInformation.setText(R.string.msgParrySightJokerSuccess);
+                //txvUserInformation.setText(R.string.msgParrySightJokerSuccess);
+                if (round.checkFor66()) {
+                    finishActivity();
+                }
             } else {
                 round.parrySightJokerUsed(false);
-                txvUserInformation.setText(R.string.msgParrySightJokerFail);
+                //txvUserInformation.setText(R.string.msgParrySightJokerFail);
             }
         } else {
             txvUserInformation.setText(R.string.msgParrySightJokerNotPossible);

@@ -32,12 +32,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     private Deck playedCardPlayer1;
     private Deck playedCardPlayer2;
 
-    //fÃ¼r Game Object -> serializable
-    //Intent i = getIntent();
-    //Game game_test = (Game)i.getSerializableExtra("game_s");
-
     private static List<ImageView> cardList;
-    private static List<CardImageView> cardsToCheckFor20;
     protected static List<ImageView> showCardList;
 
     protected static TextView txvUserInformation;
@@ -94,13 +89,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         cardList.add((ImageView) findViewById(R.id.iv_card_played));
         cardList.add((ImageView) findViewById(R.id.iv_card_played2));
 
-        /*cardsToCheckFor20 = new ArrayList<>();
-        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_1));
-        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_2));
-        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_3));
-        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_4));
-        cardsToCheckFor20.add((CardImageView) findViewById(R.id.iv_card_5));*/
-
         txvUserInformation = this.findViewById(R.id.txvUserInformation);
         txvPlayer1 = this.findViewById(R.id.txv_user1);
         txvPlayer2 = this.findViewById(R.id.txv_user2);
@@ -146,18 +134,30 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     //msg20Received, msg40Received noch verwenden bitte
     public void onClickBtnHerz(View view) {
         round.check2040("herz");
+        if (round.checkFor66()) {
+            finishActivity();
+        }
     }
 
     public void onClickBtnKaro(View view) {
         round.check2040("karo");
+        if (round.checkFor66()) {
+            finishActivity();
+        }
     }
 
     public void onClickBtnPik(View view) {
         round.check2040("pik");
+        if (round.checkFor66()) {
+            finishActivity();
+        }
     }
 
     public void onClickBtnKreuz(View view) {
         round.check2040("kreuz");
+        if (round.checkFor66()) {
+            finishActivity();
+        }
     }
 
     public void onClickBtnExchange(View view) {
@@ -247,14 +247,26 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                     case MessageHelper.CARD_EXCHANGE_RECEIVED:
                         txvUserInformation.setText(R.string.msgCardExchangeReceived);
                         break;
-
+                    case MessageHelper.PARRYSIGHTJOKER_SUCCESS_WON:
+                        txvUserInformation.setText(R.string.msgParrySightJokerSuccessWon);
+                        showRoundPoints();
+                        break;
+                    case MessageHelper.PARRYSIGHTJOKER_SUCCESS_lOST:
+                        txvUserInformation.setText(R.string.msgParrySightJokerSuccessLost);
+                        break;
+                    case MessageHelper.PARRYSIGHTJOKER_FAIL_WON:
+                        txvUserInformation.setText(R.string.msgParrySightJokerFailWon);
+                        showRoundPoints();
+                        break;
+                    case MessageHelper.PARRYSIGHTJOKER_FAIL_lOST:
+                        txvUserInformation.setText(R.string.msgParrySightJokerFailLost);
+                        break;
                 }
             }
         });
     }
 
     public void displayDeck() {
-        //TODO: bitte hier den code so anpassen, das die Karten nicht nach links nachrutschen wenn eine action getriggered wurde, erschwert unnÃ¶tig die abfrage und das trigger der 20er, 40er Ansage
 
         int index = 0;
         cardsOnHand = round.getCardsOnHand();
@@ -263,8 +275,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         playedCardPlayer1 = round.getPlayedCardPlayer1();
         playedCardPlayer2 = round.getPlayedCardPlayer2();
         String karte = "";
-
-        //round.checkFor20(cardsOnHand, cardsToCheckFor20);
 
         for(ImageView card : cardList) {
             karte = "";
@@ -291,14 +301,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
         showGamePoints();
         showRoundPoints();
-        index = 0;
-
-        /*for(CardImageView civ : cardsToCheckFor20){
-            if (index < cardsOnHand.size()) {
-                civ.setCardId (cardsOnHand.get(index).getCardID() );
-            }
-            index++;
-        }*/
     }
 
     @Override
@@ -369,17 +371,9 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
     }
     public void playCard(int cardID) {
-        /*for(CardImageView civ : cardsToCheckFor20){
-            if((int) civ.getCardId() == cardID){
-                if( civ.isEnable_20_strike() ){
-                    //TODO: was soll passieren wenn die gespielte karte freigeschalten wurde fÃ¼r die 20er ansage ?
-                }
-            }
-        }*/
-
-
         if(round.playCard(cardID)) {
-            if(round.compareCards()){
+            round.compareCards();
+            if(round.checkFor66()){
                 finishActivity();
             }
         }
@@ -401,7 +395,8 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
                 round.setMyTurn(true);
 
-                if(round.compareCards()){
+                round.compareCards();
+                if(round.checkFor66()){
                     finishActivity();
                 }
             }
@@ -467,12 +462,18 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                         break;
                     case NetworkHelper.TWENTYFORTY:
                         round.receiveCheck2040(value);
+                        if (round.checkFor66()) {
+                            finishActivity();
+                        }
                         break;
                     case NetworkHelper.SIGHTJOKER:
                         round.sightJokerReceived();
                         break;
                     case NetworkHelper.PARRYSIGHTJOKER:
                         round.parrySightJokerReceived();
+                        if (round.checkFor66()) {
+                            finishActivity();
+                        }
                         break;
                     case NetworkHelper.CARD_EXCHANGE:
                         String[] splitted = value.split(";");

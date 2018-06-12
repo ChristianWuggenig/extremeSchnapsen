@@ -11,4 +11,8 @@ public class MessageHelper {
     public static final String FORTYPLAYED = "40played";
     public static final String CARD_EXCHANGE = "cardExchanged";
     public static final String CARD_EXCHANGE_RECEIVED = "cardExchangeReceived";
+    public static final String PARRYSIGHTJOKER_SUCCESS_WON = "parrySightJokerSuccessWon";
+    public static final String PARRYSIGHTJOKER_SUCCESS_lOST = "parrySightJokerSuccessLost";
+    public static final String PARRYSIGHTJOKER_FAIL_WON = "parrySightJokerFailWon";
+    public static final String PARRYSIGHTJOKER_FAIL_lOST = "parrySightJokerFailLost";
 }

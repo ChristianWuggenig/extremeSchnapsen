@@ -39,6 +39,7 @@ public class Game implements Serializable {
     }
 
     public void updateGamePoints(int won_pointsplayer1, int won_pointsplayer2){
+        openDatabases();
         gp = gpds.getCurrentGamePointsObject();
         gp.setGamePointsPlayer1(gp.getGamePointsPlayer1()+ won_pointsplayer1);
         gp.setGamePoinstsPlayer2(gp.getGamePointsPlayer2()+ won_pointsplayer2);
@@ -46,6 +47,9 @@ public class Game implements Serializable {
     }
 
     public boolean gameWon(boolean isGroupOwner){
+        openDatabases();
+        gp = gpds.getCurrentGamePointsObject();
+
         if (gp.getGamePointsPlayer1() >= 7 && isGroupOwner) {
             return true;
         } else if (gp.getGamePointsPlayer1() >= 7 && !isGroupOwner) {
@@ -59,6 +63,7 @@ public class Game implements Serializable {
     }
 
     public boolean gameOver(boolean isGroupOwner) {
+        openDatabases();
         gp = gpds.getCurrentGamePointsObject();
 
         if (gp.getGamePointsPlayer1() >=7){
@@ -95,11 +100,13 @@ public class Game implements Serializable {
     }
   
     public int getGamePointsPlayer1() {
+        openDatabases();
         gp = gpds.getCurrentGamePointsObject();
         return gp.getGamePointsPlayer1();
     }
 
     public int getGamePointsPlayer2() {
+        openDatabases();
         gp = gpds.getCurrentGamePointsObject();
         return gp.getGamePointsPlayer2();
     }
