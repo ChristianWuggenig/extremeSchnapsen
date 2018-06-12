@@ -11,4 +11,5 @@ public class NetworkHelper {
     public static final String MODE = "mode";
     public static final String MODE_EXTREME = "extreme";
     public static final String MODE_NORMAL = "normal";
+    public static final String CARD_EXCHANGE = "cardExchange";
 }

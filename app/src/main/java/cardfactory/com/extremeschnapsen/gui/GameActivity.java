@@ -39,7 +39,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     private Deck playedCardPlayer1;
     private Deck playedCardPlayer2;
 
-    //für Game Object -> serializable
+    //fÃ¼r Game Object -> serializable
     //Intent i = getIntent();
     //Game game_test = (Game)i.getSerializableExtra("game_s");
 
@@ -163,6 +163,34 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         round.check2040("kreuz");
     }
 
+    public void onClickBtnExchange(View view) {
+
+        ivOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivCardClicked_CardExchange(view);
+            }
+        };
+
+        for (int count = 0; count < 5; count++) {
+            cardList.get(count).setOnClickListener(ivOnClickListener);
+        }
+
+    }
+
+    public void setPlayCardListener() {
+        ivOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivCardClicked(view);
+            }
+        };
+
+        for (int count = 0; count < 6; count++) {
+            cardList.get(count).setOnClickListener(ivOnClickListener);
+        }
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -216,13 +244,20 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                     case MessageHelper.FORTYPLAYED:
                         txvUserInformation.setText(R.string.msg40Played);
                         break;
+                    case MessageHelper.CARD_EXCHANGE:
+                        txvUserInformation.setText(R.string.msgCardExchanged);
+                        break;
+                    case MessageHelper.CARD_EXCHANGE_RECEIVED:
+                        txvUserInformation.setText(R.string.msgCardExchangeReceived);
+                        break;
+
                 }
             }
         });
     }
 
     public void displayDeck() {
-        //TODO: bitte hier den code so anpassen, das die Karten nicht nach links nachrutschen wenn eine action getriggered wurde, erschwert unnötig die abfrage und das trigger der 20er, 40er Ansage
+        //TODO: bitte hier den code so anpassen, das die Karten nicht nach links nachrutschen wenn eine action getriggered wurde, erschwert unnÃ¶tig die abfrage und das trigger der 20er, 40er Ansage
 
         int index = 0;
         cardsOnHand = round.getCardsOnHand();
@@ -307,11 +342,40 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         }
     }
 
+    public void ivCardClicked_CardExchange(View view) {
+
+        switch (view.getId()) {
+            case R.id.iv_card_1:
+                exchangeCard((int)cardsOnHand.get(0).getCardID());
+                break;
+            case R.id.iv_card_2:
+                exchangeCard((int)cardsOnHand.get(1).getCardID());
+                break;
+            case R.id.iv_card_3:
+                exchangeCard((int)cardsOnHand.get(2).getCardID());
+                break;
+            case R.id.iv_card_4:
+                exchangeCard((int)cardsOnHand.get(3).getCardID());
+                break;
+            case R.id.iv_card_5:
+                exchangeCard((int)cardsOnHand.get(4).getCardID());
+                break;
+
+        }
+        setPlayCardListener();
+        displayDeck();
+    }
+
+    //fÃ¼r Kartentausch
+    public void exchangeCard (int cardID){
+        round.cardExchange(cardID);
+
+    }
     public void playCard(int cardID) {
         /*for(CardImageView civ : cardsToCheckFor20){
             if((int) civ.getCardId() == cardID){
                 if( civ.isEnable_20_strike() ){
-                    //TODO: was soll passieren wenn die gespielte karte freigeschalten wurde für die 20er ansage ?
+                    //TODO: was soll passieren wenn die gespielte karte freigeschalten wurde fÃ¼r die 20er ansage ?
                 }
             }
         }*/
@@ -402,7 +466,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                         displayDeck();
                         break;
                     case NetworkHelper.TURN:
-                        //was soll geschehen wenn der gegenüberliegende spieler zugedreht hat
+                        //was soll geschehen wenn der gegenÃ¼berliegende spieler zugedreht hat
                         break;
                     case NetworkHelper.TWENTYFORTY:
                         round.receiveCheck2040(value);
@@ -412,6 +476,14 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                         break;
                     case NetworkHelper.PARRYSIGHTJOKER:
                         round.sightJokerParryReceived();
+                        break;
+                    case NetworkHelper.CARD_EXCHANGE:
+                        String[] splitted = value.split(";");
+                        if (splitted[0] != "") {
+                            round.receiveCardExchange(Integer.parseInt(splitted[0]), Integer.parseInt(splitted[1]));
+                            displayDeck();
+                        }
+                        break;
                 }
             }
         });

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 import cardfactory.com.extremeschnapsen.database.CardDataSource;
 import cardfactory.com.extremeschnapsen.database.DeckDataSource;
@@ -47,10 +48,10 @@ public class Round {
 
     private RoundPoints points; //contains the round points
 
-    //falls Button öfters gedrückt wird
+    //falls Button Ã¶fters gedrÃ¼ckt wird
     private boolean [] twentyfortyalreadyplayed = new boolean[4];
 
-    //dass nur König oder Dame gespielt werden können, nach 20/40
+    //dass nur KÃ¶nig oder Dame gespielt werden kÃ¶nnen, nach 20/40
 
     private String justplayed2040;
 
@@ -112,13 +113,13 @@ public class Round {
 
 
         if (isGroupOwner) {
-            for (Deck deck : this.currentDeck) {
+            for (Deck deck : this.deckDataSource.getAllDeck()) {
                 if (deck.getDeckStatus() == 1) {
                     deckonhands.add(deck);
                 }
             }
         } else {
-            for (Deck deck : this.currentDeck) {
+            for (Deck deck : this.deckDataSource.getAllDeck()) {
                 if (deck.getDeckStatus() == 2) {
                     deckonhands.add(deck);
                 }
@@ -128,11 +129,33 @@ public class Round {
 
     }
 
-    //die Karten auf der Hand zurückbekommen
+    public List<Deck> getCardsOnHand_Opponent() {
+        List<Deck> deckonhands = new ArrayList<>();
+
+
+        if (isGroupOwner) {
+            for (Deck deck : this.deckDataSource.getAllDeck()) {
+                if (deck.getDeckStatus() == 2) {
+                    deckonhands.add(deck);
+                }
+            }
+        } else {
+            for (Deck deck : this.deckDataSource.getAllDeck()) {
+                if (deck.getDeckStatus() == 1) {
+                    deckonhands.add(deck);
+                }
+            }
+        }
+        return deckonhands;
+
+    }
+
+
+    //die Karten auf der Hand zurÃ¼ckbekommen
     public List<Deck> getCardsOnHand(int player) {
         List<Deck> onHand = new ArrayList<>();
 
-        for (Deck deck : this.currentDeck) {
+        for (Deck deck : this.deckDataSource.getAllDeck()) {
             if (deck.getDeckStatus() == player) {
                 onHand.add(deck);
             }
@@ -184,16 +207,16 @@ public class Round {
         RoundPoints rp = new RoundPoints(1,0,0,0);
         rp = roundPointsDataSource.getCurrentRoundPointsObject();
         //if (myTurn && rp.getTrumpExchanged() == 0) {
-            for (Deck deck : this.getAllDecks()) {
-                if (deck.getCardValue() == 2 && deck.getDeckTrump() == 1) {
-                    rp.setTrumpExchanged(1);
-                    this.deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), deck.getDeckStatus());
-                    this.roundPointsDataSource.updtateTrumpExchanged(rp);
-                    this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
-                    this.currentDeck = this.deckDataSource.getAllDeck();
-                    break;
-                }
+        for (Deck deck : this.getAllDecks()) {
+            if (deck.getCardValue() == 2 && deck.getDeckTrump() == 1) {
+                rp.setTrumpExchanged(1);
+                this.deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), deck.getDeckStatus());
+                this.roundPointsDataSource.updtateTrumpExchanged(rp);
+                this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
+                this.currentDeck = this.deckDataSource.getAllDeck();
+                break;
             }
+        }
     }
 
     /**
@@ -207,7 +230,7 @@ public class Round {
     //offene Karte aus dem Deck erhalten
     public Deck getOpenCard() {
         Deck opencard = null;
-        for (Deck deck : this.currentDeck) {
+        for (Deck deck : this.deckDataSource.getAllDeck()) {
             if (deck.getDeckStatus() == 3) {
                 opencard = deck;
             }
@@ -317,6 +340,7 @@ public class Round {
     public boolean playCard(int cardID) {
 
         //ich bin dran und und schlussphase
+        roundPointsDataSource.open();
         points = roundPointsDataSource.getCurrentRoundPointsObject();
         Deck wanttoplaycard = new Deck();
 
@@ -329,7 +353,7 @@ public class Round {
             }
 
             if (checkFor2040DameKoenig(wanttoplaycard, justplayed2040)) {
-                //zurücksetzen
+                //zurÃ¼cksetzen
                 justplayed2040 = "";
                 for (Deck deck : this.getAllDecks()) {
                     if (deck.getCardID() == cardID) {
@@ -447,7 +471,7 @@ public class Round {
         List<Deck> tempcardsToPlay = new ArrayList<>();
         List<Deck> cardsToPlay = new ArrayList<>();
 
-        //check ob Karte von gleicher Farbe, wenn ja wird es der List cardsToPlay hinzugefÃ¼gt
+        //check ob Karte von gleicher Farbe, wenn ja wird es der List cardsToPlay hinzugefÃƒÂ¼gt
         for (Deck deck : this.getCardsOnHand()) {
             if (deck.getCardSuit().equals(playedcard.getCardSuit())) {
                 farbe = true;
@@ -456,7 +480,7 @@ public class Round {
         }
 
 
-        //check wenn gleiche Farbe vorhanden auf hÃ¶here Karte
+        //check wenn gleiche Farbe vorhanden auf hÃƒÂ¶here Karte
         if (farbe){
             for (Deck deck : tempcardsToPlay){
                 if (deck.getCardValue() > playedcard.getCardValue()){
@@ -465,7 +489,7 @@ public class Round {
                 }
             }
         }
-        //wenn gleiche Farbe und HÃ¶hre Karte vorhanden lÃ¶sche niedrigere Karten
+        //wenn gleiche Farbe und HÃƒÂ¶hre Karte vorhanden lÃƒÂ¶sche niedrigere Karten
         if (highercard){
             for (Deck deck : tempcardsToPlay){
                 if (deck.getCardValue() > playedcard.getCardValue()){
@@ -523,7 +547,7 @@ public class Round {
     public void updateCard(int cardID, int status) {
         deckDataSource.updateDeckStatus(cardID, status);
 
-        for (Deck deck : currentDeck) {
+        for (Deck deck : this.deckDataSource.getAllDeck()) {
             if (deck.getCardID() == cardID) {
                 deck.setDeckStatus(status);
             }
@@ -537,7 +561,7 @@ public class Round {
     public void getNextFreeCard(int playerID) {
         boolean found = false;
 
-        for (Deck deck : currentDeck) {
+        for (Deck deck : this.deckDataSource.getAllDeck()) {
             if (deck.getDeckStatus() == 4) {
                 deck.setDeckStatus(playerID);
                 deckDataSource.updateDeckStatus(deck.getCardID(), playerID);
@@ -547,7 +571,7 @@ public class Round {
         }
 
         if (!found) {
-            for (Deck deck : currentDeck) {
+            for (Deck deck : this.deckDataSource.getAllDeck()) {
                 if (deck.getDeckStatus() == 3) {
                     deck.setDeckStatus(playerID);
                     deckDataSource.updateDeckStatus(deck.getCardID(), playerID);
@@ -822,7 +846,7 @@ public class Round {
         return checkStuch;
     }
 
-    //nach Message, wenn 20/40 ausgespielt wurde -> Information, welche Farbe wird benötigt
+    //nach Message, wenn 20/40 ausgespielt wurde -> Information, welche Farbe wird benÃ¶tigt
     public void receiveCheck2040(String farbe){
         int i = 0;
         RoundPoints rp = new RoundPoints(1,1,0,0);
@@ -865,10 +889,10 @@ public class Round {
 
     }
 
-    //Der Button Herz, Pik, Karo oder Kreuz wird gedrückt um 20/40 anzusagen
+    //Der Button Herz, Pik, Karo oder Kreuz wird gedrÃ¼ckt um 20/40 anzusagen
     public String check2040(String farbe) {
 
-        //temporäre Variable, falls spieler öfters auf button 2040 drückt
+        //temporÃ¤re Variable, falls spieler Ã¶fters auf button 2040 drÃ¼ckt
         //muss nicht synchron gehalten werden, weil ja nur ein Spieler den jeweiligen 20er haben kann
         boolean alreadyplayed = false;
 
@@ -952,7 +976,7 @@ public class Round {
                 networkManager.send2040(farbe);
             }
 
-            //als Rückgabeparameter für Message an anderen Spieler
+            //als RÃ¼ckgabeparameter fÃ¼r Message an anderen Spieler
             return check2040;
         } else {
             return "";
@@ -970,9 +994,9 @@ public class Round {
             this.roundPointsDataSource.updateRoundPoints(points);
         }
         else if (points.getPointsplayer2() > 0 && points.getHiddenpointsplayer2() > 0) {
-                points.setPointsplayer2(points.getPointsplayer2() + points.getHiddenpointsplayer2());
-                points.setHiddenpointsplayer2(0);
-                this.roundPointsDataSource.updateRoundPoints(points);
+            points.setPointsplayer2(points.getPointsplayer2() + points.getHiddenpointsplayer2());
+            points.setHiddenpointsplayer2(0);
+            this.roundPointsDataSource.updateRoundPoints(points);
         }
 
     }
@@ -1118,7 +1142,7 @@ public class Round {
     }
 
     public String getGamePointsPlayer1(){
-       return String.valueOf(game_round.getGamePointsPlayer1());
+        return String.valueOf(game_round.getGamePointsPlayer1());
     }
 
     public String getGamePointsPlayer2(){
@@ -1199,5 +1223,127 @@ public class Round {
         }
 
         roundPointsDataSource.saveRoundPoints(roundPoints);
+    }
+
+    public boolean cardExchange(int cardID_A){
+
+
+        boolean checkTausch = false;
+        Deck wanttoexchange = new Deck();
+        Deck getforexchange = new Deck();
+        points = roundPointsDataSource.getCurrentRoundPointsObject();
+        int alreadyPlayedJoker;
+
+        if (myTurn) {
+
+            if (isGroupOwner){
+                alreadyPlayedJoker = points.getCardExchangeJokerPlayer1();
+            }
+            else {
+                alreadyPlayedJoker = points.getCardExchangeJokerPlayer2();
+            }
+
+            if (alreadyPlayedJoker == 0) {
+
+                checkTausch = true;
+                int size_card_on_hand_opponent = this.getCardsOnHand_Opponent().size();
+                int random_list_index = new Random().nextInt(size_card_on_hand_opponent);
+
+                //sucht passendes Deck Objekt fÃ¼r zu tauschende KartenID
+                for (Deck deck : this.getAllDecks()) {
+                    if (deck.getCardID() == cardID_A) {
+                        wanttoexchange = deck;
+                        break;
+                    }
+                }
+
+                getforexchange = this.getCardsOnHand_Opponent().get(random_list_index);
+
+                //Status fÃ¼r wantoexchange wird upgedatet
+                for (Deck deck : this.getAllDecks()) {
+                    if (deck.getCardID() == cardID_A) {
+                        if (isGroupOwner) {
+                            deck.setDeckStatus(2); //wie bekomme ich das in die GUI?
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 2);
+                        } else {
+                            deck.setDeckStatus(1);
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 1);
+                        }
+                    }
+                }
+
+                //Status fÃ¼r getforexchange wird upgedatet
+                for (Deck deck : this.getAllDecks()) {
+                    if (deck.getCardID() == getforexchange.getCardID()) {
+                        if (isGroupOwner) {
+                            deck.setDeckStatus(1); //wie bekomme ich das in die GUI?
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 1);
+                        } else {
+                            deck.setDeckStatus(2);
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 2);
+                        }
+                    }
+                }
+
+                //update Status Joker bereis gespielt
+                if (isGroupOwner) {
+                    points.setCardExchangeJokerPlayer1(1);
+                    this.roundPointsDataSource.updateJoker(points);
+                } else {
+                    points.setCardExchangeJokerPlayer2(1);
+                    this.roundPointsDataSource.updateJoker(points);
+                }
+                //Sende Karten ID zum anderen Spieler
+                networkDisplay.displayUserInformation(MessageHelper.CARD_EXCHANGE);
+                networkManager.sendCardExchange((int)wanttoexchange.getCardID(), (int) getforexchange.getCardID());
+
+            }
+        }
+
+        return checkTausch;
+    }
+
+    public boolean receiveCardExchange(int cardID_A, int cardID_B){
+
+        points = roundPointsDataSource.getCurrentRoundPointsObject();
+
+        //Status fÃ¼r wantoexchange wird upgedatet
+        for (Deck deck : this.getAllDecks()) {
+            if (deck.getCardID() == cardID_A) {
+                if (deck.getDeckStatus() == 1) {
+                    deck.setDeckStatus(2); //wie bekomme ich das in die GUI?
+                    deckDataSource.updateDeckStatus(deck.getCardID(), 2);
+                } else {
+                    deck.setDeckStatus(1);
+                    deckDataSource.updateDeckStatus(deck.getCardID(), 1);
+                }
+            }
+        }
+
+        //Status fÃ¼r gettoexchange wird upgedatet
+        for (Deck deck : this.getAllDecks()) {
+            if (deck.getCardID() == cardID_B) {
+                if (deck.getDeckStatus() == 1) {
+                    deck.setDeckStatus(2); //wie bekomme ich das in die GUI?
+                    deckDataSource.updateDeckStatus(deck.getCardID(), 2);
+                } else {
+                    deck.setDeckStatus(1);
+                    deckDataSource.updateDeckStatus(deck.getCardID(), 1);
+                }
+            }
+        }
+
+        //update Status Joker bereis gespielt
+        if (isGroupOwner) {
+            points.setCardExchangeJokerPlayer2(1);
+            this.roundPointsDataSource.updateJoker(points);
+        } else {
+            points.setCardExchangeJokerPlayer1(1);
+            this.roundPointsDataSource.updateJoker(points);
+        }
+
+        networkDisplay.displayUserInformation(MessageHelper.CARD_EXCHANGE_RECEIVED);
+
+        return true;
     }
 }
