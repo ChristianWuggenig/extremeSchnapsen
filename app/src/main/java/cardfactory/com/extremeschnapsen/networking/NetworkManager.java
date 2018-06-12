@@ -146,4 +146,14 @@ public class NetworkManager {
             httpClient.sendAction(NetworkHelper.PARRYSIGHTJOKER, "true");
         }
     }
+
+    public void sendCardExchange(int cardA, int cardB) {
+        String cardString = String.valueOf(cardA) + ";" + String.valueOf(cardB);
+
+        if (isServer) {
+            httpServer.setCardExchange(cardString);
+        } else {
+            httpClient.sendAction(NetworkHelper.CARD_EXCHANGE, cardString);
+        }
+    }
 }
