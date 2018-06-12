@@ -64,12 +64,29 @@ public class HTTPClientUnitTest {
     }
 
     @Test
-    public void testProcessServerInformation() {
+    public void testProcessServerInformationWithCardID() {
+        JSONArray jsonArray = createJsonArray(1);
+
+        httpClient.processServerInformation(jsonArray);
+
+        assertTrue(true); //if the statement above does not fail, the test is successful
+    }
+
+    @Test
+    public void testProcessServerInformationWithoutCardID() {
+        JSONArray jsonArray = createJsonArray(0);
+
+        httpClient.processServerInformation(jsonArray);
+
+        assertTrue(true); //if the statement above does not fail, the test is successful
+    }
+
+    private JSONArray createJsonArray(int cardID) {
         JSONArray jsonArray = new JSONArray();
 
         try {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put(NetworkHelper.ID, 1);
+            jsonObject.put(NetworkHelper.ID, cardID);
             jsonArray.put(jsonObject);
 
             jsonObject = new JSONObject();
@@ -95,8 +112,6 @@ public class HTTPClientUnitTest {
             fail(ex.getMessage());
         }
 
-        httpClient.processServerInformation(jsonArray);
-
-        assertTrue(true); //if the statement above does not fail, the test is successful
+        return jsonArray;
     }
 }
