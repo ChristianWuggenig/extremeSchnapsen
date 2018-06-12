@@ -1340,6 +1340,8 @@ public class Round {
             this.roundPointsDataSource.updateJoker(points);
         }
 
+        networkDisplay.displayUserInformation(MessageHelper.CARD_EXCHANGE_RECEIVED);
+
         return true;
     }
 }

@@ -472,10 +472,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                         break;
                     case NetworkHelper.CARD_EXCHANGE:
                         String[] splitted = value.split(";");
-                        //receive exchange card
-                        //splitted[0] --> cardA
-                        //splitted[1] --> cardB
-                        //Integer.parseInt nicht vergessen
+                        round.receiveCardExchange(Integer.parseInt(splitted[0]), Integer.parseInt(splitted[1]));
                 }
             }
         });
