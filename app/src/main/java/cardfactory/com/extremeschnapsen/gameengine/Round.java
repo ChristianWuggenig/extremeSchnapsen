@@ -340,6 +340,7 @@ public class Round {
     public boolean playCard(int cardID) {
 
         //ich bin dran und und schlussphase
+        roundPointsDataSource.open();
         points = roundPointsDataSource.getCurrentRoundPointsObject();
         Deck wanttoplaycard = new Deck();
 
@@ -1293,8 +1294,9 @@ public class Round {
                     this.roundPointsDataSource.updateJoker(points);
                 }
                 //Sende Karten ID zum anderen Spieler
-                //networkDisplay.displayUserInformation(MessageHelper.EXCHANGE_CARD_PLAYED);
-                //networkManager.sendExchangeCards(wanttoexchange.getCardID(), getforexchange.getCardID() );
+                networkDisplay.displayUserInformation(MessageHelper.CARD_EXCHANGE);
+                networkManager.sendCardExchange((int)wanttoexchange.getCardID(), (int) getforexchange.getCardID());
+
             }
         }
 

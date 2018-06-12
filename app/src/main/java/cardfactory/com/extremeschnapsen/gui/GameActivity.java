@@ -244,6 +244,13 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                     case MessageHelper.FORTYPLAYED:
                         txvUserInformation.setText(R.string.msg40Played);
                         break;
+                    case MessageHelper.CARD_EXCHANGE:
+                        txvUserInformation.setText(R.string.msgCardExchanged);
+                        break;
+                    case MessageHelper.CARD_EXCHANGE_RECEIVED:
+                        txvUserInformation.setText(R.string.msgCardExchangeReceived);
+                        break;
+
                 }
             }
         });
@@ -472,7 +479,11 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                         break;
                     case NetworkHelper.CARD_EXCHANGE:
                         String[] splitted = value.split(";");
-                        round.receiveCardExchange(Integer.parseInt(splitted[0]), Integer.parseInt(splitted[1]));
+                        if (splitted[0] != "") {
+                            round.receiveCardExchange(Integer.parseInt(splitted[0]), Integer.parseInt(splitted[1]));
+                            displayDeck();
+                        }
+                        break;
                 }
             }
         });

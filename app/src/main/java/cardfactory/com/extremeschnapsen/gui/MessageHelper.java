@@ -9,4 +9,6 @@ public class MessageHelper {
     public static final String TWENTYPLAYED = "20played";
     public static final String FORTYRECEIVED = "40received";
     public static final String FORTYPLAYED = "40played";
+    public static final String CARD_EXCHANGE = "cardExchanged";
+    public static final String CARD_EXCHANGE_RECEIVED = "cardExchangeReceived";
 }
