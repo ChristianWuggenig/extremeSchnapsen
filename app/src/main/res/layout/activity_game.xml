@@ -320,12 +320,13 @@
         android:layout_height="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/tausch"
         android:textSize="25sp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.891"
-        android:visibility="gone"/>
+        app:layout_constraintVertical_bias="0.891" />
 
     <Button
         android:id="@+id/btn_kartentausch"
@@ -334,14 +335,14 @@
         android:layout_height="32dp"
         android:layout_marginEnd="60dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/enttarn"
+        android:onClick="onClickBtnExchange"
         android:textSize="20sp"
-        android:text="E"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.888"
-        android:onClick="onClickBtnExchange"
-        android:visibility="gone"/>
+        app:layout_constraintVertical_bias="0.888" />
 
     <Button
         android:id="@+id/btn_caro"
@@ -352,15 +353,15 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="KA"
+        android:background="@drawable/caro20"
+        android:onClick="onClickBtnKaro"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn_kreuz"
         app:layout_constraintTop_toBottomOf="@+id/btn_pik"
         app:layout_constraintVertical_bias="0.031"
-        tools:ignore="MissingConstraints"
-        android:onClick="onClickBtnKaro"/>
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/btn_pik"
@@ -371,15 +372,15 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="P"
+        android:background="@drawable/pik20"
+        android:onClick="onClickBtnPik"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn_herz"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.651"
-        tools:ignore="MissingConstraints"
-    android:onClick="onClickBtnPik"/>
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/btn_kreuz"
@@ -389,14 +390,14 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
-        android:text="KR"
+        android:background="@drawable/kreuz20"
+        android:onClick="onClickBtnKreuz"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_deck"
         app:layout_constraintTop_toBottomOf="@+id/btn_herz"
         app:layout_constraintVertical_bias="0.115"
-        tools:ignore="MissingConstraints"
-        android:onClick="onClickBtnKreuz"/>
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/btn_herz"
@@ -406,13 +407,13 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="H"
+        android:background="@drawable/herz20"
+        android:onClick="onClickBtnHerz"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_deck"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.651"
-        tools:ignore="MissingConstraints"
-        android:onClick="onClickBtnHerz"/>
+        tools:ignore="MissingConstraints" />
 
 </android.support.constraint.ConstraintLayout>
