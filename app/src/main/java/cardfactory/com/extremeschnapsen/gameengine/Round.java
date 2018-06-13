@@ -212,7 +212,7 @@ public class Round {
         }
     }
 
-    public void receiveExchangeTrump(){
+    public void receiveExchangeTrump(){ti
         RoundPoints rp = new RoundPoints(1,0,0,0);
         rp = roundPointsDataSource.getCurrentRoundPointsObject();
         //if (myTurn && rp.getTrumpExchanged() == 0) {
@@ -1155,7 +1155,7 @@ public class Round {
                     }
                 }
 
-                //Status fÃ¼r getforexchange wird upgedatet
+                //Status für getforexchange wird upgedatet
                 for (Deck deck : this.getAllDecks()) {
                     if (deck.getCardID() == getforexchange.getCardID()) {
                         if (isGroupOwner) {
@@ -1190,7 +1190,7 @@ public class Round {
 
         points = roundPointsDataSource.getCurrentRoundPointsObject();
 
-        //Status fÃ¼r wantoexchange wird upgedatet
+        //Status für wantoexchange wird upgedatet
         for (Deck deck : this.getAllDecks()) {
             if (deck.getCardID() == cardID_A) {
                 if (deck.getDeckStatus() == 1) {
@@ -1203,7 +1203,7 @@ public class Round {
             }
         }
 
-        //Status fÃ¼r gettoexchange wird upgedatet
+        //Status für gettoexchange wird upgedatet
         for (Deck deck : this.getAllDecks()) {
             if (deck.getCardID() == cardID_B) {
                 if (deck.getDeckStatus() == 1) {
@@ -1229,4 +1229,5 @@ public class Round {
 
         return true;
     }
+
 }

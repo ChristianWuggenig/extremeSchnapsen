@@ -1,11 +1,16 @@
 package cardfactory.com.extremeschnapsen.gui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,6 +105,9 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         isGroupOwner = intent.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, true);
 
         round = new Round(this);
+        //register BroadcastReceiver and set IntentFilter for MovementSensor
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mSensorReceiver, new IntentFilter(IntentHelper.MOVEMENT_SENSOR_KEY));
 
         if(isGroupOwner) {
             round.initializeRound();
@@ -554,5 +562,30 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
     public void onClickBtnParrySightJoker(View view) {
 
+    }
+
+    private BroadcastReceiver mSensorReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //get both boolean values and handle both actions -> trigger more actions
+            boolean isShake = intent.getBooleanExtra(IntentHelper.MOVEMENT_ACTIONS[0],false);
+            boolean isTurn = intent.getBooleanExtra(IntentHelper.MOVEMENT_ACTIONS[1], false);
+
+            if(isShake){
+                //shuffle deck
+                Log.d("MainActivity", "shake happened!");
+            }
+            if(isTurn){
+                //activate closed deck status...
+                round.sendTurn();
+                Log.d("MainActivity", "turn happened!");
+            }
+        }
+    };
+
+    protected void onDestroy() {
+        //deregister BroadcastReceiver
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSensorReceiver);
+        super.onDestroy();
     }
 }
