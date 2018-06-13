@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.networking;
 
 import android.content.Context;
 
@@ -72,6 +72,7 @@ public class NetworkManagerUnitTest {
     //the nullpointerexception is thrown in the volley-class, because the requestqueue cannot be created on a mock-object
     @Test (expected = NullPointerException.class)
     public void testStartHttpClientWithNetworkDisplayPlayer() {
+        networkManager.startHttpClient();
         networkManager.startHttpClient(networkDisplay, player);
 
         fail("Exception not thrown"); //if the statement above does not fail, then the test failed
@@ -192,6 +193,23 @@ public class NetworkManagerUnitTest {
     public void testSendParrySightJokerWithClient() {
         networkManager.startHttpClient(); //start the client first
         networkManager.sendParrySightJoker();
+
+        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+    }
+
+    @Test
+    public void testSendCardExchangeWithServer() {
+        networkManager.startHttpServer(mode);
+        networkManager.sendCardExchange(1, 2);
+
+        assertTrue(true); //if the statement above does not fail, then the test is successful
+    }
+
+    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
+    @Test (expected = NullPointerException.class)
+    public void testSendCardExchangeWithClient() {
+        networkManager.startHttpClient(); //start the client first
+        networkManager.sendCardExchange(1, 2);
 
         fail("Exception not thrown"); //if the statement above does not fail, then the test failed
     }

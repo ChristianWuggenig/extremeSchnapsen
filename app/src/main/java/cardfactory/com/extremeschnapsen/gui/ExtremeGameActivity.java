@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.services.LightSensorService;
@@ -14,13 +15,20 @@ import cardfactory.com.extremeschnapsen.services.LightSensorService;
 public class ExtremeGameActivity extends GameActivity {
 
     private boolean lightSensorUsed;
-
+    private Button btnCardExchange;
+    private Button btnParrySightJoker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //setContentView(R.layout.activity_extreme_game);
+
+        btnCardExchange = this.findViewById(R.id.btn_kartentausch);
+        btnParrySightJoker = this.findViewById(R.id.btn_endtarnjoker);
+
+        btnCardExchange.setVisibility(View.VISIBLE);
+        btnParrySightJoker.setVisibility(View.VISIBLE);
 
         lightSensorUsed = false;
 
@@ -44,7 +52,7 @@ public class ExtremeGameActivity extends GameActivity {
     private void lightSensorCovered() {
         if (round.getPlayedCardPlayer1() == null && round.getPlayedCardPlayer2() == null && round.getMyTurn()) {
             showCardDialog(true);
-            round.sightJokerUsed();
+            round.sightJoker();
             lightSensorUsed = true;
         } else
             txvUserInformation.setText(R.string.msgSightJokerNotPossible);
@@ -55,14 +63,12 @@ public class ExtremeGameActivity extends GameActivity {
     public void onClickBtnParrySightJoker(View view) {
         if (round.getMyTurn() && round.getMyTurnInCurrentMove()) {
             if (round.getSightJokerReceived()) {
-                round.parrySightJokerUsed(true);
-                //txvUserInformation.setText(R.string.msgParrySightJokerSuccess);
+                round.parrySightJoker(true);
                 if (round.checkFor66()) {
-                    finishActivity();
+                    finishActivity(round.roundWon());
                 }
             } else {
-                round.parrySightJokerUsed(false);
-                //txvUserInformation.setText(R.string.msgParrySightJokerFail);
+                round.parrySightJoker(false);
             }
         } else {
             txvUserInformation.setText(R.string.msgParrySightJokerNotPossible);
@@ -70,8 +76,8 @@ public class ExtremeGameActivity extends GameActivity {
     }
 
     @Override
-    protected void finishActivity() {
+    protected void finishActivity(boolean won) {
         lightSensorUsed = false;
-        super.finishActivity();
+        super.finishActivity(won);
     }
 }

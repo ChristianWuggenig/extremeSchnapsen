@@ -14,18 +14,30 @@ public interface INetworkDisplay {
     void displayShuffledDeck(int[] shuffledDeckIDs, String playerName);
 
     /**
-     * set my turn if necessary and provide the id of the played card used for the comparation algorithm to get the winner
-     * @param cardPlayed
+     * display the player name on receive
+     * @param playerName contains the name of the opposite player
      */
-    void setMyTurn(int cardPlayed);
-
     void displayPlayer(String playerName);
 
+    /**
+     * dismiss the "waiting for opposite player" dialog
+     */
     void dismissDialog();
 
+    /**
+     * client only: wait for a card played by server
+     */
     void waitForCard();
 
+    /**
+     * update the deck on the ui
+     */
     void updateDeck();
 
+    /**
+     * called when an action is received over the network (card played, trump exchanged, etc)
+     * @param action the action ("trump", "turn",...)
+     * @param value the value ("true", "pik",...)
+     */
     void receiveAction(String action, String value);
 }

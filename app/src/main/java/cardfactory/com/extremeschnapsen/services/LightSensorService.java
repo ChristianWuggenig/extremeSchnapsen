@@ -60,7 +60,7 @@ public class LightSensorService extends Service implements SensorEventListener {
         sensorManager.unregisterListener(this);
     }
 
-    private void sendMessageToGUI(boolean sensorCovered) {
+    public void sendMessageToGUI(boolean sensorCovered) {
         Intent intent = new Intent(IntentHelper.LIGHTSENSOR_KEY);
         intent.putExtra(IntentHelper.LIGHTSENSOR_COVERED, sensorCovered);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

@@ -2,6 +2,7 @@ package cardfactory.com.extremeschnapsen.gui;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -21,7 +22,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import cardfactory.com.extremeschnapsen.models.CardImageView;
 import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
 import cardfactory.com.extremeschnapsen.R;
@@ -143,28 +143,28 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     public void onClickBtnHerz(View view) {
         round.check2040("herz");
         if (round.checkFor66()) {
-            finishActivity();
+            finishActivity(round.roundWon());
         }
     }
 
     public void onClickBtnKaro(View view) {
         round.check2040("karo");
         if (round.checkFor66()) {
-            finishActivity();
+            finishActivity(round.roundWon());
         }
     }
 
     public void onClickBtnPik(View view) {
         round.check2040("pik");
         if (round.checkFor66()) {
-            finishActivity();
+            finishActivity(round.roundWon());
         }
     }
 
     public void onClickBtnKreuz(View view) {
         round.check2040("kreuz");
         if (round.checkFor66()) {
-            finishActivity();
+            finishActivity(round.roundWon());
         }
     }
 
@@ -382,34 +382,9 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         if(round.playCard(cardID)) {
             round.compareCards();
             if(round.checkFor66()){
-                finishActivity();
+                finishActivity(round.roundWon());
             }
         }
-    }
-
-    @Override
-    public void setMyTurn(final int cardPlayed) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                List<Deck> allDecks = round.getAllDecks();
-
-                for (Deck deck : allDecks) {
-                    if (deck.getDeckStatus() == 1 && deck.getCardID() == cardPlayed)
-                        round.updateCard(cardPlayed, 5);
-                    else if (deck.getDeckStatus() == 2 && deck.getCardID() == cardPlayed)
-                        round.updateCard(cardPlayed, 6);
-                }
-
-                round.setMyTurn(true);
-
-                round.compareCards();
-                if(round.checkFor66()){
-                    finishActivity();
-                }
-            }
-        });
-
     }
 
     @Override
@@ -440,7 +415,11 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         }
     }
 
-    protected void finishActivity() {
+    protected void finishActivity(boolean won) {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(IntentHelper.GAMEWON, won);
+        setResult(Activity.RESULT_OK, returnIntent);
+
         this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
         this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
     }
@@ -461,6 +440,12 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             @Override
             public void run() {
                 switch (action) {
+                    case NetworkHelper.ID:
+                        round.receivePlayCard(Integer.parseInt(value));
+                        if(round.checkFor66()){
+                            finishActivity(round.roundWon());
+                        }
+                        break;
                     case NetworkHelper.TRUMP:
                         round.receiveExchangeTrump();
                         displayDeck();
@@ -471,16 +456,16 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                     case NetworkHelper.TWENTYFORTY:
                         round.receiveCheck2040(value);
                         if (round.checkFor66()) {
-                            finishActivity();
+                            finishActivity(round.roundWon());
                         }
                         break;
                     case NetworkHelper.SIGHTJOKER:
-                        round.sightJokerReceived();
+                        round.receiveSightJoker();
                         break;
                     case NetworkHelper.PARRYSIGHTJOKER:
-                        round.parrySightJokerReceived();
+                        round.receiveParrySightJoker();
                         if (round.checkFor66()) {
-                            finishActivity();
+                            finishActivity(round.roundWon());
                         }
                         break;
                     case NetworkHelper.CARD_EXCHANGE:

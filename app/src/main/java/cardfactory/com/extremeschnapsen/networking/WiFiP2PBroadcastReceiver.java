@@ -20,12 +20,11 @@ import cardfactory.com.extremeschnapsen.gameengine.Game;
 public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
 
     //declare the necessary P2P-Objects
-    private WifiP2pManager p2pManager;
-    private WifiP2pManager.Channel p2pChannel;
-    WifiP2pManager.PeerListListener peerListListener;
+    private WifiP2pManager p2pManager; //the manager object used to manage the p2p connection
+    private WifiP2pManager.Channel p2pChannel; //contains the p2p channel
+    WifiP2pManager.PeerListListener peerListListener; //the peerlistlistener object, which contains a list of all available peers
 
-    //declare activity-context to show toast-messages on the search-activity
-    private SearchActivity searchActivity;
+    private SearchActivity searchActivity; //declare activity-context to show toast-messages on the search-activity
 
     public WiFiP2PBroadcastReceiver(WifiP2pManager manager,
                                     WifiP2pManager.Channel channel,
@@ -38,7 +37,11 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
         this.peerListListener = myPeerListListener;
     }
 
-    //is executed every time a system action with a defined filter in "intentFilters" is thrown
+    /**
+     * is executed every time a system action with a defined filter in "intentFilters" is thrown
+     * @param context the activity context
+     * @param intent the intent with the information on the p2p-action
+     */
     @Override
     public void onReceive(final Context context, Intent intent) {
         String action = intent.getAction();
@@ -51,7 +54,6 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
             //check if P2P is possible with the given hardware-settings (for example if P2P is not available for some reason, a toast message is shown)
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 Toast.makeText(searchActivity, R.string.msgWifiP2pSearching, Toast.LENGTH_SHORT).show();
-                Log.d("tag", "wifi p2p works!");
             } else {
                 Toast.makeText(searchActivity, R.string.msgWifiP2pNotWorking, Toast.LENGTH_LONG).show();
             }
@@ -64,8 +66,9 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
                 p2pManager.requestPeers(p2pChannel, peerListListener);
             }
 
-        } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
-            // Respond to new connection or disconnections
+        }
+        // Respond to new connection or disconnections
+        else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
             p2pManager.requestConnectionInfo(p2pChannel, new WifiP2pManager.ConnectionInfoListener() {
                 @Override
                 public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
@@ -76,8 +79,6 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
                     }
                 }
             });
-        } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-            // Respond to this device's wifi state changing
         }
     }
 

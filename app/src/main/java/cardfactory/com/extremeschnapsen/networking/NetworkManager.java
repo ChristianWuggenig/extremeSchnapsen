@@ -174,6 +174,9 @@ public class NetworkManager {
         }
     }
 
+    /**
+     * called when the client or the server wants to send the information that a card was exchanged
+     */
     public void sendCardExchange(int cardA, int cardB) {
         String cardString = String.valueOf(cardA) + ";" + String.valueOf(cardB);
 

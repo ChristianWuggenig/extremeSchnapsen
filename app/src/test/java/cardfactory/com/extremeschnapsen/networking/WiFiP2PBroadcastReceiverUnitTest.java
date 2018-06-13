@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.networking;
 
 import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -77,6 +77,27 @@ public class WiFiP2PBroadcastReceiverUnitTest {
     @Test
     public void testOnReceiveWithPeersChangedActionWithNullObject() {
         when(i.getAction()).thenReturn("WIFI_P2P_PEERS_CHANGED_ACTION");
+        p2pManager = null;
+
+        broadcastReceiver.onReceive(searchActivity, i);
+
+        //if the statement above does not fail, the test is successful
+        assertTrue(true);
+    }
+
+    @Test
+    public void testOnReceiveWithConnectionChangedActionSuccess() {
+        when(i.getAction()).thenReturn("WIFI_P2P_CONNECTION_CHANGED_ACTION");
+
+        broadcastReceiver.onReceive(searchActivity, i);
+
+        //if the statement above does not fail, the test is successful
+        assertTrue(true);
+    }
+
+    @Test
+    public void testOnReceiveWithConnectionChangedActionWithNullObject() {
+        when(i.getAction()).thenReturn("WIFI_P2P_CONNECTION_CHANGED_ACTION");
         p2pManager = null;
 
         broadcastReceiver.onReceive(searchActivity, i);
