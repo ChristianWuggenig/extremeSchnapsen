@@ -176,6 +176,30 @@ public class Round {
         return myTurn;
     }
 
+    /**
+     * set the value for 2040 just played
+     * @param justplayed2040 contains the suit
+     */
+    public void setJustplayed2040(String justplayed2040) {
+        this.justplayed2040 = justplayed2040;
+    }
+
+    /**
+     * set the network display object
+     * @param networkDisplay contains the network display
+     */
+    public void setNetworkDisplay(INetworkDisplay networkDisplay) {
+        this.networkDisplay = networkDisplay;
+    }
+
+    /**
+     * set the network manager object (only for unit testing to provice a mock object)
+     * @param networkManager the moch network manager
+     */
+    public void setNetworkManager(NetworkManager networkManager) {
+        this.networkManager = networkManager;
+    }
+
     //endregion
 
     //region Database
@@ -453,6 +477,133 @@ public class Round {
     //endregion
 
     //region Actions
+
+    //Der Button Herz, Pik, Karo oder Kreuz wird gedrÃ¼ckt um 20/40 anzusagen
+    public String check2040(String farbe) {
+
+        //temporÃ¤re Variable, falls spieler Ã¶fters auf button 2040 drÃ¼ckt
+        //muss nicht synchron gehalten werden, weil ja nur ein Spieler den jeweiligen 20er haben kann
+        boolean alreadyplayed = false;
+
+        switch (farbe){
+            case "herz":
+                alreadyplayed = twentyfortyalreadyplayed[0];
+                break;
+            case "karo":
+                alreadyplayed = twentyfortyalreadyplayed[1];
+                break;
+            case "pik":
+                alreadyplayed = twentyfortyalreadyplayed[2];
+                break;
+            case "kreuz":
+                alreadyplayed = twentyfortyalreadyplayed[3];
+                break;
+        }
+
+        if (myTurn && numberPlayedCards() == 0 && !alreadyplayed && justplayed2040.equals("")) {
+            int i = 0;
+            String check2040 = "";
+            RoundPoints rp = new RoundPoints(1,1,0,0);
+
+            for (Deck deck : this.getCardsOnHand()){
+                if (farbe.equals(deck.getCardSuit()) && deck.getCardValue() <=4 && deck.getCardValue() >2){
+                    if(deck.getDeckTrump() == 1)
+                        i = 2 + i;
+                    else
+                        i++;
+                }
+            }
+            //20er 40er
+            if (i == 2 || i ==4) {
+
+                switch (farbe){
+                    case "herz":
+                        twentyfortyalreadyplayed[0] = true;
+                        justplayed2040 = "herz";
+                        break;
+                    case "karo":
+                        twentyfortyalreadyplayed[1] = true;
+                        justplayed2040 = "karo";
+                        break;
+                    case "pik":
+                        twentyfortyalreadyplayed[2] = true;
+                        justplayed2040 = "pik";
+                        break;
+                    case "kreuz":
+                        twentyfortyalreadyplayed[3] = true;
+                        justplayed2040 = "kreuz";
+                        break;
+                }
+
+
+                check2040 = farbe;
+                if (checkForStuch()){
+                    if (isGroupOwner) {
+                        rp.setPointsplayer1(10 * i);
+                    }
+                    else{
+                        rp.setPointsplayer2(10 * i);
+                    }
+                }
+                else{
+                    if (isGroupOwner){
+                        rp.setHiddenpointsplayer1(10*i);
+                    }
+                    else{
+                        rp.setHiddenpointsplayer2(10*i);
+
+                    }
+                }
+                this.roundPointsDataSource.saveRoundPoints(rp);
+            }
+
+            if (i == 2) {
+                networkDisplay.displayUserInformation(MessageHelper.TWENTYPLAYED);
+                networkManager.send2040(farbe);
+            } else if (i == 4) {
+                networkDisplay.displayUserInformation(MessageHelper.FORTYPLAYED);
+                networkManager.send2040(farbe);
+            }
+
+            //als RÃ¼ckgabeparameter fÃ¼r Message an anderen Spieler
+            return check2040;
+        } else {
+            return "";
+        }
+
+    }
+
+    //nach Message, wenn 20/40 ausgespielt wurde -> Information, welche Farbe wird benÃ¶tigt
+    public void receiveCheck2040(String farbe){
+        int i = 0;
+        RoundPoints rp = new RoundPoints(1,1,0,0);
+
+        deckDataSource.open();
+        this.trump = deckDataSource.getTrump();
+
+        if (trump.equals(farbe))
+            i=4;
+        else if (!farbe.equals(""))
+            i=2;
+
+        //20er 40er
+        if (i == 2 || i ==4) {
+            if (isGroupOwner) {
+                rp.setPointsplayer2(10 * i);
+            }
+            else{
+                rp.setPointsplayer1(10 * i);
+            }
+
+            this.roundPointsDataSource.saveRoundPoints(rp);
+        }
+
+        if (i == 2) {
+            networkDisplay.displayUserInformation(MessageHelper.TWENTYRECEIVED);
+        } else if (i == 4) {
+            networkDisplay.displayUserInformation(MessageHelper.FORTYRECEIVED);
+        }
+    }
 
     public void turn (){
         roundPointsDataSource.open();
@@ -1203,38 +1354,6 @@ public class Round {
         return checkStuch;
     }
 
-    //nach Message, wenn 20/40 ausgespielt wurde -> Information, welche Farbe wird benÃ¶tigt
-    public void receiveCheck2040(String farbe){
-        int i = 0;
-        RoundPoints rp = new RoundPoints(1,1,0,0);
-
-        deckDataSource.open();
-        this.trump = deckDataSource.getTrump();
-
-        if (trump.equals(farbe))
-            i=4;
-        else if (!farbe.equals(""))
-            i=2;
-
-        //20er 40er
-        if (i == 2 || i ==4) {
-            if (isGroupOwner) {
-                rp.setPointsplayer2(10 * i);
-            }
-            else{
-                rp.setPointsplayer1(10 * i);
-            }
-
-            this.roundPointsDataSource.saveRoundPoints(rp);
-        }
-
-        if (i == 2) {
-            networkDisplay.displayUserInformation(MessageHelper.TWENTYRECEIVED);
-        } else if (i == 4) {
-            networkDisplay.displayUserInformation(MessageHelper.FORTYRECEIVED);
-        }
-    }
-
     public int numberPlayedCards(){
         int number = 0;
         if (getPlayedCards().size() == 1)
@@ -1244,101 +1363,6 @@ public class Round {
         }
 
         return number;
-
-    }
-
-    //Der Button Herz, Pik, Karo oder Kreuz wird gedrÃ¼ckt um 20/40 anzusagen
-    public String check2040(String farbe) {
-
-        //temporÃ¤re Variable, falls spieler Ã¶fters auf button 2040 drÃ¼ckt
-        //muss nicht synchron gehalten werden, weil ja nur ein Spieler den jeweiligen 20er haben kann
-        boolean alreadyplayed = false;
-
-        switch (farbe){
-            case "herz":
-                alreadyplayed = twentyfortyalreadyplayed[0];
-                break;
-            case "karo":
-                alreadyplayed = twentyfortyalreadyplayed[1];
-                break;
-            case "pik":
-                alreadyplayed = twentyfortyalreadyplayed[2];
-                break;
-            case "kreuz":
-                alreadyplayed = twentyfortyalreadyplayed[3];
-                break;
-        }
-
-        if (myTurn && numberPlayedCards() == 0 && !alreadyplayed && justplayed2040.equals("")) {
-            int i = 0;
-            String check2040 = "";
-            RoundPoints rp = new RoundPoints(1,1,0,0);
-
-            for (Deck deck : this.getCardsOnHand()){
-                if (farbe.equals(deck.getCardSuit()) && deck.getCardValue() <=4 && deck.getCardValue() >2){
-                    if(deck.getDeckTrump() == 1)
-                        i = 2 + i;
-                    else
-                        i++;
-                }
-            }
-            //20er 40er
-            if (i == 2 || i ==4) {
-
-                switch (farbe){
-                    case "herz":
-                        twentyfortyalreadyplayed[0] = true;
-                        justplayed2040 = "herz";
-                        break;
-                    case "karo":
-                        twentyfortyalreadyplayed[1] = true;
-                        justplayed2040 = "karo";
-                        break;
-                    case "pik":
-                        twentyfortyalreadyplayed[2] = true;
-                        justplayed2040 = "pik";
-                        break;
-                    case "kreuz":
-                        twentyfortyalreadyplayed[3] = true;
-                        justplayed2040 = "kreuz";
-                        break;
-                }
-
-
-                check2040 = farbe;
-                if (checkForStuch()){
-                    if (isGroupOwner) {
-                        rp.setPointsplayer1(10 * i);
-                    }
-                    else{
-                        rp.setPointsplayer2(10 * i);
-                    }
-                }
-                else{
-                    if (isGroupOwner){
-                        rp.setHiddenpointsplayer1(10*i);
-                    }
-                    else{
-                        rp.setHiddenpointsplayer2(10*i);
-
-                    }
-                }
-                this.roundPointsDataSource.saveRoundPoints(rp);
-            }
-
-            if (i == 2) {
-                networkDisplay.displayUserInformation(MessageHelper.TWENTYPLAYED);
-                networkManager.send2040(farbe);
-            } else if (i == 4) {
-                networkDisplay.displayUserInformation(MessageHelper.FORTYPLAYED);
-                networkManager.send2040(farbe);
-            }
-
-            //als RÃ¼ckgabeparameter fÃ¼r Message an anderen Spieler
-            return check2040;
-        } else {
-            return "";
-        }
 
     }
 
