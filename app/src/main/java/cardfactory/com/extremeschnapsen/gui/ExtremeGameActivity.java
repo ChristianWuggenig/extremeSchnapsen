@@ -52,7 +52,7 @@ public class ExtremeGameActivity extends GameActivity {
     private void lightSensorCovered() {
         if (round.getPlayedCardPlayer1() == null && round.getPlayedCardPlayer2() == null && round.getMyTurn()) {
             showCardDialog(true);
-            round.sightJokerUsed();
+            round.sightJoker();
             lightSensorUsed = true;
         } else
             txvUserInformation.setText(R.string.msgSightJokerNotPossible);
@@ -63,12 +63,12 @@ public class ExtremeGameActivity extends GameActivity {
     public void onClickBtnParrySightJoker(View view) {
         if (round.getMyTurn() && round.getMyTurnInCurrentMove()) {
             if (round.getSightJokerReceived()) {
-                round.parrySightJokerUsed(true);
+                round.parrySightJoker(true);
                 if (round.checkFor66()) {
                     finishActivity(round.roundWon());
                 }
             } else {
-                round.parrySightJokerUsed(false);
+                round.parrySightJoker(false);
             }
         } else {
             txvUserInformation.setText(R.string.msgParrySightJokerNotPossible);

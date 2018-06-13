@@ -20,6 +20,8 @@ import cardfactory.com.extremeschnapsen.networking.NetworkManager;
 
 public class Round {
 
+    //region Declarations
+
     private Game game; //Game Deklaration -> Instanz unten
 
     private List<Card> allCards; //contains a list of all cards
@@ -54,6 +56,10 @@ public class Round {
     //dass nur KÃ¶nig oder Dame gespielt werden kÃ¶nnen, nach 20/40
 
     private String justplayed2040;
+
+    //endregion
+
+    //region Constructors
 
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
@@ -96,12 +102,76 @@ public class Round {
     }
 
     /**
-     * returns the status of the variable sightJokerReceived
+     * used only for the unit tests
+     */
+    public Round() {
+
+    }
+
+    /**
+     * initialize a new round and shuffle the deck (server only!)
+     */
+    public void initializeRound() {
+        allCards = cardDataSource.getAllCards();
+        currentDeck = deckDataSource.shuffelDeck(allCards);
+        isGroupOwner = true;
+    }
+
+    //endregion
+
+    //region Getters and Setters
+
+    /**
+     * set the roundpointsdatasource
+     * @param roundPointsDataSource the roundpointsdatasource object
+     */
+    public void setRoundPointsDataSource(RoundPointsDataSource roundPointsDataSource) {
+        this.roundPointsDataSource = roundPointsDataSource;
+    }
+
+    /**
+     * set the groupowner
+     * @param groupOwner true or false, if group owner or not
+     */
+    public void setGroupOwner(boolean groupOwner) {
+        isGroupOwner = groupOwner;
+    }
+
+    /**
+     * returns the status of the variable receiveSightJoker
      * @return true, if the sight joker was received, else false
      */
     public boolean getSightJokerReceived() {
         return sightJokerReceived;
     }
+
+    /**
+     * get the name of the current user
+     * @return the name of the current user
+     */
+    public String getUsername() {
+        return player.getUsername();
+    }
+
+    /**
+     * set if it is my turn or not
+     * @param myTurn is it my turn or not
+     */
+    public void setMyTurn(boolean myTurn) {
+        this.myTurn = myTurn;
+    }
+
+    /**
+     * get the information if it is currently my turn
+     * @return true, if my turn
+     */
+    public boolean getMyTurn() {
+        return myTurn;
+    }
+
+    //endregion
+
+    //region Database
 
     public void openDatabases() {
         deckDataSource.open();
@@ -116,6 +186,10 @@ public class Round {
         roundPointsDataSource.close();
         playerDataSource.close();
     }
+
+    //endregion
+
+    //region Deck & Database
 
     public List<Deck> getCardsOnHand() {
         List<Deck> deckonhands = new ArrayList<>();
@@ -159,7 +233,6 @@ public class Round {
 
     }
 
-
     //die Karten auf der Hand zurÃ¼ckbekommen
     public List<Deck> getCardsOnHand(int player) {
         List<Deck> onHand = new ArrayList<>();
@@ -171,61 +244,6 @@ public class Round {
         }
 
         return onHand;
-    }
-
-    /**
-     * get the name of the current user
-     * @return the name of the current user
-     */
-    public String getUsername() {
-        return player.getUsername();
-    }
-
-    public void exchangeTrump(){
-        RoundPoints rp = new RoundPoints(1,0,0,0);
-        rp = roundPointsDataSource.getCurrentRoundPointsObject();
-
-        if (this.points.getMoves() < 4){
-            if (myTurn && rp.getTrumpExchanged() == 0) {
-                for (Deck deck : this.getCardsOnHand()) {
-                    if (deck.getCardValue() == 2 && deck.getDeckTrump() == 1) {
-                        rp.setTrumpExchanged(1);
-                        if (isGroupOwner) {
-                            this.deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), 1);
-                            this.currentDeck = this.deckDataSource.getAllDeck();
-                            this.roundPointsDataSource.updtateTrumpExchanged(rp);
-                        } else {
-                            //this.getOpenCard().setDeckStatus(2);
-                            deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), 2);
-                            this.currentDeck = this.deckDataSource.getAllDeck();
-                            this.roundPointsDataSource.updtateTrumpExchanged(rp);
-                        }
-
-                        networkManager.sendTrumpExchanged();
-
-                        this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
-                        this.currentDeck = this.deckDataSource.getAllDeck();
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    public void receiveExchangeTrump(){
-        RoundPoints rp = new RoundPoints(1,0,0,0);
-        rp = roundPointsDataSource.getCurrentRoundPointsObject();
-        //if (myTurn && rp.getTrumpExchanged() == 0) {
-        for (Deck deck : this.getAllDecks()) {
-            if (deck.getCardValue() == 2 && deck.getDeckTrump() == 1) {
-                rp.setTrumpExchanged(1);
-                this.deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), deck.getDeckStatus());
-                this.roundPointsDataSource.updtateTrumpExchanged(rp);
-                this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
-                this.currentDeck = this.deckDataSource.getAllDeck();
-                break;
-            }
-        }
     }
 
     /**
@@ -296,15 +314,6 @@ public class Round {
     }
 
     /**
-     * initialize a new round and shuffle the deck (server only!)
-     */
-    public void initializeRound() {
-        allCards = cardDataSource.getAllCards();
-        currentDeck = deckDataSource.shuffelDeck(allCards);
-        isGroupOwner = true;
-    }
-
-    /**
      * initialize a new round with an already shuffled the deck (client only!)
      */
     public void getShuffledDeck(int[] shuffledDeckIDs) {
@@ -314,19 +323,80 @@ public class Round {
     }
 
     /**
-     * set if it is my turn or not
-     * @param myTurn is it my turn or not
+     * get the next free card from the deck
+     * @param playerID used to identify which player gets the free card
      */
-    public void setMyTurn(boolean myTurn) {
-        this.myTurn = myTurn;
+    public void getNextFreeCard(int playerID) {
+        boolean found = false;
+
+        for (Deck deck : this.deckDataSource.getAllDeck()) {
+            if (deck.getDeckStatus() == 4) {
+                deck.setDeckStatus(playerID);
+                deckDataSource.updateDeckStatus(deck.getCardID(), playerID);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            for (Deck deck : this.deckDataSource.getAllDeck()) {
+                if (deck.getDeckStatus() == 3) {
+                    deck.setDeckStatus(playerID);
+                    deckDataSource.updateDeckStatus(deck.getCardID(), playerID);
+                }
+            }
+        }
     }
 
-    /**
-     * get the information if it is currently my turn
-     * @return true, if my turn
-     */
-    public boolean getMyTurn() {
-        return myTurn;
+    //endregion
+
+    //region Round & Database
+
+    //Checkt, ob jetzt Stuch verhanden ist, um Punkte gutzuschreiben
+    public void HiddenPointsToRealPoints(){
+        this.points = this.roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if (points.getPointsplayer1() > 0 && points.getHiddenpointsplayer1() > 0) {
+            points.setPointsplayer1(points.getPointsplayer1() + points.getHiddenpointsplayer1());
+            points.setHiddenpointsplayer1(0);
+            this.roundPointsDataSource.updateRoundPoints(points);
+        }
+        else if (points.getPointsplayer2() > 0 && points.getHiddenpointsplayer2() > 0) {
+            points.setPointsplayer2(points.getPointsplayer2() + points.getHiddenpointsplayer2());
+            points.setHiddenpointsplayer2(0);
+            this.roundPointsDataSource.updateRoundPoints(points);
+        }
+
+    }
+
+    public String getRoundPointsPlayer1() {
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+        return String.valueOf(roundPoints.getPointsplayer1());
+    }
+
+    public String getRoundPointsPlayer2() {
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+        return String.valueOf(roundPoints.getPointsplayer2());
+    }
+
+    public List<Deck> getAlreadyPlayedCards() {
+        List<Deck> deckPlayed = new ArrayList<>();
+
+
+        if (isGroupOwner) {
+            for (Deck deck : deckDataSource.getAllDeck()) {
+                if (deck.getDeckStatus() == 7) {
+                    deckPlayed.add(deck);
+                }
+            }
+        } else {
+            for (Deck deck : deckDataSource.getAllDeck()) {
+                if (deck.getDeckStatus() == 8) {
+                    deckPlayed.add(deck);
+                }
+            }
+        }
+        return deckPlayed;
     }
 
     /**
@@ -335,6 +405,22 @@ public class Round {
     public void increaseMoves() {
         this.roundPointsDataSource.increaseMoves();
     }
+
+    //endregion
+
+    //region Game & Database
+
+    public String getGamePointsPlayer1(){
+        return String.valueOf(game.getGamePointsPlayer1());
+    }
+
+    public String getGamePointsPlayer2(){
+        return String.valueOf(game.getGamePointsPlayer2());
+    }
+
+    //endregion
+
+    //region Network
 
     /**
      * start the http-server
@@ -348,6 +434,64 @@ public class Round {
      */
     public void startClient() {
         networkManager.startHttpClient(networkDisplay, player);
+    }
+
+    /**
+     * tell the volley-client to wait for a card from the server
+     */
+    public void waitForCard() {
+        networkManager.waitForCard(false);
+    }
+
+    //endregion
+
+    //region Actions
+
+    public void exchangeTrump(){
+        RoundPoints rp = new RoundPoints(1,0,0,0);
+        rp = roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if (this.points.getMoves() < 4){
+            if (myTurn && rp.getTrumpExchanged() == 0) {
+                for (Deck deck : this.getCardsOnHand()) {
+                    if (deck.getCardValue() == 2 && deck.getDeckTrump() == 1) {
+                        rp.setTrumpExchanged(1);
+                        if (isGroupOwner) {
+                            this.deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), 1);
+                            this.currentDeck = this.deckDataSource.getAllDeck();
+                            this.roundPointsDataSource.updtateTrumpExchanged(rp);
+                        } else {
+                            //this.getOpenCard().setDeckStatus(2);
+                            deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), 2);
+                            this.currentDeck = this.deckDataSource.getAllDeck();
+                            this.roundPointsDataSource.updtateTrumpExchanged(rp);
+                        }
+
+                        networkManager.sendTrumpExchanged();
+
+                        this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
+                        this.currentDeck = this.deckDataSource.getAllDeck();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public void receiveExchangeTrump(){
+        RoundPoints rp = new RoundPoints(1,0,0,0);
+        rp = roundPointsDataSource.getCurrentRoundPointsObject();
+        //if (myTurn && rp.getTrumpExchanged() == 0) {
+        for (Deck deck : this.getAllDecks()) {
+            if (deck.getCardValue() == 2 && deck.getDeckTrump() == 1) {
+                rp.setTrumpExchanged(1);
+                this.deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), deck.getDeckStatus());
+                this.roundPointsDataSource.updtateTrumpExchanged(rp);
+                this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
+                this.currentDeck = this.deckDataSource.getAllDeck();
+                break;
+            }
+        }
     }
 
     /**
@@ -472,7 +616,7 @@ public class Round {
 
     }
 
-    public void playCardReceived(int card) {
+    public void receivePlayCard(int card) {
         List<Deck> allDecks = getAllDecks();
 
         for (Deck deck : allDecks) {
@@ -488,6 +632,223 @@ public class Round {
 
         compareCards();
     }
+
+    public void sightJoker() {
+        roundPointsDataSource.open();
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+
+        if (isGroupOwner) {
+            roundPoints.setSightJokerPlayer1(1);
+        } else {
+            roundPoints.setSightJokerPlayer2(1);
+        }
+
+        sightJokerUsed = true;
+        roundPointsDataSource.updateJoker(roundPoints);
+
+        networkManager.sendSightJoker();
+    }
+
+    public void receiveSightJoker() {
+        roundPointsDataSource.open();
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+        sightJokerReceived = true;
+
+        if (isGroupOwner) {
+            roundPoints.setSightJokerPlayer2(1);
+        } else {
+            roundPoints.setSightJokerPlayer1(1);
+        }
+        roundPointsDataSource.updateJoker(roundPoints);
+    }
+
+    public void parrySightJoker(boolean success) {
+        roundPointsDataSource.open();
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+        String message = "";
+
+        if (isGroupOwner && success) {
+            roundPoints.setParrySightJokerPlayer1(1);
+            roundPoints.setPointsplayer1(10);
+            message = MessageHelper.PARRYSIGHTJOKER_SUCCESS_WON;
+        } else if (!isGroupOwner && success) {
+            roundPoints.setParrySightJokerPlayer2(1);
+            roundPoints.setPointsplayer2(10);
+            message = MessageHelper.PARRYSIGHTJOKER_SUCCESS_WON;
+        } else if (isGroupOwner && !success) {
+            roundPoints.setPointsplayer2(10);
+            message = MessageHelper.PARRYSIGHTJOKER_FAIL_lOST;
+        } else if (!isGroupOwner && !success) {
+            roundPoints.setPointsplayer1(10);
+            message = MessageHelper.PARRYSIGHTJOKER_FAIL_lOST;
+        }
+
+        roundPointsDataSource.saveRoundPoints(roundPoints);
+        roundPointsDataSource.updateJoker(roundPoints);
+
+        networkManager.sendParrySightJoker();
+        sightJokerReceived = false;
+
+        networkDisplay.displayUserInformation(message);
+    }
+
+    public void receiveParrySightJoker() {
+        roundPointsDataSource.open();
+        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
+        String message = "";
+
+        if ((isGroupOwner && getPlayedCardPlayer1() != null && sightJokerUsed) || (!isGroupOwner && getPlayedCardPlayer2() != null && sightJokerUsed)) {
+            if (isGroupOwner) {
+                roundPoints.setParrySightJokerPlayer2(1);
+                roundPoints.setPointsplayer2(10);
+            } else {
+                roundPoints.setParrySightJokerPlayer1(1);
+                roundPoints.setPointsplayer1(10);
+            }
+
+            message = MessageHelper.PARRYSIGHTJOKER_SUCCESS_lOST;
+
+        } else {
+            if (isGroupOwner) {
+                roundPoints.setPointsplayer1(10);
+            } else {
+                roundPoints.setPointsplayer2(10);
+            }
+
+            message = MessageHelper.PARRYSIGHTJOKER_FAIL_WON;
+        }
+
+        roundPointsDataSource.saveRoundPoints(roundPoints);
+        roundPointsDataSource.updateJoker(roundPoints);
+
+        networkDisplay.displayUserInformation(message);
+    }
+
+    public boolean cardExchange(int cardID_A){
+
+
+        boolean checkTausch = false;
+        Deck wanttoexchange = new Deck();
+        Deck getforexchange = new Deck();
+        points = roundPointsDataSource.getCurrentRoundPointsObject();
+        int alreadyPlayedJoker;
+
+        if (myTurn) {
+
+            if (isGroupOwner){
+                alreadyPlayedJoker = points.getCardExchangeJokerPlayer1();
+            }
+            else {
+                alreadyPlayedJoker = points.getCardExchangeJokerPlayer2();
+            }
+
+            if (alreadyPlayedJoker == 0) {
+
+                checkTausch = true;
+                int size_card_on_hand_opponent = this.getCardsOnHand_Opponent().size();
+                int random_list_index = new Random().nextInt(size_card_on_hand_opponent);
+
+                //sucht passendes Deck Objekt fÃ¼r zu tauschende KartenID
+                for (Deck deck : this.getAllDecks()) {
+                    if (deck.getCardID() == cardID_A) {
+                        wanttoexchange = deck;
+                        break;
+                    }
+                }
+
+                getforexchange = this.getCardsOnHand_Opponent().get(random_list_index);
+
+                //Status fÃ¼r wantoexchange wird upgedatet
+                for (Deck deck : this.getAllDecks()) {
+                    if (deck.getCardID() == cardID_A) {
+                        if (isGroupOwner) {
+                            deck.setDeckStatus(2); //wie bekomme ich das in die GUI?
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 2);
+                        } else {
+                            deck.setDeckStatus(1);
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 1);
+                        }
+                    }
+                }
+
+                //Status fÃ¼r getforexchange wird upgedatet
+                for (Deck deck : this.getAllDecks()) {
+                    if (deck.getCardID() == getforexchange.getCardID()) {
+                        if (isGroupOwner) {
+                            deck.setDeckStatus(1); //wie bekomme ich das in die GUI?
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 1);
+                        } else {
+                            deck.setDeckStatus(2);
+                            deckDataSource.updateDeckStatus(deck.getCardID(), 2);
+                        }
+                    }
+                }
+
+                //update Status Joker bereis gespielt
+                if (isGroupOwner) {
+                    points.setCardExchangeJokerPlayer1(1);
+                    this.roundPointsDataSource.updateJoker(points);
+                } else {
+                    points.setCardExchangeJokerPlayer2(1);
+                    this.roundPointsDataSource.updateJoker(points);
+                }
+                //Sende Karten ID zum anderen Spieler
+                networkDisplay.displayUserInformation(MessageHelper.CARD_EXCHANGE);
+                networkManager.sendCardExchange((int)wanttoexchange.getCardID(), (int) getforexchange.getCardID());
+
+            }
+        }
+
+        return checkTausch;
+    }
+
+    public boolean receiveCardExchange(int cardID_A, int cardID_B){
+
+        points = roundPointsDataSource.getCurrentRoundPointsObject();
+
+        //Status fÃ¼r wantoexchange wird upgedatet
+        for (Deck deck : this.getAllDecks()) {
+            if (deck.getCardID() == cardID_A) {
+                if (deck.getDeckStatus() == 1) {
+                    deck.setDeckStatus(2); //wie bekomme ich das in die GUI?
+                    deckDataSource.updateDeckStatus(deck.getCardID(), 2);
+                } else {
+                    deck.setDeckStatus(1);
+                    deckDataSource.updateDeckStatus(deck.getCardID(), 1);
+                }
+            }
+        }
+
+        //Status fÃ¼r gettoexchange wird upgedatet
+        for (Deck deck : this.getAllDecks()) {
+            if (deck.getCardID() == cardID_B) {
+                if (deck.getDeckStatus() == 1) {
+                    deck.setDeckStatus(2); //wie bekomme ich das in die GUI?
+                    deckDataSource.updateDeckStatus(deck.getCardID(), 2);
+                } else {
+                    deck.setDeckStatus(1);
+                    deckDataSource.updateDeckStatus(deck.getCardID(), 1);
+                }
+            }
+        }
+
+        //update Status Joker bereis gespielt
+        if (isGroupOwner) {
+            points.setCardExchangeJokerPlayer2(1);
+            this.roundPointsDataSource.updateJoker(points);
+        } else {
+            points.setCardExchangeJokerPlayer1(1);
+            this.roundPointsDataSource.updateJoker(points);
+        }
+
+        networkDisplay.displayUserInformation(MessageHelper.CARD_EXCHANGE_RECEIVED);
+
+        return true;
+    }
+
+    //endregion
+
+    //region Stich
 
     public boolean checkFor2040DameKoenig (Deck wanttoplay, String farbe2040er){
 
@@ -568,13 +929,6 @@ public class Round {
     }
 
     /**
-     * tell the volley-client to wait for a card from the server
-     */
-    public void waitForCard() {
-        networkManager.waitForCard(false);
-    }
-
-    /**
      * update the status of a given card
      * @param cardID contains the id of the desired card
      * @param status contains the new status
@@ -585,32 +939,6 @@ public class Round {
         for (Deck deck : this.deckDataSource.getAllDeck()) {
             if (deck.getCardID() == cardID) {
                 deck.setDeckStatus(status);
-            }
-        }
-    }
-
-    /**
-     * get the next free card from the deck
-     * @param playerID used to identify which player gets the free card
-     */
-    public void getNextFreeCard(int playerID) {
-        boolean found = false;
-
-        for (Deck deck : this.deckDataSource.getAllDeck()) {
-            if (deck.getDeckStatus() == 4) {
-                deck.setDeckStatus(playerID);
-                deckDataSource.updateDeckStatus(deck.getCardID(), playerID);
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            for (Deck deck : this.deckDataSource.getAllDeck()) {
-                if (deck.getDeckStatus() == 3) {
-                    deck.setDeckStatus(playerID);
-                    deckDataSource.updateDeckStatus(deck.getCardID(), playerID);
-                }
             }
         }
     }
@@ -815,7 +1143,6 @@ public class Round {
         return false;
     }
 
-
     //ob Stuch bereits vorhanden
     public boolean checkForStuch(){
         boolean checkStuch = false;
@@ -969,90 +1296,6 @@ public class Round {
 
     }
 
-    //Checkt, ob jetzt Stuch verhanden ist, um Punkte gutzuschreiben
-    public void HiddenPointsToRealPoints(){
-        this.points = this.roundPointsDataSource.getCurrentRoundPointsObject();
-
-        if (points.getPointsplayer1() > 0 && points.getHiddenpointsplayer1() > 0) {
-            points.setPointsplayer1(points.getPointsplayer1() + points.getHiddenpointsplayer1());
-            points.setHiddenpointsplayer1(0);
-            this.roundPointsDataSource.updateRoundPoints(points);
-        }
-        else if (points.getPointsplayer2() > 0 && points.getHiddenpointsplayer2() > 0) {
-            points.setPointsplayer2(points.getPointsplayer2() + points.getHiddenpointsplayer2());
-            points.setHiddenpointsplayer2(0);
-            this.roundPointsDataSource.updateRoundPoints(points);
-        }
-
-    }
-
-    public String getRoundPointsPlayer1() {
-        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
-        return String.valueOf(roundPoints.getPointsplayer1());
-    }
-
-    public String getRoundPointsPlayer2() {
-        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
-        return String.valueOf(roundPoints.getPointsplayer2());
-    }
-
-    public String getGamePointsPlayer1(){
-        return String.valueOf(game.getGamePointsPlayer1());
-    }
-
-    public String getGamePointsPlayer2(){
-        return String.valueOf(game.getGamePointsPlayer2());
-    }
-
-    public List<Deck> getAlreadyPlayedCards() {
-        List<Deck> deckPlayed = new ArrayList<>();
-
-
-        if (isGroupOwner) {
-            for (Deck deck : deckDataSource.getAllDeck()) {
-                if (deck.getDeckStatus() == 7) {
-                    deckPlayed.add(deck);
-                }
-            }
-        } else {
-            for (Deck deck : deckDataSource.getAllDeck()) {
-                if (deck.getDeckStatus() == 8) {
-                    deckPlayed.add(deck);
-                }
-            }
-        }
-        return deckPlayed;
-    }
-
-    public void sightJokerUsed() {
-        roundPointsDataSource.open();
-        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
-
-        if (isGroupOwner) {
-            roundPoints.setSightJokerPlayer1(1);
-        } else {
-            roundPoints.setSightJokerPlayer2(1);
-        }
-
-        sightJokerUsed = true;
-        roundPointsDataSource.updateJoker(roundPoints);
-
-        networkManager.sendSightJoker();
-    }
-
-    public void sightJokerReceived() {
-        roundPointsDataSource.open();
-        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
-        sightJokerReceived = true;
-
-        if (isGroupOwner) {
-            roundPoints.setSightJokerPlayer2(1);
-        } else {
-            roundPoints.setSightJokerPlayer1(1);
-        }
-        roundPointsDataSource.updateJoker(roundPoints);
-    }
-
     public boolean getMyTurnInCurrentMove() {
         if (isGroupOwner && getPlayedCardPlayer2() != null) {
             return true;
@@ -1061,190 +1304,6 @@ public class Round {
         }
 
         return false;
-    }
-
-    public void parrySightJokerUsed(boolean success) {
-        roundPointsDataSource.open();
-        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
-        String message = "";
-
-        if (isGroupOwner && success) {
-            roundPoints.setParrySightJokerPlayer1(1);
-            roundPoints.setPointsplayer1(10);
-            message = MessageHelper.PARRYSIGHTJOKER_SUCCESS_WON;
-        } else if (!isGroupOwner && success) {
-            roundPoints.setParrySightJokerPlayer2(1);
-            roundPoints.setPointsplayer2(10);
-            message = MessageHelper.PARRYSIGHTJOKER_SUCCESS_WON;
-        } else if (isGroupOwner && !success) {
-            roundPoints.setPointsplayer2(10);
-            message = MessageHelper.PARRYSIGHTJOKER_FAIL_lOST;
-        } else if (!isGroupOwner && !success) {
-            roundPoints.setPointsplayer1(10);
-            message = MessageHelper.PARRYSIGHTJOKER_FAIL_lOST;
-        }
-
-        roundPointsDataSource.saveRoundPoints(roundPoints);
-        roundPointsDataSource.updateJoker(roundPoints);
-
-        networkManager.sendParrySightJoker();
-        sightJokerReceived = false;
-
-        networkDisplay.displayUserInformation(message);
-    }
-
-    public void parrySightJokerReceived() {
-        roundPointsDataSource.open();
-        RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
-        String message = "";
-
-        if ((isGroupOwner && getPlayedCardPlayer1() != null && sightJokerUsed) || (!isGroupOwner && getPlayedCardPlayer2() != null && sightJokerUsed)) {
-            if (isGroupOwner) {
-                roundPoints.setParrySightJokerPlayer2(1);
-                roundPoints.setPointsplayer2(10);
-            } else {
-                roundPoints.setParrySightJokerPlayer1(1);
-                roundPoints.setPointsplayer1(10);
-            }
-
-            message = MessageHelper.PARRYSIGHTJOKER_SUCCESS_lOST;
-
-        } else {
-            if (isGroupOwner) {
-                roundPoints.setPointsplayer1(10);
-            } else {
-                roundPoints.setPointsplayer2(10);
-            }
-
-            message = MessageHelper.PARRYSIGHTJOKER_FAIL_WON;
-        }
-
-        roundPointsDataSource.saveRoundPoints(roundPoints);
-        roundPointsDataSource.updateJoker(roundPoints);
-
-        networkDisplay.displayUserInformation(message);
-    }
-
-    public boolean cardExchange(int cardID_A){
-
-
-        boolean checkTausch = false;
-        Deck wanttoexchange = new Deck();
-        Deck getforexchange = new Deck();
-        points = roundPointsDataSource.getCurrentRoundPointsObject();
-        int alreadyPlayedJoker;
-
-        if (myTurn) {
-
-            if (isGroupOwner){
-                alreadyPlayedJoker = points.getCardExchangeJokerPlayer1();
-            }
-            else {
-                alreadyPlayedJoker = points.getCardExchangeJokerPlayer2();
-            }
-
-            if (alreadyPlayedJoker == 0) {
-
-                checkTausch = true;
-                int size_card_on_hand_opponent = this.getCardsOnHand_Opponent().size();
-                int random_list_index = new Random().nextInt(size_card_on_hand_opponent);
-
-                //sucht passendes Deck Objekt fÃ¼r zu tauschende KartenID
-                for (Deck deck : this.getAllDecks()) {
-                    if (deck.getCardID() == cardID_A) {
-                        wanttoexchange = deck;
-                        break;
-                    }
-                }
-
-                getforexchange = this.getCardsOnHand_Opponent().get(random_list_index);
-
-                //Status fÃ¼r wantoexchange wird upgedatet
-                for (Deck deck : this.getAllDecks()) {
-                    if (deck.getCardID() == cardID_A) {
-                        if (isGroupOwner) {
-                            deck.setDeckStatus(2); //wie bekomme ich das in die GUI?
-                            deckDataSource.updateDeckStatus(deck.getCardID(), 2);
-                        } else {
-                            deck.setDeckStatus(1);
-                            deckDataSource.updateDeckStatus(deck.getCardID(), 1);
-                        }
-                    }
-                }
-
-                //Status fÃ¼r getforexchange wird upgedatet
-                for (Deck deck : this.getAllDecks()) {
-                    if (deck.getCardID() == getforexchange.getCardID()) {
-                        if (isGroupOwner) {
-                            deck.setDeckStatus(1); //wie bekomme ich das in die GUI?
-                            deckDataSource.updateDeckStatus(deck.getCardID(), 1);
-                        } else {
-                            deck.setDeckStatus(2);
-                            deckDataSource.updateDeckStatus(deck.getCardID(), 2);
-                        }
-                    }
-                }
-
-                //update Status Joker bereis gespielt
-                if (isGroupOwner) {
-                    points.setCardExchangeJokerPlayer1(1);
-                    this.roundPointsDataSource.updateJoker(points);
-                } else {
-                    points.setCardExchangeJokerPlayer2(1);
-                    this.roundPointsDataSource.updateJoker(points);
-                }
-                //Sende Karten ID zum anderen Spieler
-                networkDisplay.displayUserInformation(MessageHelper.CARD_EXCHANGE);
-                networkManager.sendCardExchange((int)wanttoexchange.getCardID(), (int) getforexchange.getCardID());
-
-            }
-        }
-
-        return checkTausch;
-    }
-
-    public boolean receiveCardExchange(int cardID_A, int cardID_B){
-
-        points = roundPointsDataSource.getCurrentRoundPointsObject();
-
-        //Status fÃ¼r wantoexchange wird upgedatet
-        for (Deck deck : this.getAllDecks()) {
-            if (deck.getCardID() == cardID_A) {
-                if (deck.getDeckStatus() == 1) {
-                    deck.setDeckStatus(2); //wie bekomme ich das in die GUI?
-                    deckDataSource.updateDeckStatus(deck.getCardID(), 2);
-                } else {
-                    deck.setDeckStatus(1);
-                    deckDataSource.updateDeckStatus(deck.getCardID(), 1);
-                }
-            }
-        }
-
-        //Status fÃ¼r gettoexchange wird upgedatet
-        for (Deck deck : this.getAllDecks()) {
-            if (deck.getCardID() == cardID_B) {
-                if (deck.getDeckStatus() == 1) {
-                    deck.setDeckStatus(2); //wie bekomme ich das in die GUI?
-                    deckDataSource.updateDeckStatus(deck.getCardID(), 2);
-                } else {
-                    deck.setDeckStatus(1);
-                    deckDataSource.updateDeckStatus(deck.getCardID(), 1);
-                }
-            }
-        }
-
-        //update Status Joker bereis gespielt
-        if (isGroupOwner) {
-            points.setCardExchangeJokerPlayer2(1);
-            this.roundPointsDataSource.updateJoker(points);
-        } else {
-            points.setCardExchangeJokerPlayer1(1);
-            this.roundPointsDataSource.updateJoker(points);
-        }
-
-        networkDisplay.displayUserInformation(MessageHelper.CARD_EXCHANGE_RECEIVED);
-
-        return true;
     }
 
     public boolean roundWon() {
@@ -1262,4 +1321,6 @@ public class Round {
             }
         }
     }
+
+    //endregion
 }

@@ -17,7 +17,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import cardfactory.com.extremeschnapsen.models.CardImageView;
 import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
 import cardfactory.com.extremeschnapsen.R;
@@ -434,7 +433,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             public void run() {
                 switch (action) {
                     case NetworkHelper.ID:
-                        round.playCardReceived(Integer.parseInt(value));
+                        round.receivePlayCard(Integer.parseInt(value));
                         if(round.checkFor66()){
                             finishActivity(round.roundWon());
                         }
@@ -453,10 +452,10 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                         }
                         break;
                     case NetworkHelper.SIGHTJOKER:
-                        round.sightJokerReceived();
+                        round.receiveSightJoker();
                         break;
                     case NetworkHelper.PARRYSIGHTJOKER:
-                        round.parrySightJokerReceived();
+                        round.receiveParrySightJoker();
                         if (round.checkFor66()) {
                             finishActivity(round.roundWon());
                         }
