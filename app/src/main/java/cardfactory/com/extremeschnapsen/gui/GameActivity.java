@@ -562,7 +562,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             }
             if(isTurn){
                 //activate closed deck status...
-                round.sendTurn();
+                round.turn();
                 Log.d("MainActivity", "turn happened!");
             }
         }

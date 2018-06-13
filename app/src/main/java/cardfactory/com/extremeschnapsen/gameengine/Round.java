@@ -130,6 +130,13 @@ public class Round {
     }
 
     /**
+     * set the deckdatasource
+     */
+    public void setDeckDataSource(DeckDataSource deckDataSource) {
+        this.deckDataSource = deckDataSource;
+    }
+
+    /**
      * set the groupowner
      * @param groupOwner true or false, if group owner or not
      */
@@ -247,61 +254,6 @@ public class Round {
     }
 
     /**
-     * get the name of the current user
-     * @return the name of the current user
-     */
-    public String getUsername() {
-        return player.getUsername();
-    }
-
-    public void exchangeTrump(){
-        RoundPoints rp = new RoundPoints(1,0,0,0);
-        rp = roundPointsDataSource.getCurrentRoundPointsObject();
-
-        if (this.points.getMoves() < 4){
-            if (myTurn && rp.getTrumpExchanged() == 0) {
-                for (Deck deck : this.getCardsOnHand()) {
-                    if (deck.getCardValue() == 2 && deck.getDeckTrump() == 1) {
-                        rp.setTrumpExchanged(1);
-                        if (isGroupOwner) {
-                            this.deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), 1);
-                            this.currentDeck = this.deckDataSource.getAllDeck();
-                            this.roundPointsDataSource.updtateTrumpExchanged(rp);
-                        } else {
-                            //this.getOpenCard().setDeckStatus(2);
-                            deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), 2);
-                            this.currentDeck = this.deckDataSource.getAllDeck();
-                            this.roundPointsDataSource.updtateTrumpExchanged(rp);
-                        }
-
-                        networkManager.sendTrumpExchanged();
-
-                        this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
-                        this.currentDeck = this.deckDataSource.getAllDeck();
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    public void receiveExchangeTrump(){ti
-        RoundPoints rp = new RoundPoints(1,0,0,0);
-        rp = roundPointsDataSource.getCurrentRoundPointsObject();
-        //if (myTurn && rp.getTrumpExchanged() == 0) {
-        for (Deck deck : this.getAllDecks()) {
-            if (deck.getCardValue() == 2 && deck.getDeckTrump() == 1) {
-                rp.setTrumpExchanged(1);
-                this.deckDataSource.updateDeckStatus(this.getOpenCard().getCardID(), deck.getDeckStatus());
-                this.roundPointsDataSource.updtateTrumpExchanged(rp);
-                this.deckDataSource.updateDeckStatus(deck.getCardID(), 3);
-                this.currentDeck = this.deckDataSource.getAllDeck();
-                break;
-            }
-        }
-    }
-
-    /**
      * returns a list of all deck cards
      * @return list of deck items
      */
@@ -403,6 +355,26 @@ public class Round {
         }
     }
 
+    public List<Deck> getAlreadyPlayedCards() {
+        List<Deck> deckPlayed = new ArrayList<>();
+
+
+        if (isGroupOwner) {
+            for (Deck deck : deckDataSource.getAllDeck()) {
+                if (deck.getDeckStatus() == 7) {
+                    deckPlayed.add(deck);
+                }
+            }
+        } else {
+            for (Deck deck : deckDataSource.getAllDeck()) {
+                if (deck.getDeckStatus() == 8) {
+                    deckPlayed.add(deck);
+                }
+            }
+        }
+        return deckPlayed;
+    }
+
     //endregion
 
     //region Round & Database
@@ -432,26 +404,6 @@ public class Round {
     public String getRoundPointsPlayer2() {
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
         return String.valueOf(roundPoints.getPointsplayer2());
-    }
-
-    public List<Deck> getAlreadyPlayedCards() {
-        List<Deck> deckPlayed = new ArrayList<>();
-
-
-        if (isGroupOwner) {
-            for (Deck deck : deckDataSource.getAllDeck()) {
-                if (deck.getDeckStatus() == 7) {
-                    deckPlayed.add(deck);
-                }
-            }
-        } else {
-            for (Deck deck : deckDataSource.getAllDeck()) {
-                if (deck.getDeckStatus() == 8) {
-                    deckPlayed.add(deck);
-                }
-            }
-        }
-        return deckPlayed;
     }
 
     /**
@@ -1351,6 +1303,10 @@ public class Round {
 
     }
 
+    /**
+     * checks, if it is my turn in the current move (the opposite player already played a card and it is my turn now
+     * @return true, if it is my turn
+     */
     public boolean getMyTurnInCurrentMove() {
         if (isGroupOwner && getPlayedCardPlayer2() != null) {
             return true;
@@ -1361,6 +1317,10 @@ public class Round {
         return false;
     }
 
+    /**
+     * checks if the current player has won the round (round is already finished!)
+     * @return true, if won, false if not
+     */
     public boolean roundWon() {
         if (Integer.parseInt(getRoundPointsPlayer1()) >= 66) {
             if (isGroupOwner) {
