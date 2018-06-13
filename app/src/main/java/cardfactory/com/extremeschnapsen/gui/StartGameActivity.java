@@ -1,5 +1,6 @@
 package cardfactory.com.extremeschnapsen.gui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -61,8 +62,6 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
 
         //Instanz eines neuen Spiel
         game = new Game(this);
-        //startGameActivityIntent.putExtra("game_s", game);
-        //game.gpds.getAllGamePoints();
 
         btnStartGame = this.findViewById(R.id.btnStartRound);
         btnFinishGame = this.findViewById(R.id.btnFinishGame);
@@ -95,13 +94,6 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
     protected void onResume() {
         super.onResume();
 
-        if (alreadyStarted) {
-            btnStartGame.setText(R.string.btnStartNextRound);
-            //btnStartGame.setOnClickListener(onClickListenerStartNextRound);
-        }
-
-        alreadyStarted = true;
-
         game.openDatabases();
         
         boolean isGroupOwner = local.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, false);
@@ -133,7 +125,7 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
         }
 
         startGameIntent.putExtra(IntentHelper.IS_GROUP_OWNER, local.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, true));
-        this.startActivity(startGameIntent);
+        this.startActivityForResult(startGameIntent, 1);
     }
 
     public void btnFinishGameClick(View view) {
@@ -154,7 +146,7 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
         }
 
         startGameActivityIntent.putExtra(IntentHelper.IS_GROUP_OWNER, local.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, true));
-        this.startActivity(startGameActivityIntent);
+        this.startActivityForResult(startGameActivityIntent, 1);
     }
 
     @Override
@@ -174,5 +166,20 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
                 btnStartGame.setOnClickListener(onClickListenerStart);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                boolean won = data.getBooleanExtra(IntentHelper.GAMEWON, false);
+
+                if (won)
+                    btnStartGame.setText(R.string.btnStartNextRoundWon);
+                else
+                    btnStartGame.setText(R.string.btnStartNextRoundLost);
+            }
+        }
     }
 }

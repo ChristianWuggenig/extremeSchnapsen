@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.networking;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -114,7 +114,7 @@ public class HTTPServerUnitTest {
         }
     }
 
-    @Test
+    /*@Test
     public void testGetCurrentlyPlayedCard() {
         httpServer.setNetworkDisplay(networkDisplay);
         Map<String, String> params = new HashMap<>();
@@ -138,7 +138,7 @@ public class HTTPServerUnitTest {
         String response = httpServer.getCurrentlyPlayedCard(params);
 
         assertEquals(null, response);
-    }
+    }*/
 
     @Test
     public void testSendParrySightJokerWithParry() {
@@ -254,6 +254,46 @@ public class HTTPServerUnitTest {
 
         try {
             assertEquals(jsonObject.get(NetworkHelper.TWENTYFORTY), httpServer.send2040().get(NetworkHelper.TWENTYFORTY));
+
+        } catch (JSONException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testSendCardExchangeWithCards() {
+        httpServer.setCardExchange("1;2");
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put(NetworkHelper.CARD_EXCHANGE, "1;2");
+        } catch (JSONException ex) {
+            fail(ex.getMessage());
+        }
+
+        try {
+            assertEquals(jsonObject.get(NetworkHelper.CARD_EXCHANGE), httpServer.sendCardExchange().get(NetworkHelper.CARD_EXCHANGE));
+
+        } catch (JSONException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testSendCardExchangeWithoutCards() {
+        httpServer.setCardExchange("");
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put(NetworkHelper.CARD_EXCHANGE, "");
+        } catch (JSONException ex) {
+            fail(ex.getMessage());
+        }
+
+        try {
+            assertEquals(jsonObject.get(NetworkHelper.CARD_EXCHANGE), httpServer.sendCardExchange().get(NetworkHelper.CARD_EXCHANGE));
 
         } catch (JSONException ex) {
             fail(ex.getMessage());
@@ -561,4 +601,6 @@ public class HTTPServerUnitTest {
             fail(ex.getMessage());
         }
     }
+
+
 }

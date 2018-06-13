@@ -20,7 +20,7 @@ import cardfactory.com.extremeschnapsen.models.Player;
 public class HTTPClient {
 
     private INetworkDisplay networkDisplay; //the network display interface object
-    private IStartGame startGame;
+    private IStartGame startGame; //the start game display interface object to show information in the startgame-activity
 
     private RequestQueue requestQueue; //the volley request queue object
 
@@ -231,58 +231,34 @@ public class HTTPClient {
      * @param response jsonarray with jsonobjects containing the desired information
      */
     public void processServerInformation(JSONArray response) {
-        try {
-            //check if the returned id is 0, if yes, try again in 500ms, if no, display the played card
-            JSONObject id = response.getJSONObject(0);
-            JSONObject trump = response.getJSONObject(1);
-            JSONObject turn = response.getJSONObject(2);
-            JSONObject twentyForty = response.getJSONObject(3);
-            JSONObject sightJoker = response.getJSONObject(4);
-            JSONObject parrySightJoker = response.getJSONObject(5);
-            JSONObject cardExchange = response.getJSONObject(6);
+        if (response.length() != 0) {
+            try {
+                for (int count = 0; count < response.length(); count++) {
+                    JSONObject jsonObject = response.getJSONObject(count);
+                    String key = jsonObject.keys().next();
 
-            if (trump.getBoolean(NetworkHelper.TRUMP)) {
-                networkDisplay.receiveAction(NetworkHelper.TRUMP, "true");
-            }
+                    if (!key.equals(NetworkHelper.ID))
+                        networkDisplay.receiveAction(key, jsonObject.getString(key));
+                    else {
+                        if (jsonObject.getInt(NetworkHelper.ID) != 0) {
+                            networkDisplay.receiveAction(key, jsonObject.getString(NetworkHelper.ID));
+                            alreadyReceived = true;
+                        } else {
+                            try {
+                                Thread.sleep(700);
+                            } catch (InterruptedException ex) {
+                                Log.d("ThreadError", ex.getMessage());
+                            }
 
-            if (turn.getBoolean(NetworkHelper.TURN)) {
-                networkDisplay.receiveAction(NetworkHelper.TURN, "true");
-            }
+                            networkDisplay.waitForCard();
+                            Log.d("Waiting", "waiting for card");
 
-            if (twentyForty.getString(NetworkHelper.TWENTYFORTY) != "") {
-                networkDisplay.receiveAction(NetworkHelper.TWENTYFORTY, twentyForty.getString(NetworkHelper.TWENTYFORTY));
-            }
-
-            if (sightJoker.getBoolean(NetworkHelper.SIGHTJOKER)) {
-                networkDisplay.receiveAction(NetworkHelper.SIGHTJOKER, "true");
-            }
-
-            if (parrySightJoker.getBoolean(NetworkHelper.PARRYSIGHTJOKER)) {
-                networkDisplay.receiveAction(NetworkHelper.PARRYSIGHTJOKER, "true");
-            }
-          
-            if (cardExchange.getString(NetworkHelper.CARD_EXCHANGE) != "") {
-                networkDisplay.receiveAction(NetworkHelper.CARD_EXCHANGE, cardExchange.getString(NetworkHelper.CARD_EXCHANGE));
-            }
-
-            if(id.getInt(NetworkHelper.ID) != 0) {
-                networkDisplay.displayUserInformation(MessageHelper.YOURTURN);
-                networkDisplay.setMyTurn(id.getInt(NetworkHelper.ID));
-
-                alreadyReceived = true;
-            } else {
-                try {
-                    Thread.sleep(700);
-                } catch (InterruptedException ex) {
-                    Log.d("ThreadError", ex.getMessage());
+                        }
+                    }
                 }
-
-                networkDisplay.waitForCard();
-                Log.d("Waiting", "waiting for card");
+            } catch (JSONException ex) {
+                Log.d("JSONError", ex.getMessage());
             }
-
-        } catch (JSONException ex) {
-            Log.d("JSONError", ex.getMessage());
         }
     }
 }

@@ -472,6 +472,23 @@ public class Round {
 
     }
 
+    public void playCardReceived(int card) {
+        List<Deck> allDecks = getAllDecks();
+
+        for (Deck deck : allDecks) {
+            if (deck.getDeckStatus() == 1 && deck.getCardID() == card)
+                updateCard(card, 5);
+            else if (deck.getDeckStatus() == 2 && deck.getCardID() == card)
+                updateCard(card, 6);
+        }
+
+        setMyTurn(true);
+
+        networkDisplay.displayUserInformation(MessageHelper.YOURTURN);
+
+        compareCards();
+    }
+
     public boolean checkFor2040DameKoenig (Deck wanttoplay, String farbe2040er){
 
         if (wanttoplay.getCardSuit().equals(farbe2040er)){
@@ -1228,5 +1245,21 @@ public class Round {
         networkDisplay.displayUserInformation(MessageHelper.CARD_EXCHANGE_RECEIVED);
 
         return true;
+    }
+
+    public boolean roundWon() {
+        if (Integer.parseInt(getRoundPointsPlayer1()) >= 66) {
+            if (isGroupOwner) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (isGroupOwner) {
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
 }

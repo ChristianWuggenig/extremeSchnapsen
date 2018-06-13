@@ -210,7 +210,6 @@ public class HTTPServer {
             Log.d("JSONError", ex.getMessage());
         }
 
-        //networkDisplay.displayUserInformation(currentDeck.get(0).toString());
         networkDisplay.displayUserInformation(MessageHelper.WAITING);
         networkDisplay.displayPlayer(params.get(NetworkHelper.NAME).get(0));
         networkDisplay.dismissDialog();
@@ -224,13 +223,27 @@ public class HTTPServer {
      */
     public String sendClientInformation() {
         JSONArray jsonArray = new JSONArray();
+
         jsonArray.put(sendCurrentlyPlayedCard());
-        jsonArray.put(sendTrumpExchanged());
-        jsonArray.put(sendTurn());
-        jsonArray.put(send2040());
-        jsonArray.put(sendSightJoker());
-        jsonArray.put(sendParrySightJoker());
-        jsonArray.put(sendCardExchange());
+
+        if (trumpExchanged)
+            jsonArray.put(sendTrumpExchanged());
+
+        if (turn)
+            jsonArray.put(sendTurn());
+
+        if (!twentyForty.equals(""))
+            jsonArray.put(send2040());
+
+        if (sightJoker)
+            jsonArray.put(sendSightJoker());
+
+        if (parrySightJoker)
+            jsonArray.put(sendParrySightJoker());
+
+        if (!cardExchange.equals(""))
+            jsonArray.put(sendCardExchange());
+
         return jsonArray.toString();
     }
 
@@ -387,8 +400,12 @@ public class HTTPServer {
 
         return jsonObject;
     }
-  
-     public JSONObject sendCardExchange() {
+
+    /**
+     * sends the information of card exchange with a string containing the exchanged cards in format CardA;CardB
+     * @return returns a jsonobject with the required information
+     */
+    public JSONObject sendCardExchange() {
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -414,22 +431,8 @@ public class HTTPServer {
         try {
             JSONObject jsonObject = new JSONObject(params.get("postData"));
 
-            if (jsonObject.has(NetworkHelper.ID)) {
-                int cardID = jsonObject.getInt(NetworkHelper.ID);
-                networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
-            } else if (jsonObject.has(NetworkHelper.TRUMP)) {
-                networkDisplay.receiveAction(NetworkHelper.TRUMP, "true");
-            } else if (jsonObject.has(NetworkHelper.TURN)) {
-                networkDisplay.receiveAction(NetworkHelper.TURN, "true");
-            } else if (jsonObject.has(NetworkHelper.TWENTYFORTY)) {
-                networkDisplay.receiveAction(NetworkHelper.TWENTYFORTY, jsonObject.getString(NetworkHelper.TWENTYFORTY));
-            } else if (jsonObject.has(NetworkHelper.SIGHTJOKER)) {
-                networkDisplay.receiveAction(NetworkHelper.SIGHTJOKER, "true");
-            } else if (jsonObject.has(NetworkHelper.PARRYSIGHTJOKER)) {
-                networkDisplay.receiveAction(NetworkHelper.PARRYSIGHTJOKER, "true");
-            } else if (jsonObject.has(NetworkHelper.CARD_EXCHANGE)) {
-                networkDisplay.receiveAction(NetworkHelper.CARD_EXCHANGE, jsonObject.getString(NetworkHelper.CARD_EXCHANGE));
-            }
+            String key = jsonObject.keys().next();
+            networkDisplay.receiveAction(key, String.valueOf(jsonObject.get(key)));
 
             return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
         } catch (JSONException ex) {
@@ -437,25 +440,4 @@ public class HTTPServer {
         }
         return null;
     }
-
-    /**
-     * get the currently played card from the client
-     * @param params used to get the parameters from the http-headers
-     * @return returns a response with the same id (not needed, but a response message is necessary)
-     */
-    public String getCurrentlyPlayedCard(Map<String, String> params) {
-        try {
-            JSONObject jsonObject = new JSONObject(params.get("postData"));
-            int cardID = jsonObject.getInt(NetworkHelper.ID);
-
-            networkDisplay.setMyTurn(Integer.parseInt(String.valueOf(cardID)));
-
-            return jsonObject.toString(); //convert the jsonArray of cardIDs to a string message for the response
-        } catch (JSONException ex) {
-            Log.d("JSONError", ex.getMessage());
-        }
-        return null;
-    }
-  
-   
 }

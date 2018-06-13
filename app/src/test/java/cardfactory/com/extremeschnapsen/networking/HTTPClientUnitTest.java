@@ -1,4 +1,4 @@
-package cardfactory.com.extremeschnapsen;
+package cardfactory.com.extremeschnapsen.networking;
 
 import android.content.Context;
 

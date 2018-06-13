@@ -19,7 +19,8 @@
     <string name="btnSearch">Spieler suchen</string>
     <string name="btnStartGame">Spiel starten</string>
     <string name="btnFinishGame">Spiel beenden</string>
-    <string name="btnStartNextRound">Nächste Runde starten</string>
+    <string name="btnStartNextRoundWon">Du hast die Runde gewonnen, nächste Runde starten</string>
+    <string name="btnStartNextRoundLost">Du hast die Runde verloren, nächste Runde starten</string>
     <string name="btnGameWon">Spiel gewonnen, nächste Runde?</string>
     <string name="btnGameLost">Spiel verloren, neue Partie?</string>
 
