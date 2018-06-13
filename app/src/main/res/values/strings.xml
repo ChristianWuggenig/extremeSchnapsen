@@ -46,6 +46,10 @@
     <string name="msgSightJokerNotPossible">Du kannst den Sichtjoker erst einsetzen, wenn du am Zug bist!</string>
     <string name="msgCardExchanged">Du hast den Kartentausch Joker eingesetzt. Du bist am Zug</string>
     <string name="msgCardExchangeReceived">Der Gegner hat den Kartentausch Joker eingesetzt. Er ist am Zug</string>
+    <string name="msgTurnedCalledSuccess">Du hast zugedreht. Du bist am Zug</string>
+    <string name="msgTurnedCalledFail">Du kannst nicht zudrehen. Du bist am Zug</string>
+    <string name="msgTurnedReceived">Der Gegner hat zugedreht. Er ist am Zug</string>
+
 
     <string name="title_activity_profil">ProfilActivity</string>
     <string name="dummy_button">Dummy Button</string>

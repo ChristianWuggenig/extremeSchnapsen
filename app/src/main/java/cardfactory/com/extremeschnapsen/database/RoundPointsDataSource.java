@@ -279,6 +279,21 @@ public class RoundPointsDataSource {
 
     }
 
+    public void updateMoves(int i){
+
+        ContentValues values = new ContentValues();
+
+        values.put(DbHelper.COLUMN_ROUND_MOVES, i);
+
+        database.update(DbHelper.TABLE_ROUNDPOINTS_LIST,
+                values,
+                DbHelper.COLUMN_CURRENTROUNDPOINTS + "=" + 1,
+                null);
+
+        getAllRoundPoints();
+
+    }
+
     //löscht alle Einträge im GamePointstable
     public void deleteRoundPointsTable() {
         int anzahl_gelöschte_einträge = database.delete(DbHelper.TABLE_ROUNDPOINTS_LIST,
