@@ -454,6 +454,45 @@ public class Round {
 
     //region Actions
 
+    public void turn (){
+        roundPointsDataSource.open();
+        points = roundPointsDataSource.getCurrentRoundPointsObject();
+
+
+        if (myTurn && points.getMoves() < 4){
+            for (Deck deck : this.getAllDecks()) {
+                if (deck.getDeckStatus() == 4 || deck.getDeckStatus() ==3) {
+                    deck.setDeckStatus(9); //wie bekomme ich das in die GUI?
+                    deckDataSource.updateDeckStatus(deck.getCardID(), 9);
+                }
+            }
+            networkManager.sendTurn();
+            networkDisplay.displayUserInformation(MessageHelper.TURNEDCALLEDSUCESS);
+            points.setMoves(20);
+            roundPointsDataSource.updateMoves(20);
+        }
+        else {
+            networkDisplay.displayUserInformation(MessageHelper.TURNEDCALLEDFAIL);
+
+        }
+    }
+
+    public void turnReceived (){
+        roundPointsDataSource.open();
+        points = roundPointsDataSource.getCurrentRoundPointsObject();
+
+
+        for (Deck deck : this.getAllDecks()) {
+            if (deck.getDeckStatus() == 4 || deck.getDeckStatus() ==3) {
+                deck.setDeckStatus(9); //wie bekomme ich das in die GUI?
+                deckDataSource.updateDeckStatus(deck.getCardID(), 9);
+            }
+        }
+        points.setMoves(20);
+        roundPointsDataSource.updateMoves(20);
+        networkDisplay.displayUserInformation(MessageHelper.TURNEDRECEIVED);
+    }
+
     public void exchangeTrump(){
         RoundPoints rp = new RoundPoints(1,0,0,0);
         rp = roundPointsDataSource.getCurrentRoundPointsObject();
@@ -1336,6 +1375,8 @@ public class Round {
             }
         }
     }
-  
+
+
+
     //endregion
 }
