@@ -55,6 +55,11 @@ public class HTTPClientUnitTest {
                 jsonObject.put(NetworkHelper.ID, count);
                 jsonArray.put(jsonObject);
             }
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(NetworkHelper.NAME, "testUser");
+            jsonArray.put(jsonObject);
+
         } catch (JSONException ex) {
             fail(ex.getMessage());
         }

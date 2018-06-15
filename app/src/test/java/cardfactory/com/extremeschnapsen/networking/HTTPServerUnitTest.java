@@ -71,6 +71,7 @@ public class HTTPServerUnitTest {
     public void testGetSetCardPlayed() {
         int playedCard = 2;
         httpServer.setCardPlayed(playedCard);
+
         assertEquals(2, httpServer.getCardPlayed());
     }
 
@@ -555,6 +556,10 @@ public class HTTPServerUnitTest {
             jsonObject.put(NetworkHelper.PARRYSIGHTJOKER, "true");
             jsonArray.put(jsonObject);
 
+            jsonObject = new JSONObject();
+            jsonObject.put(NetworkHelper.CARD_EXCHANGE, "1;2");
+            jsonArray.put(jsonObject);
+
             httpServer.setNetworkDisplay(networkDisplay);
             httpServer.setCardPlayed(1);
             httpServer.setTrumpExchanged(true);
@@ -562,6 +567,7 @@ public class HTTPServerUnitTest {
             httpServer.setTwentyForty("pik");
             httpServer.setSightJoker(true);
             httpServer.setParrySightJoker(true);
+            httpServer.setCardExchange("1;2");
 
             JSONArray jsonArrayResponse = new JSONArray(httpServer.sendClientInformation());
 
@@ -571,6 +577,7 @@ public class HTTPServerUnitTest {
             assertEquals(jsonArray.getJSONObject(3).get(NetworkHelper.TWENTYFORTY), jsonArrayResponse.getJSONObject(3).get(NetworkHelper.TWENTYFORTY));
             assertEquals(jsonArray.getJSONObject(4).get(NetworkHelper.SIGHTJOKER), jsonArrayResponse.getJSONObject(4).get(NetworkHelper.SIGHTJOKER));
             assertEquals(jsonArray.getJSONObject(5).get(NetworkHelper.PARRYSIGHTJOKER), jsonArrayResponse.getJSONObject(5).get(NetworkHelper.PARRYSIGHTJOKER));
+            assertEquals(jsonArray.getJSONObject(6).get(NetworkHelper.CARD_EXCHANGE), jsonArrayResponse.getJSONObject(6).get(NetworkHelper.CARD_EXCHANGE));
         } catch (JSONException ex) {
             fail(ex.getMessage());
         }

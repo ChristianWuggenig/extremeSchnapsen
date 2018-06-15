@@ -37,6 +37,11 @@ public class HTTPServer {
 
     private String mode; //contains the game mode (extreme or normal)
 
+    /**
+     * the constructor
+     * @param startGame the start game interface object
+     * @param mode the game mode (normal, extreme)
+     */
     public HTTPServer(IStartGame startGame, String mode) {
         cardPlayed = 0;
         trumpExchanged = false;
@@ -105,6 +110,10 @@ public class HTTPServer {
         this.parrySightJoker = parrySightJoker;
     }
 
+    /**
+     * set the parameter for card exchange
+     * @param cardExchange contains the exchanged cards in format "cardA;cardB"
+     */
     public void setCardExchange(String cardExchange) {
         this.cardExchange = cardExchange;
     }

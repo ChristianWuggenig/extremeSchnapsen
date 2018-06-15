@@ -26,6 +26,17 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
 
     private SearchActivity searchActivity; //declare activity-context to show toast-messages on the search-activity
 
+    private WifiP2pManager.ConnectionInfoListener connectionInfoListener; //the connection info listener
+
+    private Context context; //the receiving context
+
+    /**
+     * the construction
+     * @param manager the p2p manager
+     * @param channel the p2p channel
+     * @param activity the activity context
+     * @param myPeerListListener the p2p peer list listener
+     */
     public WiFiP2PBroadcastReceiver(WifiP2pManager manager,
                                     WifiP2pManager.Channel channel,
                                     SearchActivity activity,
@@ -35,6 +46,23 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
         this.p2pChannel = channel;
         this.searchActivity = activity;
         this.peerListListener = myPeerListListener;
+
+        connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
+            @Override
+            public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
+                Intent startGameActivityIntent = new Intent(context, StartGameActivity.class);
+                startGameActivityIntent.putExtra(IntentHelper.IS_GROUP_OWNER, wifiP2pInfo.isGroupOwner);
+                searchActivity.startActivity(startGameActivityIntent);
+            }
+        };
+    }
+
+    /**
+     * set the connnection info listener (only for unit testing)
+     * @param connectionInfoListener contains the mock object
+     */
+    public void setConnectionInfoListener(WifiP2pManager.ConnectionInfoListener connectionInfoListener) {
+        this.connectionInfoListener = connectionInfoListener;
     }
 
     /**
@@ -43,8 +71,9 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
      * @param intent the intent with the information on the p2p-action
      */
     @Override
-    public void onReceive(final Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        this.context = context;
 
         //decide which P2P-Action was thrown
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
@@ -69,16 +98,7 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
         }
         // Respond to new connection or disconnections
         else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
-            p2pManager.requestConnectionInfo(p2pChannel, new WifiP2pManager.ConnectionInfoListener() {
-                @Override
-                public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
-                    if(wifiP2pInfo.groupFormed){
-                        Intent startGameActivityIntent = new Intent(context, StartGameActivity.class);
-                        startGameActivityIntent.putExtra(IntentHelper.IS_GROUP_OWNER, wifiP2pInfo.isGroupOwner);
-                        searchActivity.startActivity(startGameActivityIntent);
-                    }
-                }
-            });
+            p2pManager.requestConnectionInfo(p2pChannel, connectionInfoListener);
         }
     }
 

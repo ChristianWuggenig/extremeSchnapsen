@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cardfactory.com.extremeschnapsen.gui.GameActivity;
+import cardfactory.com.extremeschnapsen.gui.MessageHelper;
 import cardfactory.com.extremeschnapsen.gui.StartGameActivity;
 import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.models.Player;
@@ -28,6 +29,8 @@ public class NetworkManagerUnitTest {
     INetworkDisplay networkDisplay;
     Player player;
     String mode;
+    HTTPClient httpClient;
+    HTTPServer httpServer;
 
     @Before
     public void init() {
@@ -36,6 +39,12 @@ public class NetworkManagerUnitTest {
         networkManager = NetworkManager.getInstance(context);
         player = mock(Player.class);
         when(player.getUsername()).thenReturn("testUser");
+
+        httpClient = mock(HTTPClient.class);
+        httpServer = mock(HTTPServer.class);
+
+        networkManager.setHttpClient(httpClient);
+        networkManager.setHttpServer(httpServer);
     }
 
     @After
@@ -48,10 +57,14 @@ public class NetworkManagerUnitTest {
 
     @Test
     public void testStartHttpServerWithDeckPlayerNetworkDisplay() {
-        networkManager.startHttpServer(mode); //necessary to create the http-server-object inside the networkmanager
-        networkManager.startHttpServer(new ArrayList<Deck>(), player, networkDisplay);
+        List<Deck> currentDeck = new ArrayList<>();
+        currentDeck.add(mock(Deck.class));
 
-        assertTrue(true); //if the statement above does not fail, then the test is successful
+        networkManager.startHttpServer(currentDeck, player, networkDisplay);
+
+        verify(httpServer).setCurrentDeck(currentDeck);
+        verify(httpServer).setPlayer(player);
+        verify(httpServer).setNetworkDisplay(networkDisplay);
     }
 
     @Test
@@ -63,19 +76,19 @@ public class NetworkManagerUnitTest {
 
     @Test
     public void testStopHttpServer() {
-        networkManager.startHttpServer(mode); //start first, before stopping it
         networkManager.stopHttpServer();
 
-        assertTrue(true); //if the statement above does not fail, then the test is successful
+        verify(httpServer).stopHTTPServer();
     }
 
-    //the nullpointerexception is thrown in the volley-class, because the requestqueue cannot be created on a mock-object
-    @Test (expected = NullPointerException.class)
+    @Test
     public void testStartHttpClientWithNetworkDisplayPlayer() {
-        networkManager.startHttpClient();
         networkManager.startHttpClient(networkDisplay, player);
 
-        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+        verify(httpClient).setNetworkDisplay(networkDisplay);
+        verify(httpClient).setPlayer(player);
+        verify(httpClient).setAlreadyReceived(false);
+        verify(httpClient).getDeck();
     }
 
     //the nullpointerexception is thrown in the volley-class, because the requestqueue cannot be created on a mock-object
@@ -86,132 +99,118 @@ public class NetworkManagerUnitTest {
         fail("Exception not thrown"); //if the statement above does not fail, then the test failed
     }
 
-    //the nullpointerexception is thrown in the volley-class, because the requestqueue cannot be created on a mock-object
-    @Test (expected = NullPointerException.class)
+    @Test
     public void testSendCardWithClient() {
-        networkManager.startHttpClient(); //start the client first
         networkManager.sendCard(1);
 
-        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+        verify(httpClient).sendCard(1);
     }
 
     @Test
     public void testSendCardWithServer() {
-        networkManager.startHttpServer(mode); //has to be done first in order to initialize the http-server-object
+        networkManager.startHttpServer(null, null, null); //start the server first
         networkManager.sendCard(1);
 
-        assertTrue(true); //if the statement above does not fail, then the test is successful
+        verify(httpServer).setCardPlayed(1);
     }
 
-    //the nullpointerexception is thrown in the volley-class, because the requestqueue cannot be created on a mock-object
-    @Test (expected = NullPointerException.class)
+    @Test
     public void testWaitForCard() {
-        networkManager.startHttpClient(); //start the client first
         networkManager.waitForCard(false);
 
-        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+        verify(httpClient).setAlreadyReceived(false);
+        verify(httpClient).getServerInformation();
     }
 
     @Test
     public void testSendTrumpExchangedWithServer() {
-        networkManager.startHttpServer(mode);
+        networkManager.startHttpServer(null, null, null);
         networkManager.sendTrumpExchanged();
 
-        assertTrue(true); //if the statement above does not fail, then the test is successful
+        verify(httpServer).setTrumpExchanged(true);
+
     }
 
-    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
-    @Test (expected = NullPointerException.class)
+    @Test
     public void testSendTrumpExchangedWithClient() {
-        networkManager.startHttpClient(); //start the client first
         networkManager.sendTrumpExchanged();
 
-        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+        verify(httpClient).sendAction(NetworkHelper.TRUMP, "true");
     }
 
     @Test
     public void testSendTurnWithServer() {
-        networkManager.startHttpServer(mode);
+        networkManager.startHttpServer(null, null, null);
         networkManager.sendTurn();
 
-        assertTrue(true); //if the statement above does not fail, then the test is successful
+        verify(httpServer).setTurn(true);
     }
 
-    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
-    @Test (expected = NullPointerException.class)
+    @Test
     public void testSendTurnWithClient() {
-        networkManager.startHttpClient(); //start the client first
         networkManager.sendTurn();
 
-        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+        verify(httpClient).sendAction(NetworkHelper.TURN, "true");
     }
 
     @Test
     public void testSend2040WithServer() {
-        networkManager.startHttpServer(mode);
+        networkManager.startHttpServer(null, null, null);
         networkManager.send2040("pik");
 
-        assertTrue(true); //if the statement above does not fail, then the test is successful
+        verify(httpServer).setTwentyForty("pik");
     }
 
-    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
-    @Test (expected = NullPointerException.class)
+    @Test
     public void testSend2040WithClient() {
-        networkManager.startHttpClient(); //start the client first
         networkManager.send2040("pik");
 
-        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+        verify(httpClient).sendAction(NetworkHelper.TWENTYFORTY, "pik");
     }
 
     @Test
     public void testSendSightJokerWithServer() {
-        networkManager.startHttpServer(mode);
+        networkManager.startHttpServer(null, null, null);
         networkManager.sendSightJoker();
 
-        assertTrue(true); //if the statement above does not fail, then the test is successful
+        verify(httpServer).setSightJoker(true);
     }
 
-    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
-    @Test (expected = NullPointerException.class)
+    @Test
     public void testSendSightJokerWithClient() {
-        networkManager.startHttpClient(); //start the client first
         networkManager.sendSightJoker();
 
-        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+        verify(httpClient).sendAction(NetworkHelper.SIGHTJOKER, "true");
     }
 
     @Test
     public void testSendParrySightJokerWithServer() {
-        networkManager.startHttpServer(mode);
+        networkManager.startHttpServer(null, null, null);
         networkManager.sendParrySightJoker();
 
-        assertTrue(true); //if the statement above does not fail, then the test is successful
+        verify(httpServer).setParrySightJoker(true);
     }
 
-    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
-    @Test (expected = NullPointerException.class)
+    @Test
     public void testSendParrySightJokerWithClient() {
-        networkManager.startHttpClient(); //start the client first
         networkManager.sendParrySightJoker();
 
-        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+        verify(httpClient).sendAction(NetworkHelper.PARRYSIGHTJOKER, "true");
     }
 
     @Test
     public void testSendCardExchangeWithServer() {
-        networkManager.startHttpServer(mode);
+        networkManager.startHttpServer(null, null, null);
         networkManager.sendCardExchange(1, 2);
 
-        assertTrue(true); //if the statement above does not fail, then the test is successful
+        verify(httpServer).setCardExchange("1;2");
     }
 
-    //the exception is thrown, because the httpclient-object is not initialized, which is not possible due to the missing context for volley
-    @Test (expected = NullPointerException.class)
+    @Test
     public void testSendCardExchangeWithClient() {
-        networkManager.startHttpClient(); //start the client first
         networkManager.sendCardExchange(1, 2);
 
-        fail("Exception not thrown"); //if the statement above does not fail, then the test failed
+        verify(httpClient).sendAction(NetworkHelper.CARD_EXCHANGE, "1;2");
     }
 }
 

@@ -18,6 +18,10 @@ public class NetworkManager {
     private HTTPClient httpClient; //used for the http-client
     private HTTPServer httpServer; //used for the http-server
 
+    /**
+     * the private constructor necessary for a singleton
+     * @param context the activity context
+     */
     private NetworkManager (Context context) {
         this.context = context;
     }
@@ -42,8 +46,26 @@ public class NetworkManager {
     }
 
     /**
+     * set the http client object (only for unit tests)
+     * @param httpClient the mock object
+     */
+    public void setHttpClient(HTTPClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    /**
+     * set the http server object (only for unit tests)
+     * @param httpServer the mock object
+     */
+    public void setHttpServer(HTTPServer httpServer) {
+        this.httpServer = httpServer;
+    }
+
+    /**
      * starts the http-server and holds the current deck for the client
      * @param currentDeck the current, shuffled deck
+     * @param player the current player
+     * @param networkDisplay the network display for showing information on the gui
      */
     public void startHttpServer(List<Deck> currentDeck, Player player, INetworkDisplay networkDisplay) {
         isServer = true;
@@ -90,10 +112,6 @@ public class NetworkManager {
 
         httpClient = new HTTPClient(context);
         httpClient.getGameMode(mode);
-    }
-
-    public void startHttpClient() {
-        httpClient = new HTTPClient();
     }
 
     /**

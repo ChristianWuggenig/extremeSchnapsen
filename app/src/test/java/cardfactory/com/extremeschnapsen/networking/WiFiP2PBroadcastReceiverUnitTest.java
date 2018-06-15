@@ -20,6 +20,7 @@ public class WiFiP2PBroadcastReceiverUnitTest {
     WifiP2pManager.Channel p2pChannel;
     SearchActivity searchActivity;
     WifiP2pManager.PeerListListener peerListListener;
+    WifiP2pManager.ConnectionInfoListener connectionInfoListener;
     Intent i;
 
     @Before
@@ -29,6 +30,7 @@ public class WiFiP2PBroadcastReceiverUnitTest {
         searchActivity = mock(SearchActivity.class);
         peerListListener = mock(WifiP2pManager.PeerListListener.class);
         broadcastReceiver = new WiFiP2PBroadcastReceiver(p2pManager, p2pChannel, searchActivity, peerListListener);
+        connectionInfoListener = mock(WifiP2pManager.ConnectionInfoListener.class);
 
         i = mock(Intent.class);
     }
@@ -44,9 +46,9 @@ public class WiFiP2PBroadcastReceiverUnitTest {
         i = null;
     }
 
-    @Test
+    @Test (expected = NullPointerException.class) //happens when the toast message would be shown
     public void testOnReceiveWithStateChangedActionSuccess() {
-        when(i.getAction()).thenReturn("WIFI_P2P_STATE_CHANGED_ACTION");
+        when(i.getAction()).thenReturn("android.net.wifi.p2p.STATE_CHANGED");
         when(i.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, 1)).thenReturn(2);
 
         broadcastReceiver.onReceive(searchActivity, i);
@@ -54,9 +56,9 @@ public class WiFiP2PBroadcastReceiverUnitTest {
         assertEquals(2, WifiP2pManager.WIFI_P2P_STATE_ENABLED);
     }
 
-    @Test
+    @Test (expected = NullPointerException.class) //happens when the toast message would be shown
     public void testOnReceiveWithStateChangedActionFail() {
-        when(i.getAction()).thenReturn("WIFI_P2P_STATE_CHANGED_ACTION");
+        when(i.getAction()).thenReturn("android.net.wifi.p2p.STATE_CHANGED");
         when(i.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, 1)).thenReturn(1);
 
         broadcastReceiver.onReceive(searchActivity, i);
@@ -66,12 +68,11 @@ public class WiFiP2PBroadcastReceiverUnitTest {
 
     @Test
     public void testOnReceiveWithPeersChangedActionSuccess() {
-        when(i.getAction()).thenReturn("WIFI_P2P_PEERS_CHANGED_ACTION");
+        when(i.getAction()).thenReturn("android.net.wifi.p2p.PEERS_CHANGED");
 
         broadcastReceiver.onReceive(searchActivity, i);
 
-        //if the statement above does not fail, the test is successful
-        assertTrue(true);
+        verify(p2pManager).requestPeers(p2pChannel, peerListListener);
     }
 
     @Test
@@ -87,12 +88,13 @@ public class WiFiP2PBroadcastReceiverUnitTest {
 
     @Test
     public void testOnReceiveWithConnectionChangedActionSuccess() {
-        when(i.getAction()).thenReturn("WIFI_P2P_CONNECTION_CHANGED_ACTION");
+        when(i.getAction()).thenReturn("android.net.wifi.p2p.CONNECTION_STATE_CHANGE");
+
+        broadcastReceiver.setConnectionInfoListener(connectionInfoListener);
 
         broadcastReceiver.onReceive(searchActivity, i);
 
-        //if the statement above does not fail, the test is successful
-        assertTrue(true);
+        verify(p2pManager).requestConnectionInfo(p2pChannel, connectionInfoListener);
     }
 
     @Test

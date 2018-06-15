@@ -32,6 +32,10 @@ public class HTTPClient {
 
     private boolean alreadyReceived; //true, if the client already received the played card from the server
 
+    /**
+     * the constructor
+     * @param context contains the activity context
+     */
     public HTTPClient(Context context) {
         this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         this.startGame = (IStartGame)context;
