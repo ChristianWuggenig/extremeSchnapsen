@@ -1,6 +1,15 @@
 package cardfactory.com.extremeschnapsen.networking;
 
 import android.content.Context;
+import android.util.Log;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +35,8 @@ public class HTTPClientUnitTest {
     HTTPClient httpClient;
     Player player;
     INetworkDisplay networkDisplay;
+    RequestQueue requestQueue;
+    IStartGame startGame;
 
     @Before
     public void init() {
@@ -33,9 +44,12 @@ public class HTTPClientUnitTest {
         player = mock(Player.class);
         when(player.getUsername()).thenReturn("testUser");
         networkDisplay = mock(INetworkDisplay.class);
+        requestQueue = mock(RequestQueue.class);
+        startGame = mock(IStartGame.class);
 
         httpClient.setNetworkDisplay(networkDisplay);
         httpClient.setPlayer(player);
+        httpClient.setRequestQueue(requestQueue);
     }
 
     @After
@@ -43,6 +57,133 @@ public class HTTPClientUnitTest {
         httpClient = null;
         player = null;
         networkDisplay = null;
+    }
+
+    @Test
+    public void testGetGameMode() {
+        String queueTag = "extremeSchnapsen";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, "http://192.168.49.1:8080/" + "?" + NetworkHelper.MODE + "=" + "normal", new JSONObject(), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VolleyError", error.getMessage());
+            }
+        });
+
+        DefaultRetryPolicy defaultRetryPolicy = new DefaultRetryPolicy(20 * 100, 10, 1.0f);
+        request.setRetryPolicy(defaultRetryPolicy);
+        request.setTag(queueTag);
+        requestQueue.add(request);
+
+        httpClient.getGameMode("normal");
+
+        verify(requestQueue).add(request);
+    }
+
+    @Test
+    public void testGetDeck() {
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, "http://192.168.49.1:8080/" + "?" + NetworkHelper.NAME + "=" + player.getUsername(), new JSONArray(), new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("HTTPError", error.getMessage());
+
+            }
+        });
+
+        requestQueue.add(request);
+
+        httpClient.getDeck();
+
+        verify(requestQueue).add(request);
+    }
+
+    @Test
+    public void testSendCard() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put(NetworkHelper.ID, 1);
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "http://192.168.49.1:8080/", jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VolleyError", error.getMessage());
+            }
+        });
+
+        requestQueue.add(request);
+
+        httpClient.sendCard(1);
+
+        verify(requestQueue).add(request);
+    }
+
+    @Test
+    public void testSendActionWithTrumpExchanged() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put(NetworkHelper.TRUMP, "true");
+        } catch (JSONException ex) {
+            Log.d("JSONError", ex.getMessage());
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "http://192.168.49.1:8080/", jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VolleyError", error.getMessage());
+            }
+        });
+
+        requestQueue.add(request);
+
+        httpClient.sendAction(NetworkHelper.TRUMP, "true");
+
+        verify(requestQueue).add(request);
+    }
+
+    @Test
+    public void testGetServerInformation() {
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, "http://192.168.49.1:8080/" + "?" + NetworkHelper.ID + "=1", new JSONArray(), new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("VolleyError", error.getMessage());
+            }
+        });
+
+        requestQueue.add(request);
+
+        httpClient.setAlreadyReceived(false);
+        httpClient.getServerInformation();
+
+        verify(requestQueue).add(request);
     }
 
     @Test

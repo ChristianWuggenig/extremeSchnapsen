@@ -73,6 +73,14 @@ public class HTTPClient {
     }
 
     /**
+     * set the request queue (only for testing)
+     * @param requestQueue the mock object
+     */
+    public void setRequestQueue(RequestQueue requestQueue) {
+        this.requestQueue = requestQueue;
+    }
+
+    /**
      * get the game mode from the server and also send the own mode
      * @param mode the mode the client has set in the game settings
      */
@@ -138,9 +146,7 @@ public class HTTPClient {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, serverIP, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                //networkDisplay.displayUserInformation("Card " + cardID + " successfully sent");
                 alreadyReceived = false;
-                //networkDisplay.waitForCard(); //start the listener for a played card
             }
         }, new Response.ErrorListener() {
             @Override
