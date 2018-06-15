@@ -11,6 +11,7 @@ import java.util.List;
 import cardfactory.com.extremeschnapsen.database.DeckDataSource;
 import cardfactory.com.extremeschnapsen.database.RoundPointsDataSource;
 import cardfactory.com.extremeschnapsen.gui.GameActivity;
+import cardfactory.com.extremeschnapsen.gui.MessageHelper;
 import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.models.RoundPoints;
 import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
@@ -20,6 +21,31 @@ import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
 public class RoundUnitTest {
+
+    /*
+    bitte vorher durchlesen:
+
+    die methoden stehen in der testklasse in der gleichen reihenfolge wie in der richtigen round-klasse.
+    wenn ihr beim testen einer methode irgendwelche anderen methoden bereits mittestet, dann schreibt das bitte in die liste unten dazu, damit wir nichts doppelt testen
+    bitte unbedingt vorm commiten nochmal alle tests laufen lassen, sonst kann es sein dass sie im travis-ci fehlschlagen
+
+    bereits getestet:
+        getCardsOnHand
+        getCardsOnHand(int player)
+        getPlayedCardPlayer1
+        getPlayedCardPlayer2
+
+        check2040
+        receiveCheck2040
+        sightJoker
+        receiveSightJoker
+        parrySightJoker
+        receiveParrySightJoker
+
+        getMyTurnInCurrentMove
+        roundWon
+     */
+
     Round round;
     Context context;
     DeckDataSource deckDataSource;
@@ -52,6 +78,7 @@ public class RoundUnitTest {
         when(roundPoints.getPointsplayer1()).thenReturn(0);
         when(roundPoints.getPointsplayer2()).thenReturn(0);
         when(roundPointsDataSource.getCurrentRoundPointsObject()).thenReturn(roundPoints);
+        when(roundPoints.getMoves()).thenReturn(1);
 
         round.setDeckDataSource(deckDataSource);
         round.setRoundPointsDataSource(roundPointsDataSource);
@@ -62,6 +89,28 @@ public class RoundUnitTest {
         networkManager = mock(NetworkManager.class);
         round.setNetworkManager(networkManager);
     }
+
+    //region Deck & Database
+
+    @Test
+    public void testGetCardsOnHandWithPlayer1() {
+        when(deck1.getDeckStatus()).thenReturn(1);
+
+        List<Deck> onHand = round.getCardsOnHand(1);
+
+        assertEquals(deck1, onHand.get(0));
+    }
+
+    @Test
+    public void testGetCardsOnHandWithPlayer2() {
+        when(deck1.getDeckStatus()).thenReturn(2);
+
+        List<Deck> onHand = round.getCardsOnHand(2);
+
+        assertEquals(deck1, onHand.get(0));
+    }
+
+    //endregion
 
     //region Actions
 
@@ -219,9 +268,307 @@ public class RoundUnitTest {
         assertEquals("", round.check2040(""));
     }
 
+    @Test
+    public void testReceiveCheck2040WithKreuzWithGroupOwnerWith20() {
+        prepareCheck2040();
+        round.setGroupOwner(true);
+        round.setNetworkDisplay(networkDisplay);
+        when(deckDataSource.getTrump()).thenReturn("pik");
+
+        round.receiveCheck2040("kreuz");
+
+        verify(deckDataSource).getTrump();
+        verify(networkDisplay).displayUserInformation(MessageHelper.TWENTYRECEIVED);
+
+        assertTrue(true); //if the statements above don't fail, the test is successful
+    }
+
+    @Test
+    public void testReceiveCheck2040WithPikWithoutGroupOwnerWith40() {
+        prepareCheck2040();
+        round.setGroupOwner(false);
+        round.setNetworkDisplay(networkDisplay);
+        when(deckDataSource.getTrump()).thenReturn("pik");
+
+        round.receiveCheck2040("pik");
+
+        verify(deckDataSource).getTrump();
+        verify(networkDisplay).displayUserInformation(MessageHelper.FORTYRECEIVED);
+    }
+
+
+
+
+
+
+
+
+    @Test
+    public void testSightJokerWithGroupOwner() {
+        round.setGroupOwner(true);
+
+        round.sightJoker();
+
+        verify(roundPoints).setSightJokerPlayer1(1);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+        verify(networkManager).sendSightJoker();
+    }
+
+    @Test
+    public void testSightJokerWithoutGroupOwner() {
+        round.setGroupOwner(false);
+
+        round.sightJoker();
+
+        verify(roundPoints).setSightJokerPlayer2(1);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+        verify(networkManager).sendSightJoker();
+    }
+
+    @Test
+    public void testReceiveSightJokerWithGroupOwner() {
+        round.setGroupOwner(true);
+
+        round.receiveSightJoker();
+
+        verify(roundPoints).setSightJokerPlayer2(1);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+    }
+
+    @Test
+    public void testReceiveSightJokerWithoutGroupOwner() {
+        round.setGroupOwner(false);
+
+        round.receiveSightJoker();
+
+        verify(roundPoints).setSightJokerPlayer1(1);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+    }
+
+    @Test
+    public void testParrySightJokerWithGroupOwnerSuccess() {
+        round.setGroupOwner(true);
+
+        round.parrySightJoker(true);
+
+        verify(roundPoints).setParrySightJokerPlayer1(1);
+        verify(roundPoints).setPointsplayer1(10);
+        verify(roundPointsDataSource).saveRoundPoints(roundPoints);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+        verify(networkManager).sendParrySightJoker();
+        verify(networkDisplay).displayUserInformation(MessageHelper.PARRYSIGHTJOKER_SUCCESS_WON);
+    }
+
+    @Test
+    public void testParrySightJokerWithGroupOwnerLost() {
+        round.setGroupOwner(true);
+
+        round.parrySightJoker(false);
+
+        verify(roundPoints).setPointsplayer2(10);
+        verify(roundPointsDataSource).saveRoundPoints(roundPoints);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+        verify(networkManager).sendParrySightJoker();
+        verify(networkDisplay).displayUserInformation(MessageHelper.PARRYSIGHTJOKER_FAIL_lOST);
+    }
+
+    @Test
+    public void testParrySightJokerWithoutGroupOwnerSuccess() {
+        round.setGroupOwner(false);
+
+        round.parrySightJoker(true);
+
+        verify(roundPoints).setParrySightJokerPlayer2(1);
+        verify(roundPoints).setPointsplayer2(10);
+        verify(roundPointsDataSource).saveRoundPoints(roundPoints);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+        verify(networkManager).sendParrySightJoker();
+        verify(networkDisplay).displayUserInformation(MessageHelper.PARRYSIGHTJOKER_SUCCESS_WON);
+    }
+
+    @Test
+    public void testParrySightJokerWithoutGroupOwnerLost() {
+        round.setGroupOwner(false);
+
+        round.parrySightJoker(false);
+
+        verify(roundPoints).setPointsplayer1(10);
+        verify(roundPointsDataSource).saveRoundPoints(roundPoints);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+        verify(networkManager).sendParrySightJoker();
+        verify(networkDisplay).displayUserInformation(MessageHelper.PARRYSIGHTJOKER_FAIL_lOST);
+    }
+
+    @Test
+    public void testReceiveParrySightJokerWithGroupOwnerWithSightJokerUsed() {
+        round.setGroupOwner(true);
+        round.setSightJokerUsed(true);
+
+        when(deck1.getDeckStatus()).thenReturn(5);
+
+        round.receiveParrySightJoker();
+
+        verify(roundPoints).setParrySightJokerPlayer2(1);
+        verify(roundPoints).setPointsplayer2(10);
+        verify(roundPointsDataSource).saveRoundPoints(roundPoints);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+        verify(networkDisplay).displayUserInformation(MessageHelper.PARRYSIGHTJOKER_SUCCESS_lOST);
+    }
+
+    @Test
+    public void testReceiveParrySightJokerWithGroupOwnerWithoutSightJokerUsed() {
+        round.setGroupOwner(true);
+        round.setSightJokerUsed(false);
+
+        when(deck1.getDeckStatus()).thenReturn(5);
+
+        round.receiveParrySightJoker();
+
+        verify(roundPoints).setPointsplayer1(10);
+        verify(roundPointsDataSource).saveRoundPoints(roundPoints);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+        verify(networkDisplay).displayUserInformation(MessageHelper.PARRYSIGHTJOKER_FAIL_WON);
+    }
+
+    @Test
+    public void testReceiveParrySightJokerWithoutGroupOwnerWithSightJokerUsed() {
+        round.setGroupOwner(false);
+        round.setSightJokerUsed(true);
+
+        when(deck1.getDeckStatus()).thenReturn(6);
+
+        round.receiveParrySightJoker();
+
+        verify(roundPoints).setParrySightJokerPlayer1(1);
+        verify(roundPoints).setPointsplayer1(10);
+        verify(roundPointsDataSource).saveRoundPoints(roundPoints);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+        verify(networkDisplay).displayUserInformation(MessageHelper.PARRYSIGHTJOKER_SUCCESS_lOST);
+    }
+
+    @Test
+    public void testReceiveParrySightJokerWithoutGroupOwnerWithoutSightJokerUsed() {
+        round.setGroupOwner(false);
+        round.setSightJokerUsed(false);
+
+        when(deck1.getDeckStatus()).thenReturn(6);
+
+        round.receiveParrySightJoker();
+
+        verify(roundPoints).setPointsplayer2(10);
+        verify(roundPointsDataSource).saveRoundPoints(roundPoints);
+        verify(roundPointsDataSource).updateJoker(roundPoints);
+        verify(networkDisplay).displayUserInformation(MessageHelper.PARRYSIGHTJOKER_FAIL_WON);
+    }
+
     //endregion
 
     //region Stich
+
+    @Test
+    public void testCheckFor2040WithEqualSuitAndEqualValue() {
+        when(deck1.getCardSuit()).thenReturn("karo");
+        when(deck1.getCardValue()).thenReturn(4);
+
+        assertEquals(true, round.checkFor2040(deck1, "karo"));
+    }
+
+    @Test
+    public void testCheckFor2040WithNotEqualSuitAndEqualValue() {
+        when(deck1.getCardSuit()).thenReturn("karo");
+        when(deck1.getCardValue()).thenReturn(4);
+
+        assertEquals(false, round.checkFor2040(deck1, "pik"));
+    }
+
+    @Test
+    public void testCheckForFarbStuchzwangWithHigherCard() {
+        when(deck1.getCardSuit()).thenReturn("pik");
+        when(deck1.getCardValue()).thenReturn(4);
+        when(deck1.getDeckStatus()).thenReturn(2);
+        when(deck1.getCardID()).thenReturn(0l);
+
+        Deck playedCard = mock(Deck.class);
+        when(playedCard.getCardSuit()).thenReturn("pik");
+        when(playedCard.getCardValue()).thenReturn(3);
+
+        Deck wantToPlay = mock(Deck.class);
+        when(wantToPlay.getCardID()).thenReturn(0l);
+
+        assertEquals(true, round.checkForFarbStuchzwang(playedCard, wantToPlay));
+    }
+
+    @Test
+    public void testCheckForFarbStuchzwangWithoutHigherCard() {
+        when(deck1.getCardSuit()).thenReturn("pik");
+        when(deck1.getCardValue()).thenReturn(3);
+        when(deck1.getDeckStatus()).thenReturn(2);
+        when(deck1.getCardID()).thenReturn(0l);
+
+        Deck playedCard = mock(Deck.class);
+        when(playedCard.getCardSuit()).thenReturn("pik");
+        when(playedCard.getCardValue()).thenReturn(3);
+
+        Deck wantToPlay = mock(Deck.class);
+        when(wantToPlay.getCardID()).thenReturn(1l);
+
+        assertEquals(false, round.checkForFarbStuchzwang(playedCard, wantToPlay));
+    }
+
+    @Test
+    public void testCheckForFarbStuchzwangWithHigherCardWithTrumpOnHand() {
+        when(deck1.getCardSuit()).thenReturn("karo");
+        when(deck1.getCardValue()).thenReturn(3);
+        when(deck1.getDeckStatus()).thenReturn(2);
+        when(deck1.getDeckTrump()).thenReturn(1);
+
+        Deck playedCard = mock(Deck.class);
+        when(playedCard.getCardSuit()).thenReturn("pik");
+        when(playedCard.getCardValue()).thenReturn(4);
+
+        Deck wantToPlay = mock(Deck.class);
+        when(wantToPlay.getCardID()).thenReturn(1l);
+
+        assertEquals(false, round.checkForFarbStuchzwang(playedCard, wantToPlay));
+    }
+
+    @Test
+    public void testCheckForFarbStuchzwangWithoutHigherCardWithTrumpOnHandWithGroupOwner() {
+        when(deck1.getCardSuit()).thenReturn("pik");
+        when(deck1.getCardValue()).thenReturn(3);
+        when(deck1.getDeckStatus()).thenReturn(2);
+
+        Deck playedCard = mock(Deck.class);
+        when(playedCard.getCardSuit()).thenReturn("pik");
+        when(playedCard.getCardValue()).thenReturn(3);
+
+        Deck wantToPlay = mock(Deck.class);
+        when(wantToPlay.getCardID()).thenReturn(1l);
+
+        assertEquals(false, round.checkForFarbStuchzwang(playedCard, wantToPlay));
+    }
+
+    @Test
+    public void testCheckForFarbStuchzwangWithoutHigherCardWithoutTrumpOnHand() {
+        when(deck1.getCardSuit()).thenReturn("pik");
+        when(deck1.getCardValue()).thenReturn(3);
+        when(deck1.getDeckStatus()).thenReturn(2);
+        when(deck1.getDeckTrump()).thenReturn(0);
+
+        Deck playedCard = mock(Deck.class);
+        when(playedCard.getCardSuit()).thenReturn("karo");
+        when(playedCard.getCardValue()).thenReturn(3);
+
+        Deck wantToPlay = mock(Deck.class);
+        when(wantToPlay.getCardID()).thenReturn(1l);
+
+        assertEquals(true, round.checkForFarbStuchzwang(playedCard, wantToPlay));
+    }
+
+
+
+
+
 
     @Test
     public void testGetMyTurnInCurrentMovePlayer1Player2NotPlayed() {

@@ -194,10 +194,18 @@ public class Round {
 
     /**
      * set the network manager object (only for unit testing to provice a mock object)
-     * @param networkManager the moch network manager
+     * @param networkManager the mock network manager
      */
     public void setNetworkManager(NetworkManager networkManager) {
         this.networkManager = networkManager;
+    }
+
+    /**
+     * set the information if the sight joker was used
+     * @param sightJokerUsed true, if used
+     */
+    public void setSightJokerUsed(boolean sightJokerUsed) {
+        this.sightJokerUsed = sightJokerUsed;
     }
 
     //endregion
@@ -478,14 +486,18 @@ public class Round {
 
     //region Actions
 
-    //Der Button Herz, Pik, Karo oder Kreuz wird gedrÃ¼ckt um 20/40 anzusagen
-    public String check2040(String farbe) {
+    /**
+     * checks, if 20 or 40 can be played with a given suit
+     * @param suit contains the suit
+     * @return true if 20/40 is possible, else false
+     */
+    public String check2040(String suit) {
 
         //temporÃ¤re Variable, falls spieler Ã¶fters auf button 2040 drÃ¼ckt
         //muss nicht synchron gehalten werden, weil ja nur ein Spieler den jeweiligen 20er haben kann
         boolean alreadyplayed = false;
 
-        switch (farbe){
+        switch (suit){
             case "herz":
                 alreadyplayed = twentyfortyalreadyplayed[0];
                 break;
@@ -506,7 +518,7 @@ public class Round {
             RoundPoints rp = new RoundPoints(1,1,0,0);
 
             for (Deck deck : this.getCardsOnHand()){
-                if (farbe.equals(deck.getCardSuit()) && deck.getCardValue() <=4 && deck.getCardValue() >2){
+                if (suit.equals(deck.getCardSuit()) && deck.getCardValue() <=4 && deck.getCardValue() >2){
                     if(deck.getDeckTrump() == 1)
                         i = 2 + i;
                     else
@@ -516,7 +528,7 @@ public class Round {
             //20er 40er
             if (i == 2 || i ==4) {
 
-                switch (farbe){
+                switch (suit){
                     case "herz":
                         twentyfortyalreadyplayed[0] = true;
                         justplayed2040 = "herz";
@@ -536,7 +548,7 @@ public class Round {
                 }
 
 
-                check2040 = farbe;
+                check2040 = suit;
                 if (checkForStuch()){
                     if (isGroupOwner) {
                         rp.setPointsplayer1(10 * i);
@@ -559,10 +571,10 @@ public class Round {
 
             if (i == 2) {
                 networkDisplay.displayUserInformation(MessageHelper.TWENTYPLAYED);
-                networkManager.send2040(farbe);
+                networkManager.send2040(suit);
             } else if (i == 4) {
                 networkDisplay.displayUserInformation(MessageHelper.FORTYPLAYED);
-                networkManager.send2040(farbe);
+                networkManager.send2040(suit);
             }
 
             //als RÃ¼ckgabeparameter fÃ¼r Message an anderen Spieler
@@ -573,17 +585,20 @@ public class Round {
 
     }
 
-    //nach Message, wenn 20/40 ausgespielt wurde -> Information, welche Farbe wird benÃ¶tigt
-    public void receiveCheck2040(String farbe){
+    /**
+     * processes the information that the opposite player played 20/40
+     * @param suit contains the suit
+     */
+    public void receiveCheck2040(String suit){
         int i = 0;
         RoundPoints rp = new RoundPoints(1,1,0,0);
 
         deckDataSource.open();
         this.trump = deckDataSource.getTrump();
 
-        if (trump.equals(farbe))
+        if (trump.equals(suit))
             i=4;
-        else if (!farbe.equals(""))
+        else if (!suit.equals(""))
             i=2;
 
         //20er 40er
@@ -711,7 +726,7 @@ public class Round {
                 }
             }
 
-            if (checkFor2040DameKoenig(wanttoplaycard, justplayed2040)) {
+            if (checkFor2040(wanttoplaycard, justplayed2040)) {
                 //zurÃ¼cksetzen
                 justplayed2040 = "";
                 for (Deck deck : this.getAllDecks()) {
@@ -830,6 +845,9 @@ public class Round {
         compareCards();
     }
 
+    /**
+     * called, when the player successfully used the sight joker with the light sensor
+     */
     public void sightJoker() {
         roundPointsDataSource.open();
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
@@ -846,6 +864,9 @@ public class Round {
         networkManager.sendSightJoker();
     }
 
+    /**
+     * called, when the player receives the information that the opposite player used the sight joker
+     */
     public void receiveSightJoker() {
         roundPointsDataSource.open();
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
@@ -859,6 +880,10 @@ public class Round {
         roundPointsDataSource.updateJoker(roundPoints);
     }
 
+    /**
+     * called, when the player used the parry sight joker
+     * @param success true, if the player was right (the other one used the sight joker), else false
+     */
     public void parrySightJoker(boolean success) {
         roundPointsDataSource.open();
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
@@ -889,6 +914,9 @@ public class Round {
         networkDisplay.displayUserInformation(message);
     }
 
+    /**
+     * called when the player gets the information that the other player used the parry sight joker
+     */
     public void receiveParrySightJoker() {
         roundPointsDataSource.open();
         RoundPoints roundPoints = roundPointsDataSource.getCurrentRoundPointsObject();
@@ -999,7 +1027,7 @@ public class Round {
         return checkTausch;
     }
 
-    public boolean receiveCardExchange(int cardID_A, int cardID_B){
+    public void receiveCardExchange(int cardID_A, int cardID_B){
 
         points = roundPointsDataSource.getCurrentRoundPointsObject();
 
@@ -1039,24 +1067,34 @@ public class Round {
         }
 
         networkDisplay.displayUserInformation(MessageHelper.CARD_EXCHANGE_RECEIVED);
-
-        return true;
     }
 
     //endregion
 
     //region Stich
 
-    public boolean checkFor2040DameKoenig (Deck wanttoplay, String farbe2040er){
+    /**
+     * checks, if 20 or 40 can be played with the given card
+     * @param wantToPlay the card that would be played
+     * @param suit the suit that would be used
+     * @return true, if possible, else false
+     */
+    public boolean checkFor2040(Deck wantToPlay, String suit){
 
-        if (wanttoplay.getCardSuit().equals(farbe2040er)){
-            if (wanttoplay.getCardValue() == 4 || wanttoplay.getCardValue() == 3)
+        if (wantToPlay.getCardSuit().equals(suit)){
+            if (wantToPlay.getCardValue() == 4 || wantToPlay.getCardValue() == 3)
                 return true;
         }
         return false;
     }
 
-    public boolean checkForFarbStuchzwang (Deck playedcard, Deck wanttoplay){
+    /**
+     * checks, if farb or stuchzwang is necessary with the given cards
+     * @param playedCard the card that is already on the table
+     * @param wantToPlay the card that a player would play
+     * @return true, if it is possible to play this card, else false
+     */
+    public boolean checkForFarbStuchzwang (Deck playedCard, Deck wantToPlay){
 
         boolean farbe = false;
         boolean highercard = false;
@@ -1066,7 +1104,7 @@ public class Round {
 
         //check ob Karte von gleicher Farbe, wenn ja wird es der List cardsToPlay hinzugefÃƒÂ¼gt
         for (Deck deck : this.getCardsOnHand()) {
-            if (deck.getCardSuit().equals(playedcard.getCardSuit())) {
+            if (deck.getCardSuit().equals(playedCard.getCardSuit())) {
                 farbe = true;
                 tempcardsToPlay.add(deck);
             }
@@ -1076,7 +1114,7 @@ public class Round {
         //check wenn gleiche Farbe vorhanden auf hÃƒÂ¶here Karte
         if (farbe){
             for (Deck deck : tempcardsToPlay){
-                if (deck.getCardValue() > playedcard.getCardValue()){
+                if (deck.getCardValue() > playedCard.getCardValue()){
                     highercard = true;
                     break;
                 }
@@ -1085,7 +1123,7 @@ public class Round {
         //wenn gleiche Farbe und HÃƒÂ¶hre Karte vorhanden lÃƒÂ¶sche niedrigere Karten
         if (highercard){
             for (Deck deck : tempcardsToPlay){
-                if (deck.getCardValue() > playedcard.getCardValue()){
+                if (deck.getCardValue() > playedCard.getCardValue()){
                     cardsToPlay.add(deck);
                 }
             }
@@ -1112,7 +1150,7 @@ public class Round {
         //schauen, ob wantToplay Karte in Liste vorkommt
         if (farbe || trumpOnHand) {
             for (Deck deck : cardsToPlay) {
-                if (deck.getCardID() == wanttoplay.getCardID()) {
+                if (deck.getCardID() == wantToPlay.getCardID()) {
                     return true;
                 }
 

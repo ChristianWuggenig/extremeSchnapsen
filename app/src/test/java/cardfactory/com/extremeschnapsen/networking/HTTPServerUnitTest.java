@@ -114,32 +114,6 @@ public class HTTPServerUnitTest {
         }
     }
 
-    /*@Test
-    public void testGetCurrentlyPlayedCard() {
-        httpServer.setNetworkDisplay(networkDisplay);
-        Map<String, String> params = new HashMap<>();
-        params.put("postData", "{\"" + NetworkHelper.ID + "\": 1}");
-
-        String response = httpServer.getCurrentlyPlayedCard(params);
-
-        try {
-            JSONObject jsonObject = new JSONObject(response);
-            assertEquals(1, jsonObject.getInt(NetworkHelper.ID));
-        } catch (JSONException ex) {
-            fail(ex.getMessage());
-        }
-    }
-
-    @Test
-    public void testGetCurrentlyPlayedCardWithJsonException() {
-        Map<String, String> params = new HashMap<>();
-        params.put("postData", "dummyData");
-
-        String response = httpServer.getCurrentlyPlayedCard(params);
-
-        assertEquals(null, response);
-    }*/
-
     @Test
     public void testSendParrySightJokerWithParry() {
         httpServer.setParrySightJoker(true);

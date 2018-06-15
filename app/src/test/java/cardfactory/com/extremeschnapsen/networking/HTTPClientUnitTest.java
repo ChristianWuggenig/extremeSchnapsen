@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import cardfactory.com.extremeschnapsen.gui.MessageHelper;
 import cardfactory.com.extremeschnapsen.gui.StartGameActivity;
 import cardfactory.com.extremeschnapsen.models.Player;
 import cardfactory.com.extremeschnapsen.networking.HTTPClient;
@@ -60,7 +61,8 @@ public class HTTPClientUnitTest {
 
         httpClient.receiveShuffledDeck(jsonArray);
 
-        assertTrue(true); //if the statement above does not fail, the test is successful
+        verify(networkDisplay).displayUserInformation(MessageHelper.YOURTURN);
+        verify(networkDisplay).dismissDialog();
     }
 
     @Test
