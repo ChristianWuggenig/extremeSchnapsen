@@ -15,4 +15,11 @@ script:
     - ./gradlew build
     - ./gradlew test
     - ./gradlew test jacocoTestReport
-    - ./gradlew sonarqube -Dsonar.organization=christianwuggenig-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=01aaf8116a2dd110eb3d6d28fdbe33c891d3f500 -Dsonar.branch.name=master
+    - sonar-scanner
+    # - ./gradlew sonarqube -Dsonar.organization=christianwuggenig-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=01aaf8116a2dd110eb3d6d28fdbe33c891d3f500 -Dsonar.branch.name=master
+
+addons:
+  sonarcloud:
+    organization: "christianwuggenig-github"
+    token:
+      secure: 01aaf8116a2dd110eb3d6d28fdbe33c891d3f500
