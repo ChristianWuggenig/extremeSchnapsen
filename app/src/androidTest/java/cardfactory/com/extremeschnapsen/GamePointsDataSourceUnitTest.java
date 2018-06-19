@@ -1,26 +1,28 @@
-package cardfactory.com.extremeschnapsen.database;
+package cardfactory.com.extremeschnapsen;
 
 import android.content.Context;
+import android.support.test.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import cardfactory.com.extremeschnapsen.database.GamePointsDataSource;
 import cardfactory.com.extremeschnapsen.gameengine.Game;
 import cardfactory.com.extremeschnapsen.models.GamePoints;
 
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
 /**
  * Created by Patrick on 06.06.2018.
  */
-public class GamePointsDataSourceTest {
+public class GamePointsDataSourceUnitTest {
     GamePointsDataSource gpd;
 
     @Before
     public void setUp() throws Exception {
-        gpd = new GamePointsDataSource(mock(Context.class));
+        gpd = new GamePointsDataSource(InstrumentationRegistry.getTargetContext());
+        gpd.open();
 
     }
 
