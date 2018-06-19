@@ -18,7 +18,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     private PlayerDataSource playerDataSource;
     private Player currentplayer;
-    Float winStat;
+    Float winStatFloat;
+    int winStat;
     TextView playername;
     TextView playedGames;
     TextView wonGames;
@@ -45,8 +46,11 @@ public class ProfileActivity extends AppCompatActivity {
         wonGames.setText(Integer.toString(currentplayer.getWon_games()));
 
         if (currentplayer.getPlayed_games() > 0) {
-            winStat = (float) currentplayer.getWon_games() / (float) currentplayer.getPlayed_games();
-            winQuote.setText(Float.toString(winStat));
+
+            winStatFloat = 100f * (float) currentplayer.getWon_games() / (float) currentplayer.getPlayed_games();
+            winStat = Math.round(winStatFloat);
+
+            winQuote.setText(Integer.toString(winStat));
         }
         else
             winQuote.setText("nie gespielt");

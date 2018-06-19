@@ -31,7 +31,7 @@ public class MySensorService extends Service implements SensorEventListener {
         boolean shakeInitiated = false;
         boolean turnInitiated = false;
         float shakeThreshold= 5f;
-        float turnThreshold= 20f;
+        float turnThreshold= 10f;
 
         String TAG = "SensorService";
 

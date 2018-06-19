@@ -27,6 +27,7 @@ import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
 import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.gameengine.Round;
 import cardfactory.com.extremeschnapsen.networking.NetworkHelper;
+import cardfactory.com.extremeschnapsen.services.MySensorService;
 
 public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
@@ -50,6 +51,8 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     protected static Round round;
 
     protected boolean isGroupOwner;
+    private boolean isShaked;
+    private boolean isTurned;
 
     private static View.OnClickListener ivOnClickListener;
 
@@ -59,6 +62,32 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     private static AlertDialog connectionDialog;
     private static AlertDialog showCardsDialog;
 
+    private BroadcastReceiver mSensorReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //get both boolean values and handle both actions -> trigger more actions
+            boolean isShake = intent.getBooleanExtra(IntentHelper.MOVEMENT_ACTIONS[0],false);
+            boolean isTurn = intent.getBooleanExtra(IntentHelper.MOVEMENT_ACTIONS[1], false);
+
+            if(isShake && !isShaked){
+                isShaked = true;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        connectionDialog.dismiss();
+                    }
+                });
+                Log.d("MainActivity", "shake happened!");
+            }
+            if(isTurn && !isTurned){
+                round.turn();
+                isTurned = true;
+                displayDeck();
+                Log.d("MainActivity", "turn happened!");
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +96,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
         setContentView(R.layout.activity_game);
 
-        //startService(new Intent(this, MySensorService.class));
+        startService(new Intent(this, MySensorService.class));
 
         connectionBuilder = new AlertDialog.Builder(this);
 
@@ -105,6 +134,7 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         isGroupOwner = intent.getBooleanExtra(IntentHelper.IS_GROUP_OWNER, true);
 
         round = new Round(this);
+
         //register BroadcastReceiver and set IntentFilter for MovementSensor
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mSensorReceiver, new IntentFilter(IntentHelper.MOVEMENT_SENSOR_KEY));
@@ -137,6 +167,9 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         }
 
         showCardList = new ArrayList<>();
+
+        isTurned = false;
+        isShaked = false;
     }
 
     //msg20Received, msg40Received noch verwenden bitte
@@ -268,6 +301,15 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                         break;
                     case MessageHelper.PARRYSIGHTJOKER_FAIL_lOST:
                         txvUserInformation.setText(R.string.msgParrySightJokerFailLost);
+                        break;
+                    case MessageHelper.TURNEDCALLEDSUCESS:
+                        txvUserInformation.setText(R.string.msgTurnedCalledSuccess);
+                        break;
+                    case MessageHelper.TURNEDCALLEDFAIL:
+                        txvUserInformation.setText(R.string.msgTurnedCalledFail);
+                        break;
+                    case MessageHelper.TURNEDRECEIVED:
+                        txvUserInformation.setText(R.string.msgTurnedReceived);
                         break;
                 }
             }
@@ -451,7 +493,8 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
                         displayDeck();
                         break;
                     case NetworkHelper.TURN:
-                        //was soll geschehen wenn der gegenÃ¼berliegende spieler zugedreht hat
+                        round.turnReceived();
+                        displayDeck();
                         break;
                     case NetworkHelper.TWENTYFORTY:
                         round.receiveCheck2040(value);
@@ -548,25 +591,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     public void onClickBtnParrySightJoker(View view) {
 
     }
-
-    private BroadcastReceiver mSensorReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //get both boolean values and handle both actions -> trigger more actions
-            boolean isShake = intent.getBooleanExtra(IntentHelper.MOVEMENT_ACTIONS[0],false);
-            boolean isTurn = intent.getBooleanExtra(IntentHelper.MOVEMENT_ACTIONS[1], false);
-
-            if(isShake){
-                //shuffle deck
-                Log.d("MainActivity", "shake happened!");
-            }
-            if(isTurn){
-                //activate closed deck status...
-                round.turn();
-                Log.d("MainActivity", "turn happened!");
-            }
-        }
-    };
 
     protected void onDestroy() {
         //deregister BroadcastReceiver

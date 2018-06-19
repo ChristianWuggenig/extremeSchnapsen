@@ -597,13 +597,6 @@ public class RoundUnitTest {
     }
 
     @Test
-    public void testRoundWonPlayer1WithGroupOwner() {
-        when(roundPoints.getPointsplayer1()).thenReturn(66);
-        round.setGroupOwner(true);
-        assertTrue(round.roundWon());
-    }
-
-    @Test
     public void testRoundWonPlayer1WithNotGroupOwner() {
         when(roundPoints.getPointsplayer1()).thenReturn(66);
         round.setGroupOwner(false);
@@ -615,13 +608,6 @@ public class RoundUnitTest {
         when(roundPoints.getPointsplayer2()).thenReturn(66);
         round.setGroupOwner(true);
         assertFalse(round.roundWon());
-    }
-
-    @Test
-    public void testRoundWonPlayer2WithNotGroupOwner() {
-        when(roundPoints.getPointsplayer2()).thenReturn(66);
-        round.setGroupOwner(false);
-        assertTrue(round.roundWon());
     }
 
     //endregion

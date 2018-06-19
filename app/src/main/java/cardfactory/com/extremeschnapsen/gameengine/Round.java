@@ -1,6 +1,7 @@
 package cardfactory.com.extremeschnapsen.gameengine;
 
 import android.content.Context;
+import android.print.PageRange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,10 @@ public class Round {
 
     private boolean myTurn; //always set after a turn
     private boolean isGroupOwner; //shows if the current devices is groupowner (= server) or not (= client)
+    private boolean lastStuch;
+    private boolean hasturned;
+    private int turnpoints;
+    private boolean roundWon;
 
     //private int moves; ist jetzt in RoundPointsDataSource
     //contains the number of the current moves
@@ -72,6 +77,10 @@ public class Round {
         roundPointsDataSource.createRoundPoints(1, 1, 0, 0);
         allCards = new ArrayList<>();
         currentDeck = new ArrayList<>();
+        lastStuch = false;
+        hasturned = false;
+        turnpoints = 0;
+        roundWon = false;
 
         points = roundPointsDataSource.getCurrentRoundPointsObject();
 
@@ -632,6 +641,37 @@ public class Round {
                     deckDataSource.updateDeckStatus(deck.getCardID(), 9);
                 }
             }
+            hasturned = true;
+
+            if (isGroupOwner){
+               if (points.getPointsplayer2() == 0){
+                    turnpoints = 3;
+
+               }
+               else if (points.getPointsplayer2() <33){
+                   turnpoints = 2;
+               }
+               else {
+                   turnpoints = 1;
+
+               }
+            }
+            else {
+                if (points.getPointsplayer1() == 0){
+                    turnpoints = 3;
+
+                }
+                else if (points.getPointsplayer1() <33){
+                    turnpoints = 2;
+                }
+                else {
+                    turnpoints = 1;
+
+                }
+            }
+
+
+
             networkManager.sendTurn();
             networkDisplay.displayUserInformation(MessageHelper.TURNEDCALLEDSUCESS);
             points.setMoves(20);
@@ -654,6 +694,34 @@ public class Round {
                 deckDataSource.updateDeckStatus(deck.getCardID(), 9);
             }
         }
+
+        if (!isGroupOwner){
+            if (points.getPointsplayer2() == 0){
+                turnpoints = 3;
+
+            }
+            else if (points.getPointsplayer2() <33){
+                turnpoints = 2;
+            }
+            else {
+                turnpoints = 1;
+
+            }
+        }
+        else {
+            if (points.getPointsplayer1() == 0){
+                turnpoints = 3;
+
+            }
+            else if (points.getPointsplayer1() <33){
+                turnpoints = 2;
+            }
+            else {
+                turnpoints = 1;
+
+            }
+        }
+
         points.setMoves(20);
         roundPointsDataSource.updateMoves(20);
         networkDisplay.displayUserInformation(MessageHelper.TURNEDRECEIVED);
@@ -1287,22 +1355,26 @@ public class Round {
 
             if (player1Won && isGroupOwner) {
                 myTurn = true;
+                lastStuch = true;
                 getNextFreeCard(1);
                 getNextFreeCard(2);
                 networkDisplay.displayUserInformation(MessageHelper.WON);
             } else if (player2Won && !isGroupOwner) {
                 myTurn = true;
+                lastStuch = true;
                 getNextFreeCard(2);
                 getNextFreeCard(1);
                 networkDisplay.displayUserInformation(MessageHelper.WON);
             } else if (player1Won && !isGroupOwner) {
                 myTurn = false;
+                lastStuch = false;
                 networkManager.waitForCard(false);
                 getNextFreeCard(1);
                 getNextFreeCard(2);
                 networkDisplay.displayUserInformation(MessageHelper.LOST);
             } else if (player2Won && isGroupOwner) {
                 myTurn = false;
+                lastStuch = false;
                 getNextFreeCard(2);
                 getNextFreeCard(1);
                 networkDisplay.displayUserInformation(MessageHelper.LOST);
@@ -1340,42 +1412,135 @@ public class Round {
         openDatabases();
         RoundPoints rp2 = roundPointsDataSource.getCurrentRoundPointsObject();
 
-        if (rp2.getPointsplayer1()>=66){
+        if (rp2.getMoves() <=10 || (rp2.getMoves() >=20 && rp2.getMoves()<25)) {
+            if (rp2.getPointsplayer1() >= 66) {
 
-            if (rp2.getPointsplayer2() >= 33){
-                // 1 Punkt
-                game.updateGamePoints(1,0);
-            }
-            else if (rp2.getPointsplayer2() >0 && rp2.getPointsplayer2() <33){
-                // 2 Punkte
-                game.updateGamePoints(2,0);
-            }
-            else {
-                // 3 Punkte
-                game.updateGamePoints(3,0);
-            }
+                if (rp2.getPointsplayer2() >= 33) {
+                    // 1 Punkt
+                    game.updateGamePoints(1, 0);
+                } else if (rp2.getPointsplayer2() > 0 && rp2.getPointsplayer2() < 33) {
+                    // 2 Punkte
+                    game.updateGamePoints(2, 0);
+                } else {
+                    // 3 Punkte
+                    game.updateGamePoints(3, 0);
+                }
 
-            return true;
+                if (isGroupOwner){
+                    roundWon = true;
+                }
+                else{
+                    roundWon = false;
+                }
 
+
+                return true;
+
+            } else if (rp2.getPointsplayer2() >= 66) {
+                if (rp2.getPointsplayer1() >= 33) {
+                    // 1 Punkt
+                    game.updateGamePoints(0, 1);
+                } else if (rp2.getPointsplayer1() > 0 && rp2.getPointsplayer1() < 33) {
+                    // 2 Punkte
+                    game.updateGamePoints(0, 2);
+                } else {
+                    // 3 Punkte
+                    game.updateGamePoints(0, 3);
+                }
+
+                if (!isGroupOwner){
+                    roundWon = true;
+                }
+                else{
+                    roundWon = false;
+                }
+                return true;
+            }
         }
-        else if (rp2.getPointsplayer2()>=66){
-            if (rp2.getPointsplayer1() >= 33){
-                // 1 Punkt
-                game.updateGamePoints(0,1);
-            }
-            else if (rp2.getPointsplayer1() >0 && rp2.getPointsplayer1() <33){
-                // 2 Punkte
-                game.updateGamePoints(0,2);
-            }
-            else {
-                // 3 Punkte
-                game.updateGamePoints(0,3);
-            }
 
+        if (rp2.getMoves() == 10){
+            if (lastStuch == true && isGroupOwner){
+                game.updateGamePoints(1, 0);
+                roundWon = true;
+            }
+            else if (lastStuch == true && !isGroupOwner){
+                game.updateGamePoints(0, 1);
+                roundWon = true;
+            }
+            else if (lastStuch == false && isGroupOwner){
+                game.updateGamePoints(0, 1);
+                roundWon = false;
+            }
+            else if (lastStuch == false && !isGroupOwner){
+                game.updateGamePoints(1, 1);
+                roundWon = false;
+
+            }
+        }
+
+        if (rp2.getMoves() == 25){
+            if (hasturned == true && isGroupOwner){
+                if(rp2.getPointsplayer1() >=66){
+                    game.updateGamePoints(turnpoints, 0);
+                    roundWon = true;
+                }
+                else if (turnpoints == 3){
+                    game.updateGamePoints(0, 3);
+                    roundWon = false;
+                }
+                else {
+                    game.updateGamePoints(0, 2);
+                    roundWon = false;
+                }
+            }
+            else if (hasturned == true && !isGroupOwner){
+                if(rp2.getPointsplayer2() >=66){
+                    game.updateGamePoints(0, turnpoints);
+                    roundWon = true;
+                }
+                else if (turnpoints == 3){
+                    game.updateGamePoints(3, 0);
+                    roundWon = false;
+                }
+                else {
+                    game.updateGamePoints(2, 0);
+                    roundWon = false;
+                }
+            }
+            else if (hasturned == false && isGroupOwner){
+                if(rp2.getPointsplayer2() >=66){
+                    game.updateGamePoints(0, turnpoints);
+                    roundWon = false;
+                }
+                else if (turnpoints == 3){
+                    game.updateGamePoints(3, 0);
+                    roundWon = true;
+                }
+                else {
+                    game.updateGamePoints(2, 0);
+                    roundWon = true;
+                }
+            }
+            else if (hasturned == false && !isGroupOwner){
+                if(rp2.getPointsplayer1() >=66){
+                    roundWon = false;
+                    game.updateGamePoints(turnpoints, 0);
+                }
+                else if (turnpoints == 3){
+                    game.updateGamePoints(0, 3);
+                    roundWon = true;
+                }
+                else {
+                    game.updateGamePoints(0, 2);
+                    roundWon = true;
+                }
+
+            }
             return true;
         }
 
         return false;
+
     }
 
     //ob Stuch bereits vorhanden
@@ -1415,19 +1580,7 @@ public class Round {
     }
 
     public boolean roundWon() {
-        if (Integer.parseInt(getRoundPointsPlayer1()) >= 66) {
-            if (isGroupOwner) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            if (isGroupOwner) {
-                return false;
-            } else {
-                return true;
-            }
-        }
+       return roundWon;
     }
   
     //endregion

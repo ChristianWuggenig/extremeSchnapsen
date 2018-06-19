@@ -101,7 +101,7 @@ public class PlayerDataSource {
         while(!cursor.isAfterLast()) {
             player = cursorToPlayer(cursor);
             playerList.add(player);
-            //Log.d(LOG_TAG, "ID: " + player.getId() + ", Inhalt: " + player.toString());
+            Log.d(LOG_TAG, "ID: " + player.getId() + ", Inhalt: " + player.toString());
             cursor.moveToNext();
         }
 
@@ -125,15 +125,15 @@ public class PlayerDataSource {
 
     }
 
-    public void updatePlayerStatistics(int played_games, int won_games){
+    public void updatePlayerStatistics(int won_games){
         Player player = getCurrentPlayerObject();
-        player.setPlayed_games(player.getPlayed_games() + played_games);
+        player.setPlayed_games(player.getPlayed_games() + 1);
         player.setWon_games(player.getWon_games() + won_games);
 
         ContentValues values = new ContentValues();
 
         values.put(DbHelper.COLUMN_PLAYER_PLAYED_GAMES, player.getPlayed_games());
-        values.put(DbHelper.COLUMN_PLAYER_PLAYED_GAMES, player.getWon_games());
+        values.put(DbHelper.COLUMN_PLAYER_WON_GAMES, player.getWon_games());
 
         database.update(DbHelper.TABLE_PLAYER_LIST,
                 values,
