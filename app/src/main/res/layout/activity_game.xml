@@ -302,31 +302,16 @@
         style="@style/CustomButton"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        android:text="SJ"
-        android:textSize="20sp"
-        android:onClick="onClickBtnParrySightJoker"
-        android:visibility="gone"/>
-
-    <Button
-        android:id="@+id/btn_sichtjoker"
-        style="@style/CustomButton"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/tausch"
-        android:textSize="25sp"
+        android:background="@drawable/enttarn"
+        android:onClick="onClickBtnParrySightJoker"
+        android:textSize="20sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.891" />
+        app:layout_constraintVertical_bias="0.945" />
 
     <Button
         android:id="@+id/btn_kartentausch"
@@ -335,14 +320,14 @@
         android:layout_height="32dp"
         android:layout_marginEnd="60dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/enttarn"
+        android:background="@drawable/tausch"
         android:onClick="onClickBtnExchange"
         android:textSize="20sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.888" />
+        app:layout_constraintVertical_bias="0.945" />
 
     <Button
         android:id="@+id/btn_caro"
