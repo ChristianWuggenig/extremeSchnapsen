@@ -12,7 +12,6 @@ android:
     - sys-img-armeabi-v7a-android-26
 
 script:
-    - ./gradlew build
     - ./gradlew test
     - ./gradlew test jacocoTestReport
     - sonar-scanner
