@@ -10,11 +10,15 @@ import java.util.List;
 
 import cardfactory.com.extremeschnapsen.database.CardDataSource;
 import cardfactory.com.extremeschnapsen.database.DeckDataSource;
+import cardfactory.com.extremeschnapsen.database.GamePointsDataSource;
+import cardfactory.com.extremeschnapsen.database.PlayerDataSource;
 import cardfactory.com.extremeschnapsen.database.RoundPointsDataSource;
 import cardfactory.com.extremeschnapsen.gui.GameActivity;
 import cardfactory.com.extremeschnapsen.gui.MessageHelper;
 import cardfactory.com.extremeschnapsen.models.Card;
 import cardfactory.com.extremeschnapsen.models.Deck;
+import cardfactory.com.extremeschnapsen.models.GamePoints;
+import cardfactory.com.extremeschnapsen.models.Player;
 import cardfactory.com.extremeschnapsen.models.RoundPoints;
 import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
 import cardfactory.com.extremeschnapsen.networking.NetworkManager;
@@ -64,6 +68,12 @@ public class RoundUnitTest {
     Card card1;
     Deck deck1;
     Deck deck2;
+    Game game;
+    Player player;
+    PlayerDataSource playerDataSource;
+    GamePointsDataSource gpds;
+    GamePoints gp;
+
 
     INetworkDisplay networkDisplay;
     NetworkManager networkManager;
@@ -72,6 +82,8 @@ public class RoundUnitTest {
     public void init() {
         context = mock(GameActivity.class);
         round = new Round();
+        game = new Game();
+
 
         deck1 = mock(Deck.class);
         deck2 = mock(Deck.class);
@@ -98,8 +110,16 @@ public class RoundUnitTest {
         when(roundPointsDataSource.getCurrentRoundPointsObject()).thenReturn(roundPoints);
         when(roundPoints.getMoves()).thenReturn(1);
 
+        player = mock(Player.class);
+        playerDataSource = mock(PlayerDataSource.class);
+
+        gpds = mock(GamePointsDataSource.class);
+        gp = mock(GamePoints.class);
+
         round.setDeckDataSource(deckDataSource);
         round.setRoundPointsDataSource(roundPointsDataSource);
+
+
 
         networkDisplay = mock(INetworkDisplay.class);
         round.setNetworkDisplay(networkDisplay);
@@ -738,4 +758,14 @@ public class RoundUnitTest {
     }
 
     //endregion
+    @Test
+    public void testCheckFor66_P1_66_P2_0() {
+
+        when(roundPoints.getMoves()).thenReturn(1);
+        when(roundPoints.getPointsplayer1()).thenReturn(66);
+        when(roundPoints.getPointsplayer2()).thenReturn(0);
+
+
+        assertEquals(true, round.checkFor66());
+    }
 }

@@ -18,6 +18,12 @@ public class Game implements Serializable {
     private GamePointsDataSource gpds;
     private GamePoints gp;
 
+
+    //only for testing
+    public Game(){
+
+    }
+
     public Game (Context context) {
         this.playerDataSource = new PlayerDataSource(context);
         this.gpds = new GamePointsDataSource(context);
