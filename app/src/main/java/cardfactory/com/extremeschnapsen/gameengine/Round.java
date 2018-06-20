@@ -1,7 +1,6 @@
 package cardfactory.com.extremeschnapsen.gameengine;
 
 import android.content.Context;
-import android.print.PageRange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -202,7 +201,7 @@ public class Round {
     }
 
     /**
-     * set the network manager object (only for unit testing to provice a mock object)
+     * set the network manager object (only for unit testing to provide a mock object)
      * @param networkManager the mock network manager
      */
     public void setNetworkManager(NetworkManager networkManager) {
@@ -215,6 +214,22 @@ public class Round {
      */
     public void setSightJokerUsed(boolean sightJokerUsed) {
         this.sightJokerUsed = sightJokerUsed;
+    }
+
+    /**
+     * get the information if the current player won the round
+     * @return true, if the round was won, else false
+     */
+    public boolean roundWon() {
+        return roundWon;
+    }
+
+    /**
+     * set the card data source (only for unit testing to provide a mock object)
+     * @param cardDataSource contains the card data source mock object
+     */
+    public void setCardDataSource(CardDataSource cardDataSource) {
+        this.cardDataSource = cardDataSource;
     }
 
     //endregion
@@ -239,6 +254,10 @@ public class Round {
 
     //region Deck & Database
 
+    /**
+     * get the cards which the current player has on his hand
+     * @return a list of deck-items on hand
+     */
     public List<Deck> getCardsOnHand() {
         List<Deck> deckonhands = new ArrayList<>();
 
@@ -260,7 +279,11 @@ public class Round {
 
     }
 
-    public List<Deck> getCardsOnHand_Opponent() {
+    /**
+     * get the cards on hand from the opposite player
+     * @return a list of deck-items
+     */
+    public List<Deck> getCardsOnHandOpponent() {
         List<Deck> deckonhands = new ArrayList<>();
 
 
@@ -281,7 +304,11 @@ public class Round {
 
     }
 
-    //die Karten auf der Hand zurÃ¼ckbekommen
+    /**
+     * get the cards on hand with a given player-id
+     * @param player the id of the player (1 or 2)
+     * @return a list of deck-items
+     */
     public List<Deck> getCardsOnHand(int player) {
         List<Deck> onHand = new ArrayList<>();
 
@@ -303,7 +330,10 @@ public class Round {
         return deckDataSource.getAllDeck();
     }
 
-    //offene Karte aus dem Deck erhalten
+    /**
+     * get the open card (offene karte)
+     * @return a deck item with the open card
+     */
     public Deck getOpenCard() {
         Deck opencard = null;
         for (Deck deck : this.deckDataSource.getAllDeck()) {
@@ -314,7 +344,10 @@ public class Round {
         return opencard;
     }
 
-    //playedCard Player 1
+    /**
+     * get the card which player 1 played (lies on table)
+     * @return a deck item
+     */
     public Deck getPlayedCardPlayer1() {
         Deck playedplayer1 = null;
         this.currentDeck = getAllDecks();
@@ -326,7 +359,10 @@ public class Round {
         return playedplayer1;
     }
 
-    //playedCard Player 2
+    /**
+     * get the card which player 2 played (lies on table)
+     * @return a deck item
+     */
     public Deck getPlayedCardPlayer2() {
         Deck playedplayer2 = null;
         this.currentDeck = getAllDecks();
@@ -363,6 +399,7 @@ public class Round {
 
     /**
      * initialize a new round with an already shuffled the deck (client only!)
+     * @param shuffledDeckIDs contains the card-ids of the shuffled deck
      */
     public void getShuffledDeck(int[] shuffledDeckIDs) {
         allCards = cardDataSource.getAllCards();
@@ -396,6 +433,10 @@ public class Round {
         }
     }
 
+    /**
+     * get the already played cards for the own player
+     * @return a list of played cards (deck-items)
+     */
     public List<Deck> getAlreadyPlayedCards() {
         List<Deck> deckPlayed = new ArrayList<>();
 
@@ -1038,7 +1079,7 @@ public class Round {
             if (alreadyPlayedJoker == 0) {
 
                 checkTausch = true;
-                int size_card_on_hand_opponent = this.getCardsOnHand_Opponent().size();
+                int size_card_on_hand_opponent = this.getCardsOnHandOpponent().size();
                 int random_list_index = new Random().nextInt(size_card_on_hand_opponent);
 
                 //sucht passendes Deck Objekt fÃ¼r zu tauschende KartenID
@@ -1049,7 +1090,7 @@ public class Round {
                     }
                 }
 
-                getforexchange = this.getCardsOnHand_Opponent().get(random_list_index);
+                getforexchange = this.getCardsOnHandOpponent().get(random_list_index);
 
                 //Status fÃ¼r wantoexchange wird upgedatet
                 for (Deck deck : this.getAllDecks()) {
@@ -1577,10 +1618,6 @@ public class Round {
         }
 
         return false;
-    }
-
-    public boolean roundWon() {
-       return roundWon;
     }
   
     //endregion

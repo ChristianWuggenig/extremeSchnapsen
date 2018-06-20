@@ -8,10 +8,12 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import cardfactory.com.extremeschnapsen.database.CardDataSource;
 import cardfactory.com.extremeschnapsen.database.DeckDataSource;
 import cardfactory.com.extremeschnapsen.database.RoundPointsDataSource;
 import cardfactory.com.extremeschnapsen.gui.GameActivity;
 import cardfactory.com.extremeschnapsen.gui.MessageHelper;
+import cardfactory.com.extremeschnapsen.models.Card;
 import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.models.RoundPoints;
 import cardfactory.com.extremeschnapsen.networking.INetworkDisplay;
@@ -32,8 +34,14 @@ public class RoundUnitTest {
     bereits getestet:
         getCardsOnHand
         getCardsOnHand(int player)
+        getCardsOnHandOpponent
+        getOpenCard
         getPlayedCardPlayer1
         getPlayedCardPlayer2
+        getPlayedCards
+        getShuffledDeck
+        getNextFreeCard
+        getAlreadyPlayedCards
 
         check2040
         receiveCheck2040
@@ -43,15 +51,17 @@ public class RoundUnitTest {
         receiveParrySightJoker
 
         getMyTurnInCurrentMove
-        roundWon
      */
 
     Round round;
     Context context;
+    CardDataSource cardDataSource;
     DeckDataSource deckDataSource;
     RoundPointsDataSource roundPointsDataSource;
     RoundPoints roundPoints;
     List<Deck> currentDeck;
+    List<Card> allCards;
+    Card card1;
     Deck deck1;
     Deck deck2;
 
@@ -69,6 +79,14 @@ public class RoundUnitTest {
         currentDeck = new ArrayList<>();
         currentDeck.add(deck1);
         currentDeck.add(deck2);
+
+        card1 = mock(Card.class);
+        allCards = new ArrayList<>();
+        allCards.add(card1);
+
+        cardDataSource = mock(CardDataSource.class);
+        when(cardDataSource.getAllCards()).thenReturn(allCards);
+        round.setCardDataSource(cardDataSource);
 
         deckDataSource = mock(DeckDataSource.class);
         when(deckDataSource.getAllDeck()).thenReturn(currentDeck);
@@ -108,6 +126,129 @@ public class RoundUnitTest {
         List<Deck> onHand = round.getCardsOnHand(2);
 
         assertEquals(deck1, onHand.get(0));
+    }
+
+    @Test
+    public void testGetCardsOnHandOpponentWithGroupOwner() {
+        round.setGroupOwner(true);
+        when(deck1.getDeckStatus()).thenReturn(2);
+
+        List<Deck> onHand = round.getCardsOnHandOpponent();
+
+        assertEquals(deck1, onHand.get(0));
+    }
+
+    @Test
+    public void testGetCardsOnHandOpponentWithoutGroupOwner() {
+        round.setGroupOwner(false);
+        when(deck1.getDeckStatus()).thenReturn(1);
+
+        List<Deck> onHand = round.getCardsOnHandOpponent();
+
+        assertEquals(deck1, onHand.get(0));
+    }
+
+    @Test
+    public void testGetOpenCard() {
+        when(deck1.getDeckStatus()).thenReturn(3);
+
+        Deck open = round.getOpenCard();
+
+        assertEquals(deck1, open);
+    }
+
+    @Test
+    public void testGetPlayedCardPlayer1() {
+        when(deck1.getDeckStatus()).thenReturn(5);
+
+        Deck played = round.getPlayedCardPlayer1();
+
+        assertEquals(deck1, played);
+    }
+
+    @Test
+    public void testGetPlayedCardPlayer2() {
+        when(deck1.getDeckStatus()).thenReturn(6);
+
+        Deck played = round.getPlayedCardPlayer2();
+
+        assertEquals(deck1, played);
+    }
+
+    @Test
+    public void testGetPlayedCardsWithGroupOwner() {
+        round.setGroupOwner(true);
+
+        when(deck1.getDeckStatus()).thenReturn(5);
+        when(deck2.getDeckStatus()).thenReturn(6);
+
+        List<Deck> playedCards = round.getPlayedCards();
+
+        assertEquals(deck1, playedCards.get(0));
+        assertEquals(deck2, playedCards.get(1));
+    }
+
+    @Test
+    public void testGetPlayedCardsWithoutGroupOwner() {
+        round.setGroupOwner(false);
+
+        when(deck1.getDeckStatus()).thenReturn(5);
+        when(deck2.getDeckStatus()).thenReturn(6);
+
+        List<Deck> playedCards = round.getPlayedCards();
+
+        assertEquals(deck1, playedCards.get(0));
+        assertEquals(deck2, playedCards.get(1));
+    }
+
+    @Test
+    public void testGetShuffledDeck() {
+        int[] shuffledDeckIDs = new int[1];
+
+        round.getShuffledDeck(shuffledDeckIDs);
+
+        verify(cardDataSource).getAllCards();
+        verify(deckDataSource).receiveShuffeldDeck(shuffledDeckIDs, allCards);
+    }
+
+    @Test
+    public void testGetNextFreeCardWithPlayer1() {
+        when(deck1.getDeckStatus()).thenReturn(4);
+        when(deck1.getCardID()).thenReturn(1l);
+
+        round.getNextFreeCard(1);
+
+        verify(deckDataSource).updateDeckStatus(1, 1);
+    }
+
+    @Test
+    public void testGetNextFreeCardWithPlayer2WithOpenCard() {
+        when(deck1.getDeckStatus()).thenReturn(3);
+        when(deck1.getCardID()).thenReturn(1l);
+
+        round.getNextFreeCard(2);
+
+        verify(deckDataSource).updateDeckStatus(1, 2);
+    }
+
+    @Test
+    public void testGetAlreadyPlayedCardsWithPlayer1() {
+        round.setGroupOwner(true);
+        when(deck1.getDeckStatus()).thenReturn(7);
+
+        List<Deck> alreadyPlayed = round.getAlreadyPlayedCards();
+
+        assertEquals(deck1, alreadyPlayed.get(0));
+    }
+
+    @Test
+    public void testGetAlreadyPlayedCardsWithPlayer2() {
+        round.setGroupOwner(false);
+        when(deck1.getDeckStatus()).thenReturn(8);
+
+        List<Deck> alreadyPlayed = round.getAlreadyPlayedCards();
+
+        assertEquals(deck1, alreadyPlayed.get(0));
     }
 
     //endregion
@@ -594,20 +735,6 @@ public class RoundUnitTest {
         when(deck1.getDeckStatus()).thenReturn(5);
         round.setGroupOwner(false);
         assertTrue(round.getMyTurnInCurrentMove());
-    }
-
-    @Test
-    public void testRoundWonPlayer1WithNotGroupOwner() {
-        when(roundPoints.getPointsplayer1()).thenReturn(66);
-        round.setGroupOwner(false);
-        assertFalse(round.roundWon());
-    }
-
-    @Test
-    public void testRoundWonPlayer2WithGroupOwner() {
-        when(roundPoints.getPointsplayer2()).thenReturn(66);
-        round.setGroupOwner(true);
-        assertFalse(round.roundWon());
     }
 
     //endregion
