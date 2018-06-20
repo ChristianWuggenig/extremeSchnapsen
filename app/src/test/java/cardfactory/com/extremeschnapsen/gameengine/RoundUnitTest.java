@@ -100,6 +100,7 @@ public class RoundUnitTest {
         when(cardDataSource.getAllCards()).thenReturn(allCards);
         round.setCardDataSource(cardDataSource);
 
+
         deckDataSource = mock(DeckDataSource.class);
         when(deckDataSource.getAllDeck()).thenReturn(currentDeck);
 
@@ -110,11 +111,17 @@ public class RoundUnitTest {
         when(roundPointsDataSource.getCurrentRoundPointsObject()).thenReturn(roundPoints);
         when(roundPoints.getMoves()).thenReturn(1);
 
+
         player = mock(Player.class);
         playerDataSource = mock(PlayerDataSource.class);
+        game.setPlayerDataSource(playerDataSource);
+        round.setPlayerDataSource(playerDataSource);
 
         gpds = mock(GamePointsDataSource.class);
         gp = mock(GamePoints.class);
+        when(gpds.getCurrentGamePointsObject()).thenReturn(gp);
+        game.setGpds(gpds);
+
 
         round.setDeckDataSource(deckDataSource);
         round.setRoundPointsDataSource(roundPointsDataSource);
@@ -764,7 +771,6 @@ public class RoundUnitTest {
         when(roundPoints.getMoves()).thenReturn(1);
         when(roundPoints.getPointsplayer1()).thenReturn(66);
         when(roundPoints.getPointsplayer2()).thenReturn(0);
-
 
         assertEquals(true, round.checkFor66());
     }

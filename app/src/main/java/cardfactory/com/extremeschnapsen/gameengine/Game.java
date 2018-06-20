@@ -14,6 +14,9 @@ import cardfactory.com.extremeschnapsen.models.Player;
 public class Game implements Serializable {
 
     private Player player;
+
+
+
     private PlayerDataSource playerDataSource;
     private GamePointsDataSource gpds;
     private GamePoints gp;
@@ -42,6 +45,22 @@ public class Game implements Serializable {
         this.playerDataSource = new PlayerDataSource(context);
         this.playerDataSource.open();
         player = playerDataSource.getCurrentPlayerObject();
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void setPlayerDataSource(PlayerDataSource playerDataSource) {
+        this.playerDataSource = playerDataSource;
+    }
+
+    public void setGpds(GamePointsDataSource gpds) {
+        this.gpds = gpds;
+    }
+
+    public void setGp(GamePoints gp) {
+        this.gp = gp;
     }
 
     public void updateGamePoints(int won_pointsplayer1, int won_pointsplayer2){

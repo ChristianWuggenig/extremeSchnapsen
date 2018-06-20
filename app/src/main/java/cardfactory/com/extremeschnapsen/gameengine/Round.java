@@ -29,6 +29,7 @@ public class Round {
     private DeckDataSource deckDataSource; //contains a reference to the deck-datasource
     private CardDataSource cardDataSource; //contains a reference to the card-datasource
     private RoundPointsDataSource roundPointsDataSource; //contains a reference to the roundpoints-datasource
+
     private PlayerDataSource playerDataSource; //contains a reference to the player-datasource
 
     private NetworkManager networkManager; //the network manager object (singleton)
@@ -142,6 +143,13 @@ public class Round {
      */
     public void setDeckDataSource(DeckDataSource deckDataSource) {
         this.deckDataSource = deckDataSource;
+    }
+
+    /**
+     * set the playerdatasource
+     */
+    public void setPlayerDataSource(PlayerDataSource playerDataSource) {
+        this.playerDataSource = playerDataSource;
     }
 
     /**
