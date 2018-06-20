@@ -14,4 +14,5 @@ android:
 script:
     - ./gradlew build
     - ./gradlew test
-    - ./gradlew sonarqube -Dsonar.organization=christianwuggenig-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=01aaf8116a2dd110eb3d6d28fdbe33c891d3f500 -Dsonar.branch.name=master
+    - ./gradlew jacocoTestReport
+    - ./gradlew sonarqube -Dsonar.organization=christianwuggenig-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=01aaf8116a2dd110eb3d6d28fdbe33c891d3f500 -Dsonar.branch.name=master -Dsonar.jacoco.reportPaths=./app/build/jacoco/test.exec
