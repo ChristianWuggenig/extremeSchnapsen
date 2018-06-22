@@ -76,8 +76,8 @@ public class Player {
         this.game_mode = game_mode;
     }
 
+    @Override
     public String toString(){
-        String output = id + " " + username + " " + played_games + " " + won_games + " ";
-     return output;
+        return id + " " + username + " " + played_games + " " + won_games + " ";
     }
 }

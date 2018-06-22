@@ -63,8 +63,8 @@ public class Deck extends Card {
         this.deckTrump = deckTrump;
     }
 
+    @Override
     public String toString(){
-        String output = super.toString() + " " + deckStatus + " " + deckTrump;
-        return output;
+        return super.toString() + " " + deckStatus + " " + deckTrump;
     }
 }

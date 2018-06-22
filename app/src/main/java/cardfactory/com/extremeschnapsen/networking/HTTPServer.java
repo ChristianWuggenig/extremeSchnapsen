@@ -16,6 +16,11 @@ import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.models.Player;
 import fi.iki.elonen.NanoHTTPD;
 
+/**
+ * This class represents the http-server and is responsible for client-server-exchange of game relevant data.
+ * Actions are received via the network manager, responses are displayed on the network display interface object
+ * The framework used for the http-server is called nanohttpd, which implements methods to send and receive data via http
+ */
 public class HTTPServer {
     private int cardPlayed; //contains the played card
 
@@ -262,12 +267,12 @@ public class HTTPServer {
      * @return the mode that will actually be used then in json format converted to string
      */
     public String sendClientMode(Map<String, List<String>> params) {
-        String mode = params.get(NetworkHelper.MODE).get(0);
+        String receivedMode = params.get(NetworkHelper.MODE).get(0);
 
         try {
             JSONObject jsonObject = new JSONObject();
 
-            if (mode.equals(NetworkHelper.MODE_EXTREME)) {
+            if (receivedMode.equals(NetworkHelper.MODE_EXTREME)) {
                 jsonObject.put(NetworkHelper.MODE, NetworkHelper.MODE_EXTREME);
                 startGame.setGameMode(NetworkHelper.MODE_EXTREME);
             } else {

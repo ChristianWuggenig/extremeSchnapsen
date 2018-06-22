@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -182,28 +181,7 @@ public class DeckDataSource {
             }
         }
 
-        for (int i = 0; i <=4; i++){
-            deckList.get(i).setDeckStatus(1);
-        }
-
-        for (int i =5; i <=9; i++){
-            deckList.get(i).setDeckStatus(2);
-        }
-
-        deckList.get(10).setDeckStatus(3);
-
-        for (int i =11; i <=19; i++){
-            deckList.get(i).setDeckStatus(4);
-        }
-
-        for (Deck deck1: deckList){
-            if (deck1.getCardSuit().equals(deckList.get(10).getCardSuit())){
-                deck1.setDeckTrump(1);
-            }
-            createDeck(deck1);
-        }
-
-        return deckList;
+        return setInitialDeck(deckList);
 
     }
 
@@ -220,6 +198,11 @@ public class DeckDataSource {
             deckList.add(deck);
         }
 
+        return setInitialDeck(deckList);
+
+    }
+
+    private List<Deck> setInitialDeck(List<Deck> deckList) {
         for (int i = 0; i <=4; i++){
             deckList.get(i).setDeckStatus(1);
         }
@@ -242,7 +225,6 @@ public class DeckDataSource {
         }
 
         return deckList;
-
     }
 
     //updatet status einer Karte im Decktable

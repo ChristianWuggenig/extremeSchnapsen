@@ -1,5 +1,8 @@
 package cardfactory.com.extremeschnapsen.networking;
 
+/**
+ * This interfaces is used to exchange data between the network and the ui, for example on the receival of game relevant data
+ */
 public interface INetworkDisplay {
     /**
      * display a given message on the activity

@@ -51,8 +51,8 @@ public class GamePoints implements Serializable {
         this.gamePoinstsPlayer2 = gamePoinstsPlayer2;
     }
 
+    @Override
     public String toString(){
-        String output = gamePointsID + " " + gameID + " " + gamePointsPlayer1 + " " + gamePoinstsPlayer2;
-        return output;
+        return gamePointsID + " " + gameID + " " + gamePointsPlayer1 + " " + gamePoinstsPlayer2;
     }
 }

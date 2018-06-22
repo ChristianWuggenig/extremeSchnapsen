@@ -107,7 +107,7 @@ public class HTTPClientUnitTest {
     }
 
     @Test
-    public void testSendCard() {
+    public void testSendActionWithCard() {
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -130,7 +130,7 @@ public class HTTPClientUnitTest {
 
         requestQueue.add(request);
 
-        httpClient.sendCard(1);
+        httpClient.sendAction(NetworkHelper.ID, String.valueOf(1));
 
         verify(requestQueue).add(request);
     }

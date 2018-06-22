@@ -1,5 +1,8 @@
 package cardfactory.com.extremeschnapsen.networking;
 
+/**
+ * This interface is used on start of the game to display the game mode on the ui which was received over the network
+ */
 public interface IStartGame {
 
     /**

@@ -19,7 +19,9 @@ public class RoundPoints {
     private int cardExchangeJokerPlayer1;
     private int cardExchangeJokerPlayer2;
 
+    public RoundPoints() {
 
+    }
 
     public RoundPoints (long roundpointsID, int currentroundpoints, int pointsplayer1, int pointsplayer2){
         this.roundpointsID = roundpointsID;
@@ -209,13 +211,13 @@ public class RoundPoints {
         this.cardExchangeJokerPlayer2 = cardExchangeJokerPlayer2;
     }
 
+    @Override
     public String toString(){
-        String output = roundpointsID + " " + currentroundpoints + " " + pointsplayer1 + " " + pointsplayer2 + " " +
+        return roundpointsID + " " + currentroundpoints + " " + pointsplayer1 + " " + pointsplayer2 + " " +
                 hiddenpointsplayer1 + " " + hiddenpointsplayer2 + " " + moves + " " +
                 rundenphase + " " + trumpExchanged + " " + sightJokerPlayer1 + " " + sightJokerPlayer2 + " " +
                 parrySightJokerPlayer1 + " " + parrySightJokerPlayer2 + " " + cardExchangeJokerPlayer1 + " "
                 + cardExchangeJokerPlayer2;
-        return output;
     }
 
 }

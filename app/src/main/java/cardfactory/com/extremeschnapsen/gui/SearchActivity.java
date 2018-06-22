@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,9 @@ import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.gameengine.Game;
 import cardfactory.com.extremeschnapsen.networking.WiFiP2PBroadcastReceiver;
 
+/**
+ * this activity is displayed when searching for players on the network and trying to connect to them
+ */
 public class SearchActivity extends AppCompatActivity {
 
     //Declare necessary objects for P2P
@@ -40,10 +44,6 @@ public class SearchActivity extends AppCompatActivity {
     //Declare UI-items
     private ListViewCompat lvAvailableDevices;
     private ArrayAdapter<WifiP2pDevice> deviceAdapter;
-    private AppCompatButton btnSearch;
-
-    //Game
-    public static Game game;
 
     //Define list of available devices
     private List<WifiP2pDevice> devices = new ArrayList<>();
@@ -58,7 +58,7 @@ public class SearchActivity extends AppCompatActivity {
 
         //initialize UI-items with local variables
         lvAvailableDevices = this.findViewById(R.id.lvAvailableDevices);
-        btnSearch = this.findViewById(R.id.btnSearchForP2PDevices);
+        Button btnSearch = this.findViewById(R.id.btnSearchForP2PDevices);
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,6 +108,9 @@ public class SearchActivity extends AppCompatActivity {
         unregisterReceiver(broadcastReceiver);
     }
 
+    /**
+     * the action listener in this method is called when searching for peers, but is not implemented
+     */
     public void discoverPeers() {
 
         Toast.makeText(this, R.string.msgWifiP2pSearching, Toast.LENGTH_SHORT).show();
@@ -125,6 +128,9 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * initialize the array adapter and tell it how to display found devices on the network
+     */
     public void initializeArrayAdapter() {
         deviceAdapter = new ArrayAdapter<WifiP2pDevice>(this, R.layout.wifi_device, R.id.lvSingleDevice, devices) {
 
@@ -144,6 +150,9 @@ public class SearchActivity extends AppCompatActivity {
         };
     }
 
+    /**
+     * this listener is called when new peers on the network were found so that the list can be updated
+     */
     public void refreshedPeers() {
         peerListListener = new WifiP2pManager.PeerListListener() {
             @Override
@@ -164,6 +173,9 @@ public class SearchActivity extends AppCompatActivity {
         };
     }
 
+    /**
+     * this method defines the necessary intent filters to listen for p2p connections
+     */
     public void defineP2PIntentFilter() {
         intentFilter = new IntentFilter();
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -172,6 +184,9 @@ public class SearchActivity extends AppCompatActivity {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
     }
 
+    /**
+     * sets the list view onclicklistener so that the clicked devices will be connected to
+     */
     public void setListViewOnClickListener() {
         lvAvailableDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
