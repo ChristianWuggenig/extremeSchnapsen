@@ -765,13 +765,5 @@ public class RoundUnitTest {
     }
 
     //endregion
-    @Test
-    public void testCheckFor66_P1_66_P2_0() {
 
-        when(roundPoints.getMoves()).thenReturn(1);
-        when(roundPoints.getPointsplayer1()).thenReturn(66);
-        when(roundPoints.getPointsplayer2()).thenReturn(0);
-
-        assertEquals(true, round.checkFor66());
-    }
 }
