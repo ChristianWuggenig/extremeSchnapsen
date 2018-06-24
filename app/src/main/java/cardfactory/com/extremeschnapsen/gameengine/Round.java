@@ -22,6 +22,8 @@ public class Round {
 
     //region Declarations
 
+
+
     private Game game; //Game Deklaration -> Instanz unten
 
     private List<Card> allCards; //contains a list of all cards
@@ -65,6 +67,7 @@ public class Round {
     //endregion
 
     //region Constructors
+
 
     public Round(Context context) {
         deckDataSource = new DeckDataSource(context);
@@ -150,6 +153,38 @@ public class Round {
      */
     public void setPlayerDataSource(PlayerDataSource playerDataSource) {
         this.playerDataSource = playerDataSource;
+    }
+
+    /**
+     * set the Game
+     */
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    /**
+     * set the LastStuch
+     */
+    public void setLastStuch(boolean lastStuch) {
+        this.lastStuch = lastStuch;
+    }
+    /**
+     * set the setHasTurned
+     */
+    public void setHasturned(boolean hasturned) {
+        this.hasturned = hasturned;
+    }
+    /**
+     * set the Turnpoints
+     */
+    public void setTurnpoints(int turnpoints) {
+        this.turnpoints = turnpoints;
+    }
+    /**
+     * set the RoundWon
+     */
+    public void setRoundWon(boolean roundWon) {
+        this.roundWon = roundWon;
     }
 
     /**
@@ -1521,10 +1556,11 @@ public class Round {
                 roundWon = false;
             }
             else if (lastStuch == false && !isGroupOwner){
-                game.updateGamePoints(1, 1);
+                game.updateGamePoints(1, 0);
                 roundWon = false;
 
             }
+            return true;
         }
 
         if (rp2.getMoves() == 25){

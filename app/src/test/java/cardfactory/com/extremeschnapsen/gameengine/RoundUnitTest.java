@@ -82,7 +82,9 @@ public class RoundUnitTest {
     public void init() {
         context = mock(GameActivity.class);
         round = new Round();
-        game = new Game();
+
+        game = mock(Game.class);
+        round.setGame(game);
 
 
         deck1 = mock(Deck.class);
@@ -114,14 +116,14 @@ public class RoundUnitTest {
 
         player = mock(Player.class);
         playerDataSource = mock(PlayerDataSource.class);
-        game.setPlayerDataSource(playerDataSource);
         round.setPlayerDataSource(playerDataSource);
 
+        /*
         gpds = mock(GamePointsDataSource.class);
         gp = mock(GamePoints.class);
         when(gpds.getCurrentGamePointsObject()).thenReturn(gp);
         game.setGpds(gpds);
-
+*/
 
         round.setDeckDataSource(deckDataSource);
         round.setRoundPointsDataSource(roundPointsDataSource);
@@ -773,5 +775,273 @@ public class RoundUnitTest {
         when(roundPoints.getPointsplayer2()).thenReturn(0);
 
         assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(3,0);
     }
+
+    @Test
+    public void testCheckFor66_P1_66_P2_32() {
+
+        round.setGroupOwner(true);
+        when(roundPoints.getMoves()).thenReturn(1);
+        when(roundPoints.getPointsplayer1()).thenReturn(66);
+        when(roundPoints.getPointsplayer2()).thenReturn(32);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(2,0);
+    }
+
+    @Test
+    public void testCheckFor66_P1_66_P2_33() {
+
+        when(roundPoints.getMoves()).thenReturn(1);
+        when(roundPoints.getPointsplayer1()).thenReturn(66);
+        when(roundPoints.getPointsplayer2()).thenReturn(33);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(1,0);
+    }
+
+    @Test
+    public void testCheckFor66_P2_66_P1_0() {
+
+        when(roundPoints.getMoves()).thenReturn(1);
+        when(roundPoints.getPointsplayer2()).thenReturn(66);
+        when(roundPoints.getPointsplayer1()).thenReturn(0);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,3);
+    }
+
+    @Test
+    public void testCheckFor66_P2_66_P1_32() {
+
+        round.setGroupOwner(true);
+        when(roundPoints.getMoves()).thenReturn(1);
+        when(roundPoints.getPointsplayer2()).thenReturn(66);
+        when(roundPoints.getPointsplayer1()).thenReturn(32);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,2);
+    }
+
+    @Test
+    public void testCheckFor66_P2_66_P1_33() {
+
+        when(roundPoints.getMoves()).thenReturn(1);
+        when(roundPoints.getPointsplayer2()).thenReturn(66);
+        when(roundPoints.getPointsplayer1()).thenReturn(33);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,1);
+    }
+    @Test
+    public void testCheckFor66_LastStuch_true_GroupOwner_true() {
+
+        round.setGroupOwner(true);
+        round.setLastStuch(true);
+        when(roundPoints.getMoves()).thenReturn(10);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(1,0);
+    }
+
+    @Test
+    public void testCheckFor66_LastStuch_true_GroupOwner_false() {
+
+        round.setGroupOwner(false);
+        round.setLastStuch(true);
+        when(roundPoints.getMoves()).thenReturn(10);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,1);
+    }
+
+    @Test
+    public void testCheckFor66_LastStuch_false_GroupOwner_true() {
+
+        round.setGroupOwner(true);
+        round.setLastStuch(false);
+        when(roundPoints.getMoves()).thenReturn(10);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,1);
+    }
+
+    @Test
+    public void testCheckFor66_LastStuch_false_GroupOwner_flase() {
+
+        round.setGroupOwner(false);
+        round.setLastStuch(false);
+        when(roundPoints.getMoves()).thenReturn(10);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(1,0);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_GrpOwner_True_Won() {
+
+        round.setGroupOwner(true);
+        round.setHasturned(true);
+        round.setTurnpoints(3);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer1()).thenReturn(66);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(3,0);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_GrpOwner_True_Lost_Turnpoints_3() {
+
+        round.setGroupOwner(true);
+        round.setHasturned(true);
+        round.setTurnpoints(3);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer1()).thenReturn(65);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,3);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_GrpOwner_True_Lost_Turnpoints_2() {
+
+        round.setGroupOwner(true);
+        round.setHasturned(true);
+        round.setTurnpoints(2);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer1()).thenReturn(65);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,2);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_GrpOwner_False_Won() {
+
+        round.setGroupOwner(false);
+        round.setHasturned(true);
+        round.setTurnpoints(3);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer2()).thenReturn(66);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,3);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_GrpOwner_False_Lost_Turnpoints_3() {
+
+        round.setGroupOwner(false);
+        round.setHasturned(true);
+        round.setTurnpoints(3);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer2()).thenReturn(65);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(3,0);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_GrpOwner_False_Lost_Turnpoints_2() {
+
+        round.setGroupOwner(false);
+        round.setHasturned(true);
+        round.setTurnpoints(2);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer2()).thenReturn(65);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(2,0);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_notTurned_GrpOwner_True_Won() {
+
+        round.setGroupOwner(true);
+        round.setHasturned(false);
+        round.setTurnpoints(3);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer2()).thenReturn(66);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,3);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_notTurned_GrpOwner_True_Lost_Turnpoints_3() {
+
+        round.setGroupOwner(true);
+        round.setHasturned(false);
+        round.setTurnpoints(3);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer2()).thenReturn(65);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(3,0);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_notTurned_GrpOwner_True_Lost_Turnpoints_2() {
+
+        round.setGroupOwner(true);
+        round.setHasturned(false);
+        round.setTurnpoints(2);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer2()).thenReturn(65);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(2,0);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_notTurned_GrpOwner_False_Won() {
+
+        round.setGroupOwner(false);
+        round.setHasturned(false);
+        round.setTurnpoints(3);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer1()).thenReturn(66);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(3,0);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_notTurned_GrpOwner_False_Lost_Turnpoints_3() {
+
+        round.setGroupOwner(false);
+        round.setHasturned(false);
+        round.setTurnpoints(3);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer1()).thenReturn(65);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,3);
+    }
+
+    @Test
+    public void testCheckFor66_Zugedreht_notTurned_GrpOwner_False_Lost_Turnpoints_2() {
+
+        round.setGroupOwner(false);
+        round.setHasturned(false);
+        round.setTurnpoints(2);
+        when(roundPoints.getMoves()).thenReturn(25);
+        when(roundPoints.getPointsplayer1()).thenReturn(65);
+
+        assertEquals(true, round.checkFor66());
+        verify(game).updateGamePoints(0,2);
+    }
+
+    @Test
+    public void testCheckFor66_P1_65_P2_50() {
+
+        when(roundPoints.getMoves()).thenReturn(1);
+        when(roundPoints.getPointsplayer1()).thenReturn(65);
+        when(roundPoints.getPointsplayer2()).thenReturn(50);
+
+        assertEquals(false, round.checkFor66());
+    }
+
 }
