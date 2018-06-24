@@ -102,10 +102,6 @@ public class Round {
 
         List<Player> players = playerDataSource.getAllPlayers();
         player = players.get(0);
-      
-        for (boolean played20 : twentyfortyalreadyplayed){
-            played20 = false;
-        }
 
         justplayed2040 = "";
 

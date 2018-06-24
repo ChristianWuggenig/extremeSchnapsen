@@ -51,10 +51,9 @@ public class Card {
         this.cardValue = cardValue;
     }
 
-
+    @Override
     public String toString(){
-        String output = cardID + " " + cardSuit + " " + cardRank + " " + cardValue;
-        return output;
+        return cardID + " " + cardSuit + " " + cardRank + " " + cardValue;
     }
 
 

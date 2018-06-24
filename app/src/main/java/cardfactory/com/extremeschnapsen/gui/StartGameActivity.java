@@ -20,12 +20,10 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
 
     private static View.OnClickListener onClickListenerStart;
     private static View.OnClickListener onClickListenerFinish;
-    private static View.OnClickListener onClickListenerStartNextRound;
 
     private static AppCompatButton btnStartGame;
     private static AppCompatButton btnFinishGame;
 
-    private static boolean alreadyStarted;
     private static boolean gameModeExtreme;
     private static boolean isGroupOwner;
 
@@ -43,7 +41,6 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
 
         setContentView(R.layout.activity_start_game);
 
-        alreadyStarted = false;
         gameModeExtreme = false;
 
         networkManager = NetworkManager.getInstance(this);
@@ -70,13 +67,6 @@ public class StartGameActivity extends AppCompatActivity implements IStartGame {
             @Override
             public void onClick(View view) {
                 btnStartGameClick(view);
-            }
-        };
-
-        onClickListenerStartNextRound = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                btnStartNextRoundClick(view);
             }
         };
 

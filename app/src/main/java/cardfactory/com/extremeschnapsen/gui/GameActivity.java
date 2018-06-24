@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -31,10 +30,8 @@ import cardfactory.com.extremeschnapsen.services.MySensorService;
 
 public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
-    private static ConstraintLayout deckholder;
     private static List<Deck> cardsOnHand;
     private Deck open;
-    private List<Deck> playedCards;
     private Deck playedCardPlayer1;
     private Deck playedCardPlayer2;
 
@@ -71,12 +68,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
             if(isShake && !isShaked){
                 isShaked = true;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        connectionDialog.dismiss();
-                    }
-                });
                 Log.d("MainActivity", "shake happened!");
             }
             if(isTurn && !isTurned){
@@ -87,6 +78,8 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             }
         }
     };
+
+    //region Activity methods
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +105,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
         showCardsBuilder = new AlertDialog.Builder(this);
 
-        deckholder = (ConstraintLayout) findViewById(R.id.layoutPlaceholder);
         cardList = new ArrayList<>();
         cardList.add((ImageView) findViewById(R.id.iv_card_1));
         cardList.add((ImageView) findViewById(R.id.iv_card_2));
@@ -172,6 +164,29 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         isShaked = false;
     }
 
+    @Override
+    protected void onDestroy() {
+        //deregister BroadcastReceiver
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSensorReceiver);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        round.closeDatabases();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        round.openDatabases();
+    }
+
+    //endregion
+
+    //region Listeners
+
     //msg20Received, msg40Received noch verwenden bitte
     public void onClickBtnHerz(View view) {
         round.check2040("herz");
@@ -216,6 +231,10 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
 
     }
 
+    public void onClickBtnCards(View view) {
+        showCardDialog(false);
+    }
+
     public void setPlayCardListener() {
         ivOnClickListener = new View.OnClickListener() {
             @Override
@@ -229,17 +248,62 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        round.closeDatabases();
+    public void onClickBtnParrySightJoker(View view) {
+
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        round.openDatabases();
+    public void ivCardClicked(View view) {
+
+        switch (view.getId()) {
+            case R.id.iv_card_1:
+                playCard((int)cardsOnHand.get(0).getCardID()); //bekomme ich dadurch die richtige karte?
+                break;
+            case R.id.iv_card_2:
+                playCard((int)cardsOnHand.get(1).getCardID());
+                break;
+            case R.id.iv_card_3:
+                playCard((int)cardsOnHand.get(2).getCardID());
+                break;
+            case R.id.iv_card_4:
+                playCard((int)cardsOnHand.get(3).getCardID());
+                break;
+            case R.id.iv_card_5:
+                playCard((int)cardsOnHand.get(4).getCardID());
+                break;
+            case R.id.iv_card_trump:
+                round.exchangeTrump();
+                displayDeck();
+                break;
+        }
     }
+
+    public void ivCardClicked_CardExchange(View view) {
+
+        switch (view.getId()) {
+            case R.id.iv_card_1:
+                exchangeCard((int)cardsOnHand.get(0).getCardID());
+                break;
+            case R.id.iv_card_2:
+                exchangeCard((int)cardsOnHand.get(1).getCardID());
+                break;
+            case R.id.iv_card_3:
+                exchangeCard((int)cardsOnHand.get(2).getCardID());
+                break;
+            case R.id.iv_card_4:
+                exchangeCard((int)cardsOnHand.get(3).getCardID());
+                break;
+            case R.id.iv_card_5:
+                exchangeCard((int)cardsOnHand.get(4).getCardID());
+                break;
+
+        }
+        setPlayCardListener();
+        displayDeck();
+    }
+
+    //endregion
+
+    //region Interface methods
 
     @Override
     public void dismissDialog() {
@@ -316,43 +380,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         });
     }
 
-    public void displayDeck() {
-
-        int index = 0;
-        cardsOnHand = round.getCardsOnHand();
-        open = round.getOpenCard();
-        playedCards = round.getPlayedCards();
-        playedCardPlayer1 = round.getPlayedCardPlayer1();
-        playedCardPlayer2 = round.getPlayedCardPlayer2();
-        String karte = "";
-
-        for(ImageView card : cardList) {
-            karte = "";
-            if (index < cardsOnHand.size()) {
-                karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
-            }
-            if (index == 5 && open != null){
-                karte = open.getCardSuit() + open.getCardRank();
-            }
-            if (index == 6 && playedCardPlayer1 != null) {
-                karte = playedCardPlayer1.getCardSuit() + playedCardPlayer1.getCardRank();
-            }
-            if (index == 7 && playedCardPlayer2 != null) {
-                karte = playedCardPlayer2.getCardSuit() + playedCardPlayer2.getCardRank();
-            }
-            if (karte == "")
-                karte = "logo";
-
-            index ++;
-
-            int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName());
-            card.setImageResource(res_id);
-        }
-
-        showGamePoints();
-        showRoundPoints();
-    }
-
     @Override
     public void displayShuffledDeck(final int[] shuffledDeckIDs, final String playerName) {
         runOnUiThread(new Runnable() {
@@ -364,69 +391,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
             }
         });
 
-    }
-
-    public void ivCardClicked(View view) {
-
-        switch (view.getId()) {
-            case R.id.iv_card_1:
-                playCard((int)cardsOnHand.get(0).getCardID()); //bekomme ich dadurch die richtige karte?
-                break;
-            case R.id.iv_card_2:
-                playCard((int)cardsOnHand.get(1).getCardID());
-                break;
-            case R.id.iv_card_3:
-                playCard((int)cardsOnHand.get(2).getCardID());
-                break;
-            case R.id.iv_card_4:
-                playCard((int)cardsOnHand.get(3).getCardID());
-                break;
-            case R.id.iv_card_5:
-                playCard((int)cardsOnHand.get(4).getCardID());
-                break;
-            case R.id.iv_card_trump:
-                round.exchangeTrump();
-                displayDeck();
-                break;
-        }
-    }
-
-    public void ivCardClicked_CardExchange(View view) {
-
-        switch (view.getId()) {
-            case R.id.iv_card_1:
-                exchangeCard((int)cardsOnHand.get(0).getCardID());
-                break;
-            case R.id.iv_card_2:
-                exchangeCard((int)cardsOnHand.get(1).getCardID());
-                break;
-            case R.id.iv_card_3:
-                exchangeCard((int)cardsOnHand.get(2).getCardID());
-                break;
-            case R.id.iv_card_4:
-                exchangeCard((int)cardsOnHand.get(3).getCardID());
-                break;
-            case R.id.iv_card_5:
-                exchangeCard((int)cardsOnHand.get(4).getCardID());
-                break;
-
-        }
-        setPlayCardListener();
-        displayDeck();
-    }
-
-    //fÃ¼r Kartentausch
-    public void exchangeCard (int cardID){
-        round.cardExchange(cardID);
-
-    }
-    public void playCard(int cardID) {
-        if(round.playCard(cardID)) {
-            round.compareCards();
-            if(round.checkFor66()){
-                finishActivity(round.roundWon());
-            }
-        }
     }
 
     @Override
@@ -447,33 +411,6 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
     @Override
     public void waitForCard() {
         round.waitForCard();
-    }
-
-    public void showRoundPoints() {
-        if (isGroupOwner) {
-            txvPoints.setText(round.getRoundPointsPlayer1() + " Punkte");
-        } else {
-            txvPoints.setText(round.getRoundPointsPlayer2() + " Punkte");
-        }
-    }
-
-    protected void finishActivity(boolean won) {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra(IntentHelper.GAMEWON, won);
-        setResult(Activity.RESULT_OK, returnIntent);
-
-        this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
-        this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
-    }
-
-    protected void showGamePoints() {
-        if (isGroupOwner) {
-            txvGamePoints1.setText(round.getGamePointsPlayer1());
-            txvGamePoints2.setText(round.getGamePointsPlayer2());
-        } else {
-            txvGamePoints1.setText(round.getGamePointsPlayer2());
-            txvGamePoints2.setText(round.getGamePointsPlayer1());
-        }
     }
 
     @Override
@@ -523,8 +460,81 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         });
     }
 
-    public void onClickBtnCards(View view) {
-        showCardDialog(false);
+    //endregion
+
+    //region Actions
+
+    public void exchangeCard (int cardID){
+        round.cardExchange(cardID);
+
+    }
+
+    public void playCard(int cardID) {
+        if(round.playCard(cardID)) {
+            round.compareCards();
+            if(round.checkFor66()){
+                finishActivity(round.roundWon());
+            }
+        }
+    }
+
+    //endregion
+
+    //region Display UI
+
+    public void displayDeck() {
+
+        int index = 0;
+        cardsOnHand = round.getCardsOnHand();
+        open = round.getOpenCard();
+        List<Deck> playedCards = round.getPlayedCards();
+        playedCardPlayer1 = round.getPlayedCardPlayer1();
+        playedCardPlayer2 = round.getPlayedCardPlayer2();
+        String karte = "";
+
+        for(ImageView card : cardList) {
+            karte = "";
+            if (index < cardsOnHand.size()) {
+                karte = cardsOnHand.get(index).getCardSuit() + cardsOnHand.get(index).getCardRank();
+            }
+            if (index == 5 && open != null){
+                karte = open.getCardSuit() + open.getCardRank();
+            }
+            if (index == 6 && playedCardPlayer1 != null) {
+                karte = playedCardPlayer1.getCardSuit() + playedCardPlayer1.getCardRank();
+            }
+            if (index == 7 && playedCardPlayer2 != null) {
+                karte = playedCardPlayer2.getCardSuit() + playedCardPlayer2.getCardRank();
+            }
+            if (karte == "")
+                karte = "logo";
+
+            index ++;
+
+            int res_id = getResources().getIdentifier(karte, "drawable", this.getPackageName());
+            card.setImageResource(res_id);
+        }
+
+        showGamePoints();
+        showRoundPoints();
+    }
+
+    public void showRoundPoints() {
+        if (isGroupOwner) {
+            txvPoints.setText(round.getRoundPointsPlayer1() + " Punkte");
+        } else {
+            txvPoints.setText(round.getRoundPointsPlayer2() + " Punkte");
+        }
+    }
+
+    protected void showGamePoints() {
+        if (isGroupOwner) {
+            txvGamePoints1.setText(round.getGamePointsPlayer1());
+            txvGamePoints2.setText(round.getGamePointsPlayer2());
+        } else {
+            txvGamePoints1.setText(round.getGamePointsPlayer2());
+            txvGamePoints2.setText(round.getGamePointsPlayer1());
+        }
     }
 
     protected void showCardDialog(boolean sightJoker) {
@@ -588,13 +598,18 @@ public class GameActivity extends AppCompatActivity implements INetworkDisplay {
         showCardList.add((ImageView) dialogView.findViewById(R.id.ivShowCard15));
     }
 
-    public void onClickBtnParrySightJoker(View view) {
+    //endregion
 
+    //region Finish
+
+    protected void finishActivity(boolean won) {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(IntentHelper.GAMEWON, won);
+        setResult(Activity.RESULT_OK, returnIntent);
+
+        this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
+        this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
     }
 
-    protected void onDestroy() {
-        //deregister BroadcastReceiver
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSensorReceiver);
-        super.onDestroy();
-    }
+    //endregion
 }

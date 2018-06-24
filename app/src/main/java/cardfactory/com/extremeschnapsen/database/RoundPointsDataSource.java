@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -198,7 +197,7 @@ public class RoundPointsDataSource {
     public void saveRoundPoints(RoundPoints pointsToSave){
 
         List<RoundPoints> roundPointsList = getAllRoundPoints();
-        RoundPoints rp =null;
+        RoundPoints rp = new RoundPoints();
 
         for (RoundPoints rpl : roundPointsList){
             if (rpl.getCurrentroundpoints() == 1){

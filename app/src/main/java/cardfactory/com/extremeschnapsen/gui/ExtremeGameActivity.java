@@ -15,17 +15,13 @@ import cardfactory.com.extremeschnapsen.services.LightSensorService;
 public class ExtremeGameActivity extends GameActivity {
 
     private boolean lightSensorUsed;
-    private Button btnCardExchange;
-    private Button btnParrySightJoker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //setContentView(R.layout.activity_extreme_game);
-
-        btnCardExchange = this.findViewById(R.id.btn_kartentausch);
-        btnParrySightJoker = this.findViewById(R.id.btn_endtarnjoker);
+        Button btnCardExchange = this.findViewById(R.id.btn_kartentausch);
+        Button btnParrySightJoker = this.findViewById(R.id.btn_endtarnjoker);
 
         btnCardExchange.setVisibility(View.VISIBLE);
         btnParrySightJoker.setVisibility(View.VISIBLE);

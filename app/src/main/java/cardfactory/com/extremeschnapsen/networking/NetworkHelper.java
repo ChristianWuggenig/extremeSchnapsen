@@ -1,5 +1,8 @@
 package cardfactory.com.extremeschnapsen.networking;
 
+/**
+ * This class provides unique ids to exchange data over the network with common values
+ */
 public class NetworkHelper {
     public static final String NAME = "name";
     public static final String ID = "id";

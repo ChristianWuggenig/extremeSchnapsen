@@ -103,7 +103,7 @@ public class NetworkManagerUnitTest {
     public void testSendCardWithClient() {
         networkManager.sendCard(1);
 
-        verify(httpClient).sendCard(1);
+        verify(httpClient).sendAction(NetworkHelper.ID, String.valueOf(1));
     }
 
     @Test

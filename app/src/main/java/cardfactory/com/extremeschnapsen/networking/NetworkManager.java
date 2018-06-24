@@ -7,6 +7,9 @@ import java.util.List;
 import cardfactory.com.extremeschnapsen.models.Deck;
 import cardfactory.com.extremeschnapsen.models.Player;
 
+/**
+ * The network manager implements a singleton and is responsible for starting the http-client or -server and to send data over the network with the appropriate objects
+ */
 public class NetworkManager {
 
     private static NetworkManager networkManager; //create a static network manager
@@ -124,7 +127,7 @@ public class NetworkManager {
             httpServer.setCardPlayed(cardID);
         }
         else {
-            httpClient.sendCard(cardID);
+            httpClient.sendAction(NetworkHelper.ID, String.valueOf(cardID));
         }
     }
 

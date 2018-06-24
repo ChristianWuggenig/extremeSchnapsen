@@ -4,22 +4,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.p2p.*;
-import android.util.Log;
 import android.widget.Toast;
 
 import cardfactory.com.extremeschnapsen.R;
 import cardfactory.com.extremeschnapsen.gui.IntentHelper;
 import cardfactory.com.extremeschnapsen.gui.SearchActivity;
 import cardfactory.com.extremeschnapsen.gui.StartGameActivity;
-import cardfactory.com.extremeschnapsen.gameengine.Game;
 
 /**
- * Created by Christian on 03.04.2018.
+ * this broadcast receiver is used to connect the device with other devices over wifi p2p
  */
 
 public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
 
-    //declare the necessary P2P-Objects
     private WifiP2pManager p2pManager; //the manager object used to manage the p2p connection
     private WifiP2pManager.Channel p2pChannel; //contains the p2p channel
     WifiP2pManager.PeerListListener peerListListener; //the peerlistlistener object, which contains a list of all available peers
@@ -50,9 +47,11 @@ public class WiFiP2PBroadcastReceiver extends BroadcastReceiver {
         connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
             @Override
             public void onConnectionInfoAvailable(WifiP2pInfo wifiP2pInfo) {
-                Intent startGameActivityIntent = new Intent(context, StartGameActivity.class);
-                startGameActivityIntent.putExtra(IntentHelper.IS_GROUP_OWNER, wifiP2pInfo.isGroupOwner);
-                searchActivity.startActivity(startGameActivityIntent);
+                if (wifiP2pInfo.groupFormed) {
+                    Intent startGameActivityIntent = new Intent(context, StartGameActivity.class);
+                    startGameActivityIntent.putExtra(IntentHelper.IS_GROUP_OWNER, wifiP2pInfo.isGroupOwner);
+                    searchActivity.startActivity(startGameActivityIntent);
+                }
             }
         };
     }

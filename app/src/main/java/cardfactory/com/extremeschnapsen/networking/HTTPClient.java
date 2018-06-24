@@ -12,11 +12,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 import cardfactory.com.extremeschnapsen.gui.MessageHelper;
 import cardfactory.com.extremeschnapsen.models.Player;
 
+/**
+ * This class represents the http-client and is responsible for client-server-exchange of game relevant data.
+ * Actions are received via the network manager, responses are displayed on the network display interface object
+ */
 public class HTTPClient {
 
     private INetworkDisplay networkDisplay; //the network display interface object
@@ -24,9 +26,9 @@ public class HTTPClient {
 
     private RequestQueue requestQueue; //the volley request queue object
 
-    private static final String serverIP = "http://192.168.49.1:8080/"; //is static, because WifiP2P always assigns this ip address;
+    private static final String SERVER_IP = "http://192.168.49.1:8080/"; //is static, because WifiP2P always assigns this ip address;
 
-    private static final String queueTag = "extremeSchnapsen"; //contains the queueTag for volley
+    private static final String QUEUE_TAG = "extremeSchnapsen"; //contains the queueTag for volley
 
     private Player player; //contains the current player
 
@@ -37,8 +39,8 @@ public class HTTPClient {
      * @param context contains the activity context
      */
     public HTTPClient(Context context) {
-        this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         this.startGame = (IStartGame)context;
+        this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
     }
 
     /**
@@ -85,7 +87,7 @@ public class HTTPClient {
      * @param mode the mode the client has set in the game settings
      */
     public void getGameMode(String mode) {
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, serverIP + "?" + NetworkHelper.MODE + "=" + mode, new JSONObject(), new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, SERVER_IP + "?" + NetworkHelper.MODE + "=" + mode, new JSONObject(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
@@ -104,7 +106,7 @@ public class HTTPClient {
         //set initial timeout and retry policy for volley
         request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 10, 1.0f));
 
-        request.setTag(queueTag);
+        request.setTag(QUEUE_TAG);
         requestQueue.add(request);
     }
 
@@ -114,7 +116,7 @@ public class HTTPClient {
      */
     public void getDeck() {
 
-        final JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, serverIP + "?" + NetworkHelper.NAME + "=" + player.getUsername(), new JSONArray(), new Response.Listener<JSONArray>() {
+        final JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, SERVER_IP + "?" + NetworkHelper.NAME + "=" + player.getUsername(), new JSONArray(), new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 receiveShuffledDeck(response);
@@ -124,34 +126,6 @@ public class HTTPClient {
             public void onErrorResponse(VolleyError error) {
                 Log.d("HTTPError", error.getMessage());
                 getDeck();
-            }
-        });
-
-        requestQueue.add(request);
-    }
-
-    /**
-     * sends a played card to the server with a given cardID
-     * @param cardID contains the id of the played card
-     */
-    public void sendCard(final int cardID) {
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            jsonObject.put(NetworkHelper.ID, cardID);
-        } catch (JSONException ex) {
-            Log.d("JSONError", ex.getMessage());
-        }
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, serverIP, jsonObject, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                alreadyReceived = false;
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("VolleyError", error.getMessage());
             }
         });
 
@@ -172,7 +146,7 @@ public class HTTPClient {
             Log.d("JSONError", ex.getMessage());
         }
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, serverIP, jsonObject, new Response.Listener<JSONObject>() {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, SERVER_IP, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 alreadyReceived = false;
@@ -193,7 +167,7 @@ public class HTTPClient {
     public void getServerInformation() {
 
         if(!alreadyReceived) {
-            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, serverIP + "?" + NetworkHelper.ID + "=1", new JSONArray(), new Response.Listener<JSONArray>() {
+            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, SERVER_IP + "?" + NetworkHelper.ID + "=1", new JSONArray(), new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
                     processServerInformation(response);
@@ -257,6 +231,7 @@ public class HTTPClient {
                             try {
                                 Thread.sleep(700);
                             } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
                                 Log.d("ThreadError", ex.getMessage());
                             }
 
