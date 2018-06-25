@@ -35,8 +35,8 @@ We have different types of cheating:
 
 ## Technical Details
 
-EXTREME SCHNAPSEN was developed using Android Studio and Android SDK version 26. This mutliplayer game can be played on any 
-Android device, the only requirement is a connection via WifiDirect. The layout, the cards ant the buttons are made with Adobe 
+EXTREME SCHNAPSEN was developed using Android Studio and Android SDK version 19. This mutliplayer game can be played on any 
+Android device, the only requirement is a connection via WifiDirect. The layout, the cards and the buttons are made with Adobe 
 Illustrator. 
 
 * [Android Studio](https://developer.android.com/studio/) 
