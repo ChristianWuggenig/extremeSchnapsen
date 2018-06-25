@@ -27,10 +27,10 @@ We have different types of cheating:
   presumption is right, the counterpart gets 10 extra points in this round, if he is wrong you will get 10 points 
 
 
-## Preview of the game and the sight joker
+## Preview of the Game and the Sight-Joker
 
-![Screenshot1]()
-![Screenshot2]()
+![Game](https://github.com/dascheriau/extremeSchnapsen/blob/master/Screenshot_20180625-154037.jpg)
+![Sight-Joker](https://github.com/dascheriau/extremeSchnapsen/blob/master/Screenshot_20180625-154043.jpg)
 
 
 ## Technical Details
